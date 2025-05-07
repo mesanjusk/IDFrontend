@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 
-export default function ImageUploadPage() {
+export default function Upload() {
   const [file, setFile] = useState(null);
   const [title, setTitle] = useState('');
 
