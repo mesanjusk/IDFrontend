@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import panzoom from "panzoom";
 
 const categories = ["All", "Wedding", "Birthday", "Vastu", "Opening"];
 
@@ -60,7 +59,6 @@ export default function InstagramStyleGallery() {
           >
             <i className="fa-brands fa-facebook-messenger text-xl"></i>
           </a>
-          
         </div>
       </header>
 
@@ -92,19 +90,7 @@ export default function InstagramStyleGallery() {
               key={img._id}
               className="bg-white rounded shadow-md cursor-pointer relative overflow-hidden"
             >
-              <div
-                className="aspect-square"
-                ref={(el) => {
-                  if (el) {
-                    panzoom(el, {
-                      maxZoom: 3,
-                      minZoom: 1,
-                      bounds: true,
-                      boundsPadding: 0.1,
-                    });
-                  }
-                }}
-              >
+              <div className="aspect-square">
                 <img
                   src={img.url}
                   alt={img.title}
@@ -118,8 +104,9 @@ export default function InstagramStyleGallery() {
               <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2">
                 <button
                   onClick={() => handleLike(img._id)}
-                  className="bg-pink-600 text-white py-1 px-3 rounded-full text-sm"
+                  
                 >
+                  <i className="fas fa-heart mr-2 text-red-600"></i>
                   Like {likes[img._id] || 0}
                 </button>
               </div>
