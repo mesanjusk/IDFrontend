@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import HomePage from './pages/HomePage';
-import ImageUploadPage from './pages/ImageUploadPage';
+import HomePage from './componennts/HomePage';
+import ImageUploadPage from './componennts/ImageUploadPage';
 
 function App() {
   return (
