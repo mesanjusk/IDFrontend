@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import panzoom from "panzoom";
 
 const categories = ["All", "Wedding", "Birthday", "Vastu", "Opening"];
 
@@ -7,10 +8,8 @@ export default function InstagramStyleGallery() {
   const [images, setImages] = useState([]);
   const [filteredImages, setFilteredImages] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [modalImage, setModalImage] = useState(null);
-  const [likes, setLikes] = useState({}); // Store likes for each image
+  const [likes, setLikes] = useState({});
 
-  // Fetch images
   const fetchImages = async () => {
     try {
       const res = await axios.get("https://idbackend-rf1u.onrender.com/api/images");
@@ -36,7 +35,6 @@ export default function InstagramStyleGallery() {
     }
   }, [selectedCategory, images]);
 
-  // Handle like button click
   const handleLike = (imageId) => {
     setLikes((prevLikes) => ({
       ...prevLikes,
@@ -45,64 +43,82 @@ export default function InstagramStyleGallery() {
   };
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen bg-gradient-to-br from-pink-100 via-rose-50 to-yellow-50">
 
-      {/* Header - fixed */}
+      {/* Header */}
       <header className="bg-white shadow-md py-2 px-4 flex justify-between items-center fixed top-0 left-0 right-0 z-10">
         <div className="flex items-center space-x-4">
-          <span className="font-bold text-2xl text-purple-600">S.K. Cards</span>
+          <span className="font-bold text-2xl bg-gradient-to-r from-pink-500 via-purple-500 to-orange-500 bg-clip-text text-transparent">S.K. Cards</span>
         </div>
-        <div className="flex space-x-4">
-          <i className="fas fa-home text-xl cursor-pointer"></i>
+        <div className="flex space-x-4 text-pink-600">
+          <i className="fas fa-facebook-messanger text-xl cursor-pointer"></i>
           <a
             href="https://wa.me/919372333633?text=Hi%2C%20I%20would%20like%20to%20make%20an%20enquiry"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xl text-purple-600"
+            className="text-xl"
           >
-            <i className="fab fa-whatsapp text-xl"></i>
+            <i className="fa-brands fa-facebook-messenger text-xl"></i>
           </a>
-          <i className="fas fa-user-circle text-xl cursor-pointer"></i>
+          
         </div>
       </header>
 
-      {/* Main Scrollable Content */}
+      {/* Content */}
       <div className="mt-[60px] mb-[60px] overflow-y-auto flex-1">
-        
-        {/* Categories - Horizontal */}
-        <div className="flex overflow-x-auto space-x-6 px-4 py-3">
+
+        {/* Categories */}
+        <div className="flex overflow-x-auto space-x-6 px-4 py-3 scrollbar-hide">
           {categories.map((category) => (
             <div
               key={category}
-              className="flex flex-col items-center space-y-2 cursor-pointer"
+              className={`flex flex-col items-center space-y-2 cursor-pointer transition-transform duration-200 ${
+                selectedCategory === category ? "scale-105" : ""
+              }`}
               onClick={() => setSelectedCategory(category)}
             >
-              <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center">
-                <span className="text-xl font-semibold text-purple-600">{category[0]}</span>
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-pink-200 to-purple-100 flex items-center justify-center">
+                <span className="text-xl font-semibold text-pink-600">{category[0]}</span>
               </div>
-              <span className="text-sm text-purple-600">{category}</span>
+              <span className="text-sm text-pink-700">{category}</span>
             </div>
           ))}
         </div>
 
-        {/* Gallery Feed */}
+        {/* Gallery */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 p-4">
           {filteredImages.map((img) => (
-            <div key={img._id} className="bg-white rounded shadow-md cursor-pointer relative">
-              <img
-                src={img.url}
-                alt={img.title}
-                className="w-full h-auto object-cover aspect-square pointer-events-none"
-                onContextMenu={(e) => e.preventDefault()}
-                loading="lazy"
-              />
-              <p className="text-center text-purple-600 font-medium py-2">{img.title}</p>
-
-              {/* Like Button */}
+            <div
+              key={img._id}
+              className="bg-white rounded shadow-md cursor-pointer relative overflow-hidden"
+            >
+              <div
+                className="aspect-square"
+                ref={(el) => {
+                  if (el) {
+                    panzoom(el, {
+                      maxZoom: 3,
+                      minZoom: 1,
+                      bounds: true,
+                      boundsPadding: 0.1,
+                    });
+                  }
+                }}
+              >
+                <img
+                  src={img.url}
+                  alt={img.title}
+                  className="w-full h-full object-cover pointer-events-auto select-none"
+                  onContextMenu={(e) => e.preventDefault()}
+                  loading="lazy"
+                  draggable={false}
+                />
+              </div>
+              <p className="text-center text-pink-600 font-medium py-2">{img.title}</p>
               <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2">
                 <button
                   onClick={() => handleLike(img._id)}
-                  className="bg-purple-600 text-white py-1 px-3 rounded-full text-sm"
+                  className="bg-pink-600 text-white py-1 px-3 rounded-full text-sm"
                 >
                   Like {likes[img._id] || 0}
                 </button>
@@ -112,9 +128,9 @@ export default function InstagramStyleGallery() {
         </div>
       </div>
 
-      {/* Footer - fixed */}
+      {/* Footer */}
       <footer className="bg-white shadow-md py-3 px-6 fixed bottom-0 left-0 right-0 z-10">
-        <div className="flex justify-around items-center text-purple-600">
+        <div className="flex justify-around items-center text-pink-600">
           <div className="flex flex-col items-center">
             <i className="fas fa-home text-2xl"></i>
             <span className="text-xs">Home</span>
