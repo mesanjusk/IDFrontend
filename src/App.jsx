@@ -10,8 +10,8 @@ function App() {
         <Link to="/upload" className="text-blue-600 hover:underline">Upload Image</Link>
       </nav>
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/upload" element={<ImageUploadPage />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/upload" element={<Upload />} />
       </Routes>
     </Router>
   );
