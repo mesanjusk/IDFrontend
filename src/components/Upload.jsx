@@ -1,4 +1,3 @@
-// src/components/Upload.jsx
 import { useState } from 'react';
 import axios from 'axios';
 
@@ -7,16 +6,20 @@ const Upload = () => {
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
   const [instaUrl, setInstaUrl] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleUpload = async () => {
+    setError('');
+
     if (!file || !title || !category) {
-      return alert('Please fill all required fields');
+      return setError('Please fill all required fields');
     }
     if (!file.type.startsWith('image/')) {
-      return alert('Only images are allowed');
+      return setError('Only image files are allowed');
     }
     if (file.size > 2 * 1024 * 1024) {
-      return alert('Max size 2MB');
+      return setError('Maximum image size is 2MB');
     }
 
     const formData = new FormData();
@@ -26,6 +29,7 @@ const Upload = () => {
     formData.append('instaUrl', instaUrl);
 
     try {
+      setLoading(true);
       await axios.post('https://idbackend-rf1u.onrender.com/api/images', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
@@ -36,6 +40,9 @@ const Upload = () => {
       setInstaUrl('');
     } catch (err) {
       console.error('Upload failed:', err.response?.data || err.message);
+      setError('Upload failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -90,18 +97,26 @@ const Upload = () => {
         />
 
         {file && (
-          <img 
-            src={URL.createObjectURL(file)} 
-            alt="Preview" 
-            className="w-40 h-40 object-cover rounded-md shadow-md mx-auto"
-          />
+          <div className="text-center space-y-2">
+            <img 
+              src={URL.createObjectURL(file)} 
+              alt="Preview" 
+              className="w-40 h-40 object-cover rounded-md shadow-md mx-auto"
+            />
+            <p className="text-sm text-gray-600">{file.name} ({(file.size / 1024).toFixed(2)} KB)</p>
+          </div>
         )}
+
+        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
         <button 
           onClick={handleUpload} 
-          className="w-full bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200"
+          disabled={loading}
+          className={`w-full px-6 py-2 rounded-md transition duration-200 ${
+            loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'
+          }`}
         >
-          Upload
+          {loading ? 'Uploading...' : 'Upload'}
         </button>
       </div>
     </div>
