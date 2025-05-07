@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-export default function HomePage() {
+export default function Home() {
   const [images, setImages] = useState([]);
 
   const fetchImages = async () => {
