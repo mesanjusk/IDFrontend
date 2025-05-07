@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import Home from '.src/components/Home';
-import Upload from '.src/componennts/Upload';
+import Home from './components/Home';
+import Upload from './components/Upload'; // fixed path and typo
 
 function App() {
   return (
