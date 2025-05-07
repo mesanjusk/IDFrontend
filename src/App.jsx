@@ -5,10 +5,7 @@ import Upload from './components/Upload'; // fixed path and typo
 function App() {
   return (
     <Router>
-      <nav className="bg-white shadow-md p-4 flex justify-between">
-        <Link to="/" className="text-xl font-semibold text-gray-700">Home</Link>
-        <Link to="/upload" className="text-blue-600 hover:underline">Upload Image</Link>
-      </nav>
+      
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/upload" element={<Upload />} />
