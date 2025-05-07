@@ -63,7 +63,7 @@ export default function Upload() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-6">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">Upload Design</h1>
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">Upload Design </h1>
       <div className="flex flex-col space-y-4 w-full max-w-md">
         <input
           type="text"
