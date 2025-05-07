@@ -2,7 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 
 export default function Upload() {
-  const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
   const [subcategory, setSubcategory] = useState('');
@@ -10,21 +10,24 @@ export default function Upload() {
   const [instagramUrl, setInstagramUrl] = useState('');
   const [size, setSize] = useState('');
   const [religions, setReligions] = useState('');
-  const [seoTitle, setSeoTitle] = useState(''); // SEO Title
-  const [seoDescription, setSeoDescription] = useState(''); // SEO Description
-  const [seoKeywords, setSeoKeywords] = useState(''); // SEO Keywords
+  const [seoTitle, setSeoTitle] = useState('');
+  const [seoDescription, setSeoDescription] = useState('');
+  const [seoKeywords, setSeoKeywords] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
   const handleUpload = async () => {
-    if (!file) return alert('Please select a file');
+    if (!files.length) {
+      return alert('Please select at least one image.');
+    }
+
     setLoading(true);
     setError('');
     setSuccess('');
 
     const formData = new FormData();
-    formData.append('image', file);
+    files.forEach(file => formData.append('images[]', file)); // multiple images
     formData.append('title', title);
     formData.append('category', category);
     formData.append('subcategory', subcategory);
@@ -32,9 +35,9 @@ export default function Upload() {
     formData.append('instagramUrl', instagramUrl);
     formData.append('size', size);
     formData.append('religions', religions);
-    formData.append('seoTitle', seoTitle); // Add SEO Title
-    formData.append('seoDescription', seoDescription); // Add SEO Description
-    formData.append('seoKeywords', seoKeywords); // Add SEO Keywords
+    formData.append('seoTitle', seoTitle);
+    formData.append('seoDescription', seoDescription);
+    formData.append('seoKeywords', seoKeywords);
 
     try {
       const res = await axios.post('https://idbackend-rf1u.onrender.com/api/images', formData, {
@@ -42,7 +45,7 @@ export default function Upload() {
       });
 
       setSuccess('Uploaded successfully!');
-      setFile(null);
+      setFiles([]);
       setTitle('');
       setCategory('');
       setSubcategory('');
@@ -50,12 +53,12 @@ export default function Upload() {
       setInstagramUrl('');
       setSize('');
       setReligions('');
-      setSeoTitle(''); // Clear SEO fields after success
+      setSeoTitle('');
       setSeoDescription('');
       setSeoKeywords('');
     } catch (err) {
-      setError('Upload failed, please try again.');
-      console.error('Upload failed:', err.response?.data || err.message);
+      setError('Upload failed. Please try again.');
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -63,7 +66,7 @@ export default function Upload() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-6">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">Upload Design </h1>
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">Upload Design</h1>
       <div className="flex flex-col space-y-4 w-full max-w-md">
         <input
           type="text"
@@ -72,11 +75,14 @@ export default function Upload() {
           onChange={(e) => setTitle(e.target.value)}
           className="px-4 py-2 border rounded-md"
         />
+
         <input
           type="file"
-          onChange={(e) => setFile(e.target.files[0])}
+          multiple
+          onChange={(e) => setFiles(Array.from(e.target.files))}
           className="px-4 py-2 border rounded-md"
         />
+
         <input
           type="text"
           placeholder="Category"
@@ -84,6 +90,7 @@ export default function Upload() {
           onChange={(e) => setCategory(e.target.value)}
           className="px-4 py-2 border rounded-md"
         />
+
         <input
           type="text"
           placeholder="Subcategory"
@@ -91,6 +98,7 @@ export default function Upload() {
           onChange={(e) => setSubcategory(e.target.value)}
           className="px-4 py-2 border rounded-md"
         />
+
         <input
           type="number"
           placeholder="Price"
@@ -98,6 +106,7 @@ export default function Upload() {
           onChange={(e) => setPrice(e.target.value)}
           className="px-4 py-2 border rounded-md"
         />
+
         <input
           type="url"
           placeholder="Instagram URL"
@@ -105,6 +114,7 @@ export default function Upload() {
           onChange={(e) => setInstagramUrl(e.target.value)}
           className="px-4 py-2 border rounded-md"
         />
+
         <input
           type="text"
           placeholder="Size"
@@ -112,6 +122,7 @@ export default function Upload() {
           onChange={(e) => setSize(e.target.value)}
           className="px-4 py-2 border rounded-md"
         />
+
         <input
           type="text"
           placeholder="Religions"
@@ -120,7 +131,6 @@ export default function Upload() {
           className="px-4 py-2 border rounded-md"
         />
 
-        {/* SEO Fields */}
         <input
           type="text"
           placeholder="SEO Title"
@@ -128,12 +138,14 @@ export default function Upload() {
           onChange={(e) => setSeoTitle(e.target.value)}
           className="px-4 py-2 border rounded-md"
         />
+
         <textarea
           placeholder="SEO Description"
           value={seoDescription}
           onChange={(e) => setSeoDescription(e.target.value)}
           className="px-4 py-2 border rounded-md"
         />
+
         <input
           type="text"
           placeholder="SEO Keywords"
@@ -147,7 +159,9 @@ export default function Upload() {
 
         <button
           onClick={handleUpload}
-          className={`bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition duration-200 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+          className={`bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition duration-200 ${
+            loading ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
           disabled={loading}
         >
           {loading ? 'Uploading...' : 'Upload'}

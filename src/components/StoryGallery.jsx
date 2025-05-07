@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 
 export default function StoryGallery() {
   const [images, setImages] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [autoPlay, setAutoPlay] = useState(true);
+  const touchStartX = useRef(null);
+  const touchEndX = useRef(null);
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -23,54 +25,65 @@ export default function StoryGallery() {
     if (autoPlay && images.length > 0) {
       interval = setInterval(() => {
         setCurrentIndex((prev) => (prev + 1) % images.length);
-      }, 3000); // 3 seconds per story
+      }, 3000);
     }
     return () => clearInterval(interval);
   }, [autoPlay, images]);
 
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartX.current || !touchEndX.current) return;
+    const diff = touchStartX.current - touchEndX.current;
+    if (diff > 50) {
+      // Swipe left → next
+      setCurrentIndex((prev) => (prev + 1) % images.length);
+    } else if (diff < -50) {
+      // Swipe right → previous
+      setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+    }
+    touchStartX.current = null;
+    touchEndX.current = null;
+  };
+
   const currentImage = images[currentIndex];
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen bg-black text-white overflow-hidden">
-      <div className="w-[300px] h-[500px] relative rounded-xl overflow-hidden border-4 border-white">
-        {currentImage && (
+    <div
+      className="fixed inset-0 bg-black text-white overflow-hidden flex items-center justify-center"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      onClick={() => setAutoPlay((prev) => !prev)} // Tap to pause/play
+    >
+      {currentImage && (
+        <>
           <img
             src={currentImage.url}
             alt={currentImage.title}
-            className="w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover"
           />
-        )}
-        <div className="absolute top-0 left-0 w-full flex gap-1 p-2">
-          {images.map((_, i) => (
-            <div
-              key={i}
-              className={`h-1 flex-1 rounded bg-white ${
-                i <= currentIndex ? "opacity-100" : "opacity-30"
-              }`}
-            />
-          ))}
-        </div>
-      </div>
-      <div className="mt-4 flex gap-4">
-        <button
-          onClick={() => setAutoPlay((prev) => !prev)}
-          className="px-4 py-2 bg-pink-600 text-white rounded-lg"
-        >
-          {autoPlay ? "Pause" : "Play"}
-        </button>
-        <button
-          onClick={() => setCurrentIndex((prev) => (prev - 1 + images.length) % images.length)}
-          className="px-4 py-2 bg-gray-600 text-white rounded-lg"
-        >
-          Prev
-        </button>
-        <button
-          onClick={() => setCurrentIndex((prev) => (prev + 1) % images.length)}
-          className="px-4 py-2 bg-gray-600 text-white rounded-lg"
-        >
-          Next.
-        </button>
-      </div>
+          <div className="absolute top-0 left-0 w-full flex gap-1 p-2 z-10">
+            {images.map((_, i) => (
+              <div
+                key={i}
+                className={`h-1 flex-1 rounded bg-white transition-opacity ${
+                  i <= currentIndex ? "opacity-100" : "opacity-30"
+                }`}
+              />
+            ))}
+          </div>
+          <div className="absolute bottom-4 w-full text-center text-sm text-gray-300 z-10">
+            Tap to {autoPlay ? "pause" : "play"}, swipe to navigate
+          </div>
+        </>
+      )}
     </div>
   );
 }
