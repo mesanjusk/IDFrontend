@@ -8,7 +8,7 @@ function App() {
 
   const fetchImages = async () => {
     try {
-      const res = await axios.get('http://localhost:9000/api/images');
+      const res = await axios.get('https://idbackend-rf1u.onrender.com/api/images');
       setImages(res.data);
     } catch (err) {
       console.error('Error fetching images:', err);
@@ -22,7 +22,7 @@ function App() {
     formData.append('title' , title);
 
     try {
-      await axios.post('http://localhost:9000/api/images', formData, {
+      await axios.post('https://idbackend-rf1u.onrender.com/api/images', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       alert('Uploaded successfully');
