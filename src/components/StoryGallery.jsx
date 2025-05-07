@@ -68,7 +68,7 @@ export default function StoryGallery() {
           onClick={() => setCurrentIndex((prev) => (prev + 1) % images.length)}
           className="px-4 py-2 bg-gray-600 text-white rounded-lg"
         >
-          Next
+          Next.
         </button>
       </div>
     </div>
