@@ -8,7 +8,7 @@ function Home() {
 
   const fetchImages = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/images');
+      const res = await axios.get('https://idbackend-rf1u.onrender.com/api/images');
       console.log("Fetched images:", res.data);
       setImages(res.data);
     } catch (err) {
@@ -33,7 +33,7 @@ function Home() {
       ? img.images.map((imageName, index) => (
           <div key={`${i}-${index}`} className="group relative overflow-hidden rounded-lg shadow-md cursor-pointer">
             <img 
-              src={`http://localhost:5000/uploads/${imageName}`} 
+              src={`https://idbackend-rf1u.onrender.com/uploads/${imageName}`} 
               alt="Uploaded" 
               className="w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110"
             />
