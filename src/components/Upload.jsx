@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 
-export default function Upload() {
+function Upload() {
   const [files, setFiles] = useState([]);
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
@@ -13,21 +13,13 @@ export default function Upload() {
   const [seoTitle, setSeoTitle] = useState('');
   const [seoDescription, setSeoDescription] = useState('');
   const [seoKeywords, setSeoKeywords] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
 
   const handleUpload = async () => {
-    if (!files.length) {
-      return alert('Please select at least one image.');
-    }
-
-    setLoading(true);
-    setError('');
-    setSuccess('');
-
+    if (files.length === 0) return alert('Please select at least one file');
+    
     const formData = new FormData();
-    files.forEach(file => formData.append('images[]', file)); // multiple images
+    files.forEach(file => formData.append('images', file)); 
+    
     formData.append('title', title);
     formData.append('category', category);
     formData.append('subcategory', subcategory);
@@ -40,49 +32,36 @@ export default function Upload() {
     formData.append('seoKeywords', seoKeywords);
 
     try {
-      const res = await axios.post('https://idbackend-rf1u.onrender.com/api/images', formData, {
+      const response = await axios.post('https://idbackend-rf1u.onrender.com//api/images', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
-
-      setSuccess('Uploaded successfully!');
-      setFiles([]);
-      setTitle('');
-      setCategory('');
-      setSubcategory('');
-      setPrice('');
-      setInstagramUrl('');
-      setSize('');
-      setReligions('');
-      setSeoTitle('');
-      setSeoDescription('');
-      setSeoKeywords('');
+      alert('Uploaded successfully');
+      setFiles([]); 
     } catch (err) {
-      setError('Upload failed. Please try again.');
-      console.error(err);
-    } finally {
-      setLoading(false);
+      console.error('Upload failed:', err.response?.data || err.message);
+      alert('Upload failed');
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-6">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">Upload Design</h1>
+
       <div className="flex flex-col space-y-4 w-full max-w-md">
-        <input
+        
+        <input 
           type="text"
           placeholder="Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           className="px-4 py-2 border rounded-md"
         />
-
-        <input
-          type="file"
+        <input 
+          type="file" 
           multiple
           onChange={(e) => setFiles(Array.from(e.target.files))}
           className="px-4 py-2 border rounded-md"
         />
-
         <input
           type="text"
           placeholder="Category"
@@ -90,7 +69,6 @@ export default function Upload() {
           onChange={(e) => setCategory(e.target.value)}
           className="px-4 py-2 border rounded-md"
         />
-
         <input
           type="text"
           placeholder="Subcategory"
@@ -98,7 +76,6 @@ export default function Upload() {
           onChange={(e) => setSubcategory(e.target.value)}
           className="px-4 py-2 border rounded-md"
         />
-
         <input
           type="number"
           placeholder="Price"
@@ -106,7 +83,6 @@ export default function Upload() {
           onChange={(e) => setPrice(e.target.value)}
           className="px-4 py-2 border rounded-md"
         />
-
         <input
           type="url"
           placeholder="Instagram URL"
@@ -114,7 +90,6 @@ export default function Upload() {
           onChange={(e) => setInstagramUrl(e.target.value)}
           className="px-4 py-2 border rounded-md"
         />
-
         <input
           type="text"
           placeholder="Size"
@@ -122,7 +97,6 @@ export default function Upload() {
           onChange={(e) => setSize(e.target.value)}
           className="px-4 py-2 border rounded-md"
         />
-
         <input
           type="text"
           placeholder="Religions"
@@ -130,7 +104,6 @@ export default function Upload() {
           onChange={(e) => setReligions(e.target.value)}
           className="px-4 py-2 border rounded-md"
         />
-
         <input
           type="text"
           placeholder="SEO Title"
@@ -138,14 +111,12 @@ export default function Upload() {
           onChange={(e) => setSeoTitle(e.target.value)}
           className="px-4 py-2 border rounded-md"
         />
-
         <textarea
           placeholder="SEO Description"
           value={seoDescription}
           onChange={(e) => setSeoDescription(e.target.value)}
           className="px-4 py-2 border rounded-md"
         />
-
         <input
           type="text"
           placeholder="SEO Keywords"
@@ -153,20 +124,15 @@ export default function Upload() {
           onChange={(e) => setSeoKeywords(e.target.value)}
           className="px-4 py-2 border rounded-md"
         />
-
-        {error && <p className="text-red-500 text-sm">{error}</p>}
-        {success && <p className="text-green-500 text-sm">{success}</p>}
-
-        <button
-          onClick={handleUpload}
-          className={`bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition duration-200 ${
-            loading ? 'opacity-50 cursor-not-allowed' : ''
-          }`}
-          disabled={loading}
+        <button 
+          onClick={handleUpload} 
+          className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition duration-200"
         >
-          {loading ? 'Uploading...' : 'Upload'}
+          Upload
         </button>
       </div>
     </div>
   );
 }
+
+export default Upload;
