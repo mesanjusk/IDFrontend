@@ -32,7 +32,7 @@ function Upload() {
     formData.append('seoKeywords', seoKeywords);
 
     try {
-      const response = await axios.post('https://idbackend-rf1u.onrender.com//api/images', formData, {
+      const response = await axios.post('https://idbackend-rf1u.onrender.com/api/images', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       alert('Uploaded successfully');
