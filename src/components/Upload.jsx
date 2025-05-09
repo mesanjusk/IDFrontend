@@ -2,7 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 
 function Upload() {
-  const [file, setFile] = useState([]);
+  const [file, setFile] = useState('');
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
   const [subcategory, setSubcategory] = useState('');
@@ -18,7 +18,7 @@ function Upload() {
     if (!file) return alert('Please select at least one file');
     
     const formData = new FormData();
-   formData.append('file', file); 
+   formData.append('image', file); 
     
     formData.append('title', title);
     formData.append('category', category);
@@ -58,7 +58,7 @@ function Upload() {
         />
         <input 
           type="file"
-          onChange={(e) => setFile(e.target.files)}
+          onChange={(e) => setFile(e.target.files[0])}
           className="px-4 py-2 border rounded-md"
         />
         <input
