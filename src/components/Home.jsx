@@ -9,7 +9,6 @@ function Home() {
   const fetchImages = async () => {
     try {
       const res = await axios.get('https://idbackend-rf1u.onrender.com/api/images');
-      console.log("Fetched images:", res.data);
       setImages(res.data);
     } catch (err) {
       console.error('Error fetching images:', err);
