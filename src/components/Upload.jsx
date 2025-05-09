@@ -2,7 +2,7 @@ import { useState } from 'react';
 import axios from 'axios';
 
 function Upload() {
-  const [files, setFiles] = useState([]);
+  const [file, setFile] = useState([]);
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
   const [subcategory, setSubcategory] = useState('');
@@ -15,10 +15,10 @@ function Upload() {
   const [seoKeywords, setSeoKeywords] = useState('');
 
   const handleUpload = async () => {
-    if (files.length === 0) return alert('Please select at least one file');
+    if (!file) return alert('Please select at least one file');
     
     const formData = new FormData();
-    files.forEach(file => formData.append('images', file)); 
+   formData.append('file', file)); 
     
     formData.append('title', title);
     formData.append('category', category);
@@ -36,7 +36,7 @@ function Upload() {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       alert('Uploaded successfully');
-      setFiles([]); 
+      setFile(''); 
     } catch (err) {
       console.error('Upload failed:', err.response?.data || err.message);
       alert('Upload failed');
@@ -57,9 +57,8 @@ function Upload() {
           className="px-4 py-2 border rounded-md"
         />
         <input 
-          type="file" 
-          multiple
-          onChange={(e) => setFiles(Array.from(e.target.files))}
+          type="file"
+          onChange={(e) => setFile(e.target.files)}
           className="px-4 py-2 border rounded-md"
         />
         <input
