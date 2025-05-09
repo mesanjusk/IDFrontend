@@ -18,7 +18,7 @@ function Upload() {
     if (!file) return alert('Please select at least one file');
     
     const formData = new FormData();
-   formData.append('file', file)); 
+   formData.append('file', file); 
     
     formData.append('title', title);
     formData.append('category', category);
