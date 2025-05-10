@@ -70,7 +70,7 @@ const CreateListing = () => {
     }
 
     try {
-      const res = await axios.post('http://localhost:5000/api/listings', formData, {
+      const res = await axios.post('https://idbackend-rf1u.onrender.com/api/listings', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
