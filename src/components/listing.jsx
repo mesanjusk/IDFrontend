@@ -1,48 +1,46 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
 import axios from 'axios';
 
-const ListingDetails = () => {
-  const [listing, setListing] = useState(null);
-  const { id } = useParams(); 
+const Listings = () => {
+  const [listings, setListings] = useState([]);
 
+  // Fetch all listings from the backend
   useEffect(() => {
-    const fetchListing = async () => {
+    const fetchListings = async () => {
       try {
-        const response = await axios.get(`https://idbackend-rf1u.onrender.com/api/listings/${id}`);
-        setListing(response.data);
+        const response = await axios.get('http://localhost:5000/api/listings');
+        setListings(response.data);
       } catch (err) {
-        console.error('Error fetching listing:', err);
+        console.error('Error fetching listings:', err);
       }
     };
 
-    fetchListing();
-  }, [id]);
-
-  if (!listing) {
-    return <div>Loading...</div>;
-  }
+    fetchListings();
+  }, []);
 
   return (
-    <div className="listing-details">
-      <h2>{listing.title}</h2>
-      <p>{listing.description}</p>
-      <p>{listing.price} USD / night</p>
-      <p>{listing.location}</p>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {listings.map((listing) => (
+        <div key={listing._id} className="listing-card">
+          <h3>{listing.title}</h3>
+          <p>{listing.location}</p>
+          <p>{listing.price} USD / night</p>
 
-      {/* Render Images */}
-      <div className="images">
-        {listing.images.map((image, index) => (
-          <img
-            key={index}
-            src={image}
-            alt={`Listing image ${index + 1}`}
-            className="w-full h-96 object-cover mb-4"
-          />
-        ))}
-      </div>
+          {/* Display images like Airbnb */}
+          <div className="image-container">
+            {listing.images.map((image, index) => (
+              <img
+                key={index}
+                src={image}
+                alt={`Listing image ${index + 1}`}
+                className="w-full h-48 object-cover"
+              />
+            ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 };
 
-export default ListingDetails;
+export default Listings;
