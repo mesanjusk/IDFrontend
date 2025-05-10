@@ -1,46 +1,94 @@
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
 
-const Listings = () => {
-  const [listings, setListings] = useState([]);
+const ListingDetails = () => {
+  const [listing, setListing] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [touchStartX, setTouchStartX] = useState(null);
+  const [touchEndX, setTouchEndX] = useState(null);
+  const { id } = useParams();
 
-  // Fetch all listings from the backend
   useEffect(() => {
-    const fetchListings = async () => {
+    const fetchListing = async () => {
       try {
-        const response = await axios.get('https://idbackend-rf1u.onrender.com/api/listings');
-        setListings(response.data);
+        const response = await axios.get(`https://idbackend-rf1u.onrender.com/api/listings/${id}`);
+        setListing(response.data);
       } catch (err) {
-        console.error('Error fetching listings:', err);
+        console.error('Error fetching listing:', err);
       }
     };
 
-    fetchListings();
-  }, []);
+    fetchListing();
+  }, [id]);
+
+  const handleTouchStart = (e) => {
+    setTouchStartX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEndX(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartX || !touchEndX) return;
+    const distance = touchStartX - touchEndX;
+
+    if (distance > 50) {
+      // swipe left
+      setCurrentIndex((prevIndex) =>
+        prevIndex === listing.images.length - 1 ? 0 : prevIndex + 1
+      );
+    } else if (distance < -50) {
+      // swipe right
+      setCurrentIndex((prevIndex) =>
+        prevIndex === 0 ? listing.images.length - 1 : prevIndex - 1
+      );
+    }
+
+    setTouchStartX(null);
+    setTouchEndX(null);
+  };
+
+  if (!listing) {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {listings.map((listing) => (
-        <div key={listing._id} className="listing-card">
-          <h3>{listing.title}</h3>
-          <p>{listing.location}</p>
-          <p>{listing.price} USD / night</p>
+    <div className="listing-details max-w-4xl mx-auto p-4">
+      <h2 className="text-2xl font-bold mb-2">{listing.title}</h2>
+      <p className="text-gray-600 mb-1">{listing.location}</p>
+      <p className="text-xl text-green-600 font-semibold mb-4">{listing.price} USD / night</p>
+      <p className="mb-6">{listing.description}</p>
 
-          {/* Display images like Airbnb */}
-          <div className="image-container">
-            {listing.images.map((image, index) => (
-              <img
-                key={index}
-                src={image}
-                alt={`Listing image ${index + 1}`}
-                className="w-full h-48 object-cover"
-              />
-            ))}
-          </div>
+      {/* Carousel */}
+      <div
+        className="relative w-full h-[400px] overflow-hidden rounded-lg"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        <img
+          src={listing.images[currentIndex]}
+          alt={`Listing image ${currentIndex + 1}`}
+          className="w-full h-full object-cover transition-all duration-500"
+        />
+
+        {/* Dot Indicators */}
+        <div className="absolute bottom-3 w-full flex justify-center space-x-2">
+          {listing.images.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentIndex(index)}
+              className={`w-3 h-3 rounded-full ${
+                currentIndex === index ? 'bg-white' : 'bg-white/50'
+              }`}
+            ></button>
+          ))}
         </div>
-      ))}
+      </div>
     </div>
   );
 };
 
-export default Listings;
+export default ListingDetails;
