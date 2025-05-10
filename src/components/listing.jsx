@@ -26,7 +26,7 @@ const Listings = () => {
           <p>{listing.location}</p>
           <p className="text-lg text-green-500">{listing.price} USD / night</p>
 
-          {/* Image Carousel */}
+          {/* Image Carousel with Swipe Support */}
           <div className="relative">
             <Carousel images={listing.images} />
           </div>
@@ -39,6 +39,8 @@ const Listings = () => {
 // Carousel Component
 const Carousel = ({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
 
   const nextImage = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
@@ -50,28 +52,33 @@ const Carousel = ({ images }) => {
     );
   };
 
-  return (
-    <div className="relative w-full">
-      <div className="flex justify-center items-center">
-        <button
-          onClick={prevImage}
-          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white text-black p-2 rounded-full shadow-lg"
-        >
-          &lt;
-        </button>
+  // Swipe handling
+  const handleTouchStart = (e) => {
+    setTouchStart(e.touches[0].clientX);
+  };
 
+  const handleTouchEnd = () => {
+    if (touchStart - touchEnd > 150) {
+      nextImage(); // Swipe Left
+    }
+
+    if (touchEnd - touchStart > 150) {
+      prevImage(); // Swipe Right
+    }
+  };
+
+  return (
+    <div
+      className="relative w-full"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
+      <div className="flex justify-center items-center">
         <img
           src={images[currentIndex]}
           alt={`Listing image ${currentIndex + 1}`}
           className="w-full h-48 object-cover rounded-lg transition-all duration-300"
         />
-
-        <button
-          onClick={nextImage}
-          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white text-black p-2 rounded-full shadow-lg"
-        >
-          &gt;
-        </button>
       </div>
     </div>
   );
