@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
@@ -15,6 +14,7 @@ import { MdOutlineVideoLibrary } from 'react-icons/md';
 
 const Listings = () => {
   const [listings, setListings] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState('All');
 
   useEffect(() => {
     const fetchListings = async () => {
@@ -25,60 +25,95 @@ const Listings = () => {
         console.error('Error fetching listings:', err);
       }
     };
-
     fetchListings();
   }, []);
+
+  // Extract unique categories
+  const categories = ['All', ...Array.from(new Set(listings.map(item => item.category)))];
 
   return (
     <div className="max-w-sm mx-auto min-h-screen bg-white flex flex-col">
       {/* Header */}
       <div className="flex justify-between items-center p-3 border-b shadow-sm sticky top-0 bg-white z-10">
-        <h1 className="text-xl font-bold">S.K.Cards</h1>
+        <h1 className="text-xl font-bold flex items-center gap-2">
+          <div className="w-7 h-7 bg-gradient-to-br from-yellow-400 to-pink-500 text-white flex items-center justify-center rounded-full text-xs">
+            S
+          </div>
+          S.K.Cards
+        </h1>
         <FaFacebookMessenger className="text-2xl" />
+      </div>
+
+      {/* Story Section */}
+      <div className="flex overflow-x-auto px-3 py-2 gap-4 scrollbar-hide">
+        {categories.map((cat) => (
+          <div
+            key={cat}
+            className="flex flex-col items-center cursor-pointer"
+            onClick={() => setSelectedCategory(cat)}
+          >
+            <div
+              className={`w-14 h-14 rounded-full border-2 text-white text-sm font-bold flex items-center justify-center ${
+                selectedCategory === cat
+                  ? 'bg-black border-black'
+                  : 'bg-gray-400 border-gray-300'
+              }`}
+            >
+              {cat.charAt(0).toUpperCase()}
+            </div>
+            <span className="text-xs mt-1">{cat}</span>
+          </div>
+        ))}
       </div>
 
       {/* Feed */}
       <div className="flex-1 overflow-y-auto pb-16">
-        {listings.map((listing) => (
-          <div key={listing._id} className="border-b pb-4">
-            {/* Post Header */}
-            <div className="flex items-center p-3 space-x-3">
-              <img
-                src={listing.images[0]}
-                alt="profile"
-                className="w-9 h-9 rounded-full object-cover"
-              />
-              <span className="font-semibold">{listing.title}</span>
+        {listings
+          .filter((listing) =>
+            selectedCategory === 'All' ? true : listing.category === selectedCategory
+          )
+          .map((listing) => (
+            <div key={listing._id} className="border-b pb-4">
+              {/* Post Header */}
+              <div className="flex items-center p-3 space-x-3">
+                <img
+                  src={listing.images[0]}
+                  alt="profile"
+                  className="w-9 h-9 rounded-full object-cover"
+                />
+                <span className="font-semibold">{listing.title}</span>
+              </div>
+
+              {/* Image Carousel */}
+              <Carousel images={listing.images} />
+
+              {/* Post Actions */}
+              <div className="px-3 mt-2 space-x-4 text-xl flex">
+                <FaRegHeart />
+                <FaRegCommentDots />
+                <FaShare
+                  className="cursor-pointer"
+                  onClick={() => {
+                    if (navigator.share) {
+                      navigator
+                        .share({
+                          title: listing.title,
+                          text: listing.location,
+                          url: window.location.href,
+                        })
+                        .catch((err) => console.error('Share failed:', err));
+                    } else {
+                      alert('Sharing not supported in this browser');
+                    }
+                  }}
+                />
+              </div>
+
+              {/* Details */}
+              <div className="px-3 text-sm mt-1">{listing.location}</div>
+              <div className="px-3 text-sm text-green-500">{listing.price} ₹</div>
             </div>
-
-            {/* Image Carousel */}
-            <Carousel images={listing.images} />
-
-            {/* Post Actions */}
-            <div className="px-3 mt-2 space-x-4 text-xl flex">
-  <FaRegHeart />
-  <FaRegCommentDots />
-  <FaShare
-    className="cursor-pointer"
-    onClick={() => {
-      if (navigator.share) {
-        navigator.share({
-          title: listing.title,
-          text: listing.location,
-          url: window.location.href,
-        }).catch((err) => console.error('Share failed:', err));
-      } else {
-        alert('Sharing not supported in this browser');
-      }
-    }}
-  />
-</div>
-
-            {/* Details */}
-            <div className="px-3 text-sm mt-1">{listing.location}</div>
-            <div className="px-3 text-sm text-green-500">{listing.price} ₹ </div>
-          </div>
-        ))}
+          ))}
       </div>
 
       {/* Footer Navigation */}
