@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'; 
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const Listings = () => {
@@ -41,7 +41,6 @@ const Carousel = ({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
-
   const [isZoomed, setIsZoomed] = useState(false);
   const [dragStart, setDragStart] = useState(0);
   const [dragging, setDragging] = useState(false);
@@ -51,9 +50,7 @@ const Carousel = ({ images }) => {
   };
 
   const prevImage = () => {
-    setCurrentIndex(
-      (prevIndex) => (prevIndex - 1 + images.length) % images.length
-    );
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
   };
 
   // Swipe handling (Mobile)
@@ -117,6 +114,20 @@ const Carousel = ({ images }) => {
           onClick={toggleZoom} // Zoom functionality on click
         />
       </div>
+
+      {/* Left and Right Arrow Controls */}
+      <button
+        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full"
+        onClick={prevImage}
+      >
+        &#10094;
+      </button>
+      <button
+        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full"
+        onClick={nextImage}
+      >
+        &#10095;
+      </button>
     </div>
   );
 };
