@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { FaRegHeart, FaRegCommentDots, FaHome, FaSearch, FaShoppingBag, FaUser, FaFacebookMessenger } from 'react-icons/fa';
+import { MdOutlineVideoLibrary } from 'react-icons/md';
 
 const Listings = () => {
   const [listings, setListings] = useState([]);
 
-  // Fetch all listings from the backend
   useEffect(() => {
     const fetchListings = async () => {
       try {
@@ -19,19 +20,37 @@ const Listings = () => {
   }, []);
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {listings.map((listing) => (
-        <div key={listing._id} className="listing-card p-4 bg-white shadow-lg rounded-lg">
-          <h3 className="text-xl font-semibold">{listing.title}</h3>
-          <p>{listing.location}</p>
-          <p className="text-lg text-green-500">{listing.price} USD / night</p>
+    <div className="max-w-sm mx-auto min-h-screen bg-white flex flex-col">
+      {/* Header */}
+      <div className="flex justify-between items-center p-3 border-b shadow-sm sticky top-0 bg-white z-10">
+        <h1 className="text-xl font-bold">Instagram</h1>
+        <FaFacebookMessenger className="text-2xl" />
+      </div>
 
-          {/* Image Carousel with Swipe Support */}
-          <div className="relative">
+      {/* Feed */}
+      <div className="flex-1 overflow-y-auto pb-16">
+        {listings.map((listing) => (
+          <div key={listing._id} className="border-b pb-4">
+            <div className="p-3 font-semibold">{listing.title}</div>
             <Carousel images={listing.images} />
+            <div className="px-3 mt-2 space-x-4 text-xl flex">
+              <FaRegHeart />
+              <FaRegCommentDots />
+            </div>
+            <div className="px-3 text-sm mt-1">{listing.location}</div>
+            <div className="px-3 text-sm text-green-500">{listing.price} USD / night</div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
+
+      {/* Footer */}
+      <div className="fixed bottom-0 w-full max-w-sm bg-white border-t flex justify-between px-6 py-2 text-xl">
+        <FaHome />
+        <FaSearch />
+        <MdOutlineVideoLibrary />
+        <FaShoppingBag />
+        <FaUser />
+      </div>
     </div>
   );
 };
@@ -41,89 +60,67 @@ const Carousel = ({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
-  const [isZoomed, setIsZoomed] = useState(false);
   const [dragStart, setDragStart] = useState(0);
   const [dragging, setDragging] = useState(false);
+  const [isZoomed, setIsZoomed] = useState(false);
 
   const nextImage = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+    setCurrentIndex((prev) => (prev + 1) % images.length);
   };
 
   const prevImage = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
+    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 
-  // Swipe handling (Mobile)
-  const handleTouchStart = (e) => {
-    setTouchStart(e.touches[0].clientX);
-  };
-
+  const handleTouchStart = (e) => setTouchStart(e.touches[0].clientX);
   const handleTouchEnd = () => {
-    if (touchStart - touchEnd > 150) {
-      nextImage(); // Swipe Left
-    }
-
-    if (touchEnd - touchStart > 150) {
-      prevImage(); // Swipe Right
-    }
+    if (touchStart - touchEnd > 50) nextImage();
+    if (touchEnd - touchStart > 50) prevImage();
   };
 
-  // Mouse Drag (Desktop)
   const handleMouseDown = (e) => {
     setDragging(true);
     setDragStart(e.clientX);
   };
 
   const handleMouseMove = (e) => {
-    if (dragging) {
-      const dragDistance = dragStart - e.clientX;
-      if (dragDistance > 150) {
-        nextImage();
-        setDragging(false);
-      } else if (dragDistance < -150) {
-        prevImage();
-        setDragging(false);
-      }
+    if (!dragging) return;
+    const distance = dragStart - e.clientX;
+    if (distance > 100) {
+      nextImage();
+      setDragging(false);
+    } else if (distance < -100) {
+      prevImage();
+      setDragging(false);
     }
   };
 
-  const handleMouseUp = () => {
-    setDragging(false);
-  };
-
-  // Zoom functionality
-  const toggleZoom = () => {
-    setIsZoomed(!isZoomed);
-  };
+  const handleMouseUp = () => setDragging(false);
+  const toggleZoom = () => setIsZoomed(!isZoomed);
 
   return (
     <div
-      className="relative w-full"
+      className="relative"
       onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
+      onTouchEnd={(e) => setTouchEnd(e.changedTouches[0].clientX) || handleTouchEnd()}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
     >
-      <div className="flex justify-center items-center">
-        <img
-          src={images[currentIndex]}
-          alt={`Listing image ${currentIndex + 1}`}
-          className={`w-full h-48 object-cover rounded-lg transition-all duration-300 ${isZoomed ? 'transform scale-150' : ''}`}
-          style={{ cursor: 'pointer' }}
-          onClick={toggleZoom} // Zoom functionality on click
-        />
-      </div>
-
-      {/* Left and Right Arrow Controls */}
+      <img
+        src={images[currentIndex]}
+        alt=""
+        className={`w-full h-64 object-cover ${isZoomed ? 'scale-125' : ''} transition-transform duration-300`}
+        onClick={toggleZoom}
+      />
       <button
-        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full"
+        className="absolute left-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-40 text-white p-1 rounded-full"
         onClick={prevImage}
       >
         &#10094;
       </button>
       <button
-        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full"
+        className="absolute right-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-40 text-white p-1 rounded-full"
         onClick={nextImage}
       >
         &#10095;
