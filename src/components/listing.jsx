@@ -31,7 +31,7 @@ const Listings = () => {
     <div className="max-w-sm mx-auto min-h-screen bg-white flex flex-col">
       {/* Header */}
       <div className="flex justify-between items-center p-3 border-b shadow-sm sticky top-0 bg-white z-10">
-        <h1 className="text-xl font-bold">Instagram</h1>
+        <h1 className="text-xl font-bold">S.K.Cards</h1>
         <FaFacebookMessenger className="text-2xl" />
       </div>
 
@@ -54,13 +54,27 @@ const Listings = () => {
 
             {/* Post Actions */}
             <div className="px-3 mt-2 space-x-4 text-xl flex">
-              <FaRegHeart />
-              <FaRegCommentDots />
-            </div>
+  <FaRegHeart />
+  <FaRegCommentDots />
+  <FaShare
+    className="cursor-pointer"
+    onClick={() => {
+      if (navigator.share) {
+        navigator.share({
+          title: listing.title,
+          text: listing.location,
+          url: window.location.href,
+        }).catch((err) => console.error('Share failed:', err));
+      } else {
+        alert('Sharing not supported in this browser');
+      }
+    }}
+  />
+</div>
 
             {/* Details */}
             <div className="px-3 text-sm mt-1">{listing.location}</div>
-            <div className="px-3 text-sm text-green-500">{listing.price} USD / night</div>
+            <div className="px-3 text-sm text-green-500">{listing.price} ₹ </div>
           </div>
         ))}
       </div>
