@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
@@ -8,6 +9,7 @@ import {
   FaShoppingBag,
   FaUser,
   FaFacebookMessenger,
+  FaShare,
 } from 'react-icons/fa';
 import { MdOutlineVideoLibrary } from 'react-icons/md';
 
