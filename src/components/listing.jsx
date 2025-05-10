@@ -17,6 +17,7 @@ import { MdOutlineVideoLibrary } from 'react-icons/md';
 const Listings = () => {
   const [listings, setListings] = useState([]);
   const [savedPosts, setSavedPosts] = useState({});
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   useEffect(() => {
     const fetchListings = async () => {
@@ -30,20 +31,46 @@ const Listings = () => {
     fetchListings();
   }, []);
 
+  const filteredListings = selectedCategory
+    ? listings.filter((l) => l.category === selectedCategory)
+    : listings;
+
+  const uniqueCategories = [...new Set(listings.map((item) => item.category))];
+
   return (
     <div className="max-w-sm mx-auto min-h-screen bg-white flex flex-col">
       {/* Header */}
       <div className="flex justify-between items-center p-3 border-b shadow-sm sticky top-0 bg-white z-10">
         <h1 className="text-xl font-bold flex items-center gap-2">
-         
-          SK Cards
+          <div className="w-7 h-7 bg-gradient-to-tr from-yellow-400 to-pink-600 rounded-full flex items-center justify-center text-white text-sm">S</div>
+          S.K.Cards
         </h1>
         <FaFacebookMessenger className="text-2xl" />
       </div>
 
+      {/* Story-style category filter */}
+      <div className="flex overflow-x-auto px-3 py-2 gap-3">
+        {uniqueCategories.map((category, index) => (
+          <div
+            key={index}
+            className={`w-16 flex-shrink-0 flex flex-col items-center cursor-pointer ${
+              selectedCategory === category ? 'text-pink-600' : ''
+            }`}
+            onClick={() => setSelectedCategory(selectedCategory === category ? null : category)}
+          >
+            <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-yellow-400 to-pink-600 p-1">
+              <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-xl font-bold text-pink-600">
+                {category[0].toUpperCase()}
+              </div>
+            </div>
+            <div className="text-xs mt-1 text-center">{category.slice(0, 8)}</div>
+          </div>
+        ))}
+      </div>
+
       {/* Feed */}
       <div className="flex-1 overflow-y-auto pb-16">
-        {listings.map((listing) => (
+        {filteredListings.map((listing) => (
           <div key={listing._id} className="border-b pb-4">
             {/* Post Header */}
             <div className="flex items-center p-3 space-x-3">
@@ -95,7 +122,7 @@ const Listings = () => {
 
             {/* Details */}
             <div className="px-3 text-sm mt-1">{listing.location}</div>
-            ₹ <div className="px-3 text-sm text-green-500">{listing.price} </div>
+            <div className="px-3 text-sm text-green-500">{listing.price} ₹</div>
           </div>
         ))}
       </div>
