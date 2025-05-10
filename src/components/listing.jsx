@@ -42,6 +42,10 @@ const Carousel = ({ images }) => {
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
 
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [dragStart, setDragStart] = useState(0);
+  const [dragging, setDragging] = useState(false);
+
   const nextImage = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
   };
@@ -52,7 +56,7 @@ const Carousel = ({ images }) => {
     );
   };
 
-  // Swipe handling
+  // Swipe handling (Mobile)
   const handleTouchStart = (e) => {
     setTouchStart(e.touches[0].clientX);
   };
@@ -67,17 +71,50 @@ const Carousel = ({ images }) => {
     }
   };
 
+  // Mouse Drag (Desktop)
+  const handleMouseDown = (e) => {
+    setDragging(true);
+    setDragStart(e.clientX);
+  };
+
+  const handleMouseMove = (e) => {
+    if (dragging) {
+      const dragDistance = dragStart - e.clientX;
+      if (dragDistance > 150) {
+        nextImage();
+        setDragging(false);
+      } else if (dragDistance < -150) {
+        prevImage();
+        setDragging(false);
+      }
+    }
+  };
+
+  const handleMouseUp = () => {
+    setDragging(false);
+  };
+
+  // Zoom functionality
+  const toggleZoom = () => {
+    setIsZoomed(!isZoomed);
+  };
+
   return (
     <div
       className="relative w-full"
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
     >
       <div className="flex justify-center items-center">
         <img
           src={images[currentIndex]}
           alt={`Listing image ${currentIndex + 1}`}
-          className="w-full h-48 object-cover rounded-lg transition-all duration-300"
+          className={`w-full h-48 object-cover rounded-lg transition-all duration-300 ${isZoomed ? 'transform scale-150' : ''}`}
+          style={{ cursor: 'pointer' }}
+          onClick={toggleZoom} // Zoom functionality on click
         />
       </div>
     </div>
