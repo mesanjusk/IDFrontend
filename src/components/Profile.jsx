@@ -1,16 +1,16 @@
 import React from 'react';
 import { FaCamera, FaInstagram, FaMapMarkerAlt, FaPen } from 'react-icons/fa';
 import { Helmet } from 'react-helmet';
-import Footer from './Footer'; // Import your Footer component
+import Footer from './Footer';
 
 const Profile = () => {
   const userProfile = {
     name: 'Sanju SK Digital',
-    bio: 'Photographer | Digital Creator | Graphic Designer',
+    bio: 'Photographer | Digital Creator | Graphic Designer in Gondia, India',
     posts: 320,
     followers: 4500,
     following: 180,
-    image: 'https://instagram.fnag7-1.fna.fbcdn.net/v/t51.2885-19/467017567_463186110140764_722149194584631803_n.jpg?...', // Shorten or host externally
+    image: 'https://instagram.fnag7-1.fna.fbcdn.net/...jpg', // Use CDN/shorten
     profileUrl: 'https://skcard.vercel.app/profile',
     instagramUrl: 'https://www.instagram.com/sanju.sk.digital/',
     googleBusinessEmbed:
@@ -19,28 +19,43 @@ const Profile = () => {
 
   return (
     <div className="profile-page bg-white flex flex-col min-h-screen">
-
       <Helmet>
-        <title>{userProfile.name} – Digital Creator Portfolio</title>
+        <title>{userProfile.name} – Photographer, Designer & Digital Printing in Gondia</title>
         <meta
           name="description"
-          content={`${userProfile.name}'s digital portfolio showcasing photography, graphic design, and social presence.`}
+          content="Sanju SK Digital – Professional digital creator, photographer, and custom printing expert in Gondia. Custom ID cards, wedding invites, trophies & more."
         />
         <link rel="canonical" href={userProfile.profileUrl} />
-        <meta property="og:title" content={userProfile.name} />
+        <meta property="og:title" content={`${userProfile.name} – Gondia Printing & Design`} />
         <meta property="og:description" content={userProfile.bio} />
         <meta property="og:image" content={userProfile.image} />
         <meta property="og:url" content={userProfile.profileUrl} />
         <meta property="og:type" content="profile" />
+        <meta property="og:locale" content="en_IN" />
+        <meta name="robots" content="index, follow" />
+
+        {/* Optional Twitter Meta */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Sanju SK Digital – Gondia Printing Services" />
+        <meta name="twitter:description" content="Custom cards, trophies, ID cards & more. Visit now." />
+        <meta name="twitter:image" content={userProfile.image} />
+
+        {/* Structured Data for LocalBusiness */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "Person",
+            "@type": "LocalBusiness",
             name: userProfile.name,
-            url: userProfile.profileUrl,
             image: userProfile.image,
-            description: userProfile.bio,
+            url: userProfile.profileUrl,
             sameAs: [userProfile.instagramUrl, 'https://g.co/kgs/bNmV7os'],
+            address: {
+              "@type": "PostalAddress",
+              addressLocality: "Gondia",
+              addressRegion: "Maharashtra",
+              addressCountry: "IN",
+            },
+            description: userProfile.bio,
           })}
         </script>
       </Helmet>
@@ -49,22 +64,17 @@ const Profile = () => {
       <div className="flex items-center p-5 space-x-5 sm:flex-col md:flex-row">
         <img
           src={userProfile.image}
-          alt={`${userProfile.name} profile`}
+          alt=""
           className="w-32 h-32 rounded-full object-cover border-4 border-gray-300 mb-4 md:mb-0"
         />
         <div className="flex-1">
           <h1 className="text-3xl font-semibold">{userProfile.name}</h1>
           <p className="text-sm text-gray-600">{userProfile.bio}</p>
-          <div className="mt-2 flex space-x-10 text-sm font-medium">
-            <span>{userProfile.posts} Posts</span>
-            <span>{userProfile.followers} Followers</span>
-            <span>{userProfile.following} Following</span>
-          </div>
+          
         </div>
-        
       </div>
 
-      {/* Google Business Map */}
+      {/* Google Map Embed */}
       <div className="location mt-5 px-5">
         <h2 className="text-xl font-semibold flex items-center mb-3">
           <FaMapMarkerAlt className="mr-2" />
@@ -79,14 +89,16 @@ const Profile = () => {
             style={{ border: 0 }}
             allowFullScreen
             loading="lazy"
-            title="Sanju SK Digital Location"
+            title="Sanju SK Digital Location in Gondia"
           ></iframe>
         </div>
       </div>
- <div className="text-center py-3 text-gray-500 text-sm">
-    © {new Date().getFullYear()} Sanju SK Digital. All rights reserved.
-  </div>
-      <div className="fixed bottom-0 w-full bg-white border-t">
+
+      <div className="text-center py-3 text-gray-500 text-sm">
+        © {new Date().getFullYear()} {userProfile.name}. All rights reserved.
+      </div>
+
+      <div className="fixed bottom-0 ">
         <Footer />
       </div>
     </div>
