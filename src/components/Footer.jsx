@@ -7,7 +7,10 @@ const Footer = () => {
 
   return (
     <div className="fixed bottom-0 w-full max-w-sm bg-white border-t flex justify-between px-6 py-2 text-xl">
-      <FaHome />
+      <FaHome 
+      className="cursor-pointer"
+        onClick={() => navigate('/')} // Navigate to profile when clicked
+      />
       <FaSearch />
       <MdOutlineVideoLibrary />
       <FaShoppingBag />

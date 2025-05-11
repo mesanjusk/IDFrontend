@@ -2,7 +2,7 @@ import { FaFacebookMessenger } from 'react-icons/fa';
 
 const Navbar = () => {
   return (
-    <div className="flex justify-between items-center p-3 border-b shadow-sm sticky top-0 bg-white z-10">
+    <div className="flex justify-between items-center p-3 sticky top-0 bg-white z-10">
       <h1 className="text-xl font-bold flex items-center gap-2">
         SK Cards
       </h1>
