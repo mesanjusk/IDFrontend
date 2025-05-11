@@ -7,6 +7,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@react-google-maps/api": "^2.20.6",
     "@vitejs/plugin-react": "^4.4.1",
     "axios": "^1.6.0",
     "browser-image-compression": "^2.0.2",
