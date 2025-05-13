@@ -9,6 +9,9 @@ import Listing from './components/listing';
 import ListingDetails from './components/ListingDetails';
 import Profile from './components/Profile';
 import UploadCategory from './components/UploadCategory';
+import UploadSubcategory from './components/UploadSubcategory';
+import AddItem from './pages/addTitle';
+import AddPrice from './pages/addPrice';
 
 function App() {
   const [backendReady, setBackendReady] = useState(false);
@@ -67,6 +70,9 @@ function App() {
         <Route path="/list" element={<Listing />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/UploadCategory" element={<UploadCategory />} />
+        <Route path="/UploadSubcategory" element={<UploadSubcategory />} />
+        <Route path="/addTitle" element={<AddItem />} />
+         <Route path="/addPrice" element={<AddPrice />} />
       </Routes>
     </Router>
   );
