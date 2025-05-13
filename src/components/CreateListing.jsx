@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import imageCompression from 'browser-image-compression';
 
@@ -17,70 +17,146 @@ const CreateListing = () => {
   });
 
   const [images, setImages] = useState([]);
+  const [previewImages, setPreviewImages] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [dropdownData, setDropdownData] = useState({
+    titles: [],
+    categories: [],
+    subcategories: [],
+    prices: [],
+    instagramUrls: [],
+    sizes: [],
+    religions: []
+  });
+
+  const fileInputRef = useRef(null);
+
+  // Fetch dropdown data from the backend
+  useEffect(() => {
+    const fetchDropdownData = async () => {
+      try {
+        const response = await axios.get('https://your-api-endpoint.com/dropdown-data');
+        setDropdownData(response.data);
+      } catch (error) {
+        console.error('Error fetching dropdown data:', error);
+      }
+    };
+    fetchDropdownData();
+  }, []);
 
   const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files);
-    const compressedFiles = [];
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    const filtered = files.filter(file => validTypes.includes(file.type));
+
+    if (filtered.length !== files.length) {
+      alert("Some files were skipped. Only JPG, PNG, WEBP allowed.");
+    }
+
+    const totalImages = filtered.length + images.length;
+    if (totalImages > 10) {
+      alert("Max 10 images allowed.");
+      return;
+    }
 
     setLoading(true);
+    const newImages = [];
 
-    for (const file of files) {
+    for (const file of filtered) {
       try {
+        const alreadyExists = images.some(img => img.name === file.name && img.size === file.size);
+        if (alreadyExists) continue;
+
         const compressedBlob = await imageCompression(file, {
           maxSizeMB: 1,
           maxWidthOrHeight: 1920,
           useWebWorker: true,
         });
 
-        const compressedFile = new File([compressedBlob], file.name, {
+        const timestamp = Date.now();
+        const compressedFile = new File([compressedBlob], `${timestamp}-${file.name}`, {
           type: compressedBlob.type,
         });
 
-        compressedFiles.push(compressedFile);
+        newImages.push(compressedFile);
       } catch (err) {
         console.error('Compression failed:', err);
       }
     }
 
-    setImages(compressedFiles);
+    const updatedImages = [...images, ...newImages];
+    setImages(updatedImages);
+
+    const newPreviews = updatedImages.map(file => ({
+      url: URL.createObjectURL(file),
+      name: file.name,
+      size: (file.size / 1024).toFixed(1) + ' KB'
+    }));
+
+    setPreviewImages(newPreviews);
     setLoading(false);
+  };
+
+  const removeImage = (index) => {
+    const updatedImages = [...images];
+    const updatedPreviews = [...previewImages];
+    updatedImages.splice(index, 1);
+    updatedPreviews.splice(index, 1);
+
+    setImages(updatedImages);
+    setPreviewImages(updatedPreviews);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (loading) {
-      alert("Please wait, images are still being processed...");
+      alert("Images still processing...");
+      return;
+    }
+
+    if (!form.title || !form.category || !form.subcategory || !form.price || images.length === 0) {
+      alert("Please fill in required fields and upload at least one image.");
       return;
     }
 
     const formData = new FormData();
-
-    Object.entries(form).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
-
-    if (images.length > 0) {
-      images.forEach((img) => {
-        formData.append('images', img);
-      });
-    } else {
-      console.log("No images selected for upload.");
-    }
+    Object.entries(form).forEach(([key, value]) => formData.append(key, value));
+    images.forEach(img => formData.append('images', img));
 
     try {
-      const res = await axios.post('https://idbackend-rf1u.onrender.com/api/listings', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const res = await axios.post(
+        'https://idbackend-rf1u.onrender.com/api/listings',
+        formData,
+        {
+          headers: { 'Content-Type': 'multipart/form-data' },
+          onUploadProgress: (e) => {
+            const percent = Math.round((e.loaded * 100) / e.total);
+            setUploadProgress(percent);
+          }
+        }
+      );
 
-      alert('Listing Created!');
-    } catch (error) {
-      console.error('Upload failed:', error.response?.data || error.message);
-      alert(error.response?.data?.error || 'Upload failed.');
+      alert('Listing Created Successfully!');
+      setForm({
+        title: '', category: '', subcategory: '', price: '',
+        instagramUrl: '', size: '', religions: '',
+        seoTitle: '', seoDescription: '', seoKeywords: ''
+      });
+      setImages([]);
+      setPreviewImages([]);
+      setUploadProgress(0);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    } catch (err) {
+      console.error('Upload failed:', err);
+      alert(err?.response?.data?.error || 'Upload failed.');
     }
+  };
+
+  const handleInputChange = (field) => (e) => {
+    setForm({ ...form, [field]: e.target.value });
   };
 
   return (
@@ -88,84 +164,86 @@ const CreateListing = () => {
       <h1 className="text-3xl font-bold text-gray-800 mb-6">Upload Design</h1>
 
       <form onSubmit={handleSubmit} className="flex flex-col space-y-4 w-full max-w-md">
+        {/* Dropdown fields */}
+        {[
+          { label: 'Title', name: 'title', options: dropdownData.titles },
+          { label: 'Category', name: 'category', options: dropdownData.categories },
+          { label: 'Subcategory', name: 'subcategory', options: dropdownData.subcategories },
+          { label: 'Price', name: 'price', options: dropdownData.prices },
+          { label: 'Instagram URL', name: 'instagramUrl', options: dropdownData.instagramUrls },
+          { label: 'Size', name: 'size', options: dropdownData.sizes },
+          { label: 'Religion', name: 'religions', options: dropdownData.religions }
+        ].map(({ label, name, options }) => (
+          <select
+            key={name}
+            className="px-4 py-2 border rounded-md"
+            value={form[name]}
+            onChange={handleInputChange(name)}
+          >
+            <option value="">Select {label}</option>
+            {options.map(opt => (
+              <option key={opt} value={opt}>{opt}</option>
+            ))}
+          </select>
+        ))}
 
-        <select className="px-4 py-2 border rounded-md" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })}>
-          <option value="">Select Title</option>
-          <option value="Elegant Wedding">Elegant Wedding</option>
-          <option value="Minimal Birthday">Minimal Birthday</option>
-          <option value="Corporate Event">Corporate Event</option>
-        </select>
+        {/* SEO text fields */}
+        {['seoTitle', 'seoDescription', 'seoKeywords'].map((field) => (
+          <input
+            key={field}
+            type="text"
+            className="px-4 py-2 border rounded-md"
+            placeholder={field.replace('seo', 'SEO ')}
+            value={form[field]}
+            onChange={handleInputChange(field)}
+          />
+        ))}
 
-        <select className="px-4 py-2 border rounded-md" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
-          <option value="">Select Category</option>
-          <option value="Wedding">Wedding</option>
-          <option value="Birthday">Birthday</option>
-          <option value="Corporate">Corporate</option>
-        </select>
-
-        <select className="px-4 py-2 border rounded-md" value={form.subcategory} onChange={(e) => setForm({ ...form, subcategory: e.target.value })}>
-          <option value="">Select Subcategory</option>
-          <option value="Invitation">Invitation</option>
-          <option value="Flyer">Flyer</option>
-          <option value="Banner">Banner</option>
-        </select>
-
-        <select className="px-4 py-2 border rounded-md" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })}>
-          <option value="">Select Price</option>
-          <option value="10">10</option>
-          <option value="20">20</option>
-          <option value="50">50</option>
-        </select>
-
-        <select className="px-4 py-2 border rounded-md" value={form.instagramUrl} onChange={(e) => setForm({ ...form, instagramUrl: e.target.value })}>
-          <option value="">Select Instagram URL</option>
-          <option value="https://instagram.com/example1">example1</option>
-          <option value="https://instagram.com/example2">example2</option>
-        </select>
-
-        <select className="px-4 py-2 border rounded-md" value={form.size} onChange={(e) => setForm({ ...form, size: e.target.value })}>
-          <option value="">Select Size</option>
-          <option value="A4">A4</option>
-          <option value="A5">A5</option>
-          <option value="Square">Square</option>
-        </select>
-
-        <select className="px-4 py-2 border rounded-md" value={form.religions} onChange={(e) => setForm({ ...form, religions: e.target.value })}>
-          <option value="">Select Religion</option>
-          <option value="Hindu">Hindu</option>
-          <option value="Muslim">Muslim</option>
-          <option value="Christian">Christian</option>
-        </select>
-
-        <select className="px-4 py-2 border rounded-md" value={form.seoTitle} onChange={(e) => setForm({ ...form, seoTitle: e.target.value })}>
-          <option value="">Select SEO Title</option>
-          <option value="Best Wedding Card">Best Wedding Card</option>
-          <option value="Unique Flyer Design">Unique Flyer Design</option>
-        </select>
-
-        <select className="px-4 py-2 border rounded-md" value={form.seoDescription} onChange={(e) => setForm({ ...form, seoDescription: e.target.value })}>
-          <option value="">Select SEO Description</option>
-          <option value="Elegant, printable design">Elegant, printable design</option>
-          <option value="Modern editable PSD">Modern editable PSD</option>
-        </select>
-
-        <select className="px-4 py-2 border rounded-md" value={form.seoKeywords} onChange={(e) => setForm({ ...form, seoKeywords: e.target.value })}>
-          <option value="">Select SEO Keywords</option>
-          <option value="wedding,card,template">wedding,card,template</option>
-          <option value="flyer,invitation,design">flyer,invitation,design</option>
-        </select>
-
+        {/* File upload */}
         <input
           className="px-4 py-2 border rounded-md"
           type="file"
           name="images"
           accept="image/*"
           multiple
+          ref={fileInputRef}
           onChange={handleImageUpload}
         />
 
+        {/* Preview section */}
+        {previewImages.length > 0 && (
+          <div className="grid grid-cols-2 gap-4 mt-2">
+            {previewImages.map((img, idx) => (
+              <div key={idx} className="relative border rounded p-2 bg-white">
+                <img src={img.url} alt={`preview-${idx}`} className="w-full h-32 object-cover rounded" />
+                <p className="text-xs mt-1 truncate">{img.name}</p>
+                <p className="text-xs text-gray-500">{img.size}</p>
+                <button
+                  type="button"
+                  onClick={() => removeImage(idx)}
+                  className="absolute top-1 right-1 text-xs bg-red-500 text-white rounded px-1"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Progress */}
+        {uploadProgress > 0 && uploadProgress < 100 && (
+          <div className="w-full bg-gray-200 rounded-md overflow-hidden mt-2">
+            <div
+              className="bg-blue-500 text-white text-xs text-center p-1"
+              style={{ width: `${uploadProgress}%` }}
+            >
+              {uploadProgress}% 
+            </div>
+          </div>
+        )}
+
         <button
-          className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 transition duration-200 disabled:opacity-50"
+          className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition duration-200 disabled:opacity-50"
           type="submit"
           disabled={loading}
         >
