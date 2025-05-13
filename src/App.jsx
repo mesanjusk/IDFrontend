@@ -14,7 +14,7 @@ function App() {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      setBackendReady(true); // fallback after 5 sec
+      setBackendReady(true); 
     }, 5000);
 
     fetch('https://idbackend-rf1u.onrender.com/api/ping')
