@@ -22,7 +22,7 @@ export default function AddUser() {
                 }
                 else if(res.data=="notexist"){
                     alert("User added successfully")
-                    navigate("/home")
+                    navigate("/admin")
                 }
             })
             .catch(e=>{

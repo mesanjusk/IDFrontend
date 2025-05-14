@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import { useNavigate } from "react-router-dom";
 import axios from "axios"
 
-export default function AddTitle() {
+export default function AddSEOT() {
     const navigate = useNavigate();
 
     const [name,setName]=useState('')
@@ -10,15 +10,15 @@ export default function AddTitle() {
     async function submit(e){
         e.preventDefault();
         try{
-            await axios.post("https://idbackend-rf1u.onrender.com/api/titles/add",{
+            await axios.post("http://localhost:5000/api/seots/add",{
                 name
             })
             .then(res=>{
                 if(res.data === "exist"){
-                    alert("Title already exists")
+                    alert("SEOT already exists")
                 }
                 else if(res.data === "notexist"){
-                    alert("Title added successfully")
+                    alert("SEOT added successfully")
                     navigate("/admin")
                 }
             })
@@ -40,7 +40,7 @@ export default function AddTitle() {
         <div className="min-h-screen bg-gray-50 p-6">
            
             
-            <h1 className="text-2xl font-bold mb-6">Add Title</h1>
+            <h1 className="text-2xl font-bold mb-6">Add SEOTitle</h1>
 
             <form  onSubmit={submit} className="bg-white p-4 rounded shadow max-w-md space-y-4">
                 

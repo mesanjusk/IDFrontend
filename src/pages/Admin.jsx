@@ -1,19 +1,36 @@
 import { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from 'axios';
 import { Helmet } from 'react-helmet';
-import Navbar from './Navbar';
-import Footer from './Footer';
-import Category from './Category';
-import Content from './Content';
+import Category from "../components/Category";  // Correct import for Category
+import Content from "../components/Content";   // Correct import for Content
 
-const Home = () => {
+
+
+const Admin = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [listings, setListings] = useState([]);
   const [savedPosts, setSavedPosts] = useState({});
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+   const [loggedInUser, setLoggedInUser] = useState(null); 
 
-  useEffect(() => {
+   useEffect(() => {
+      setTimeout(() => {
+        const userNameFromState = location.state?.id;
+        const user = userNameFromState || localStorage.getItem('User_name');
+        setLoggedInUser(user);
+        if (user) {
+          fetchListings(user);
+        } else {
+          navigate("/");
+        }
+      }, 2000);
+      setTimeout(() => setLoading(false), 2000);
+    }, [location.state, navigate]);
+
     const fetchListings = async () => {
       try {
         const response = await axios.get('https://idbackend-rf1u.onrender.com/api/listings');
@@ -25,8 +42,7 @@ const Home = () => {
         setLoading(false);
       }
     };
-    fetchListings();
-  }, []);
+   
 
   // Load saved posts from localStorage
   useEffect(() => {
@@ -41,6 +57,8 @@ const Home = () => {
 
   const uniqueCategories = [...new Set(listings.map((item) => item.category))];
 
+  
+
   return (
     <div className="max-w-sm mx-auto min-h-screen bg-white flex flex-col">
       <Helmet>
@@ -53,8 +71,6 @@ const Home = () => {
         <meta property="og:type" content="website" />
       </Helmet>
 
-      {/* Navbar */}
-      <Navbar />
 
       {/* Conditional Rendering */}
       {loading ? (
@@ -80,10 +96,9 @@ const Home = () => {
         </>
       )}
 
-      {/* Footer */}
-      <Footer />
+    
     </div>
   );
 };
 
-export default Home;
+export default Admin;

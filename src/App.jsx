@@ -10,10 +10,17 @@ import ListingDetails from './components/ListingDetails';
 import Profile from './components/Profile';
 import UploadCategory from './pages/UploadCategory';
 import UploadSubcategory from './pages/UploadSubcategory';
-import AddItem from './pages/addTitle';
+import AddTitle from './pages/addTitle';
 import AddPrice from './pages/addPrice';
 import AddUser from './pages/addUser';
 import Login from './pages/login';
+import Admin from './pages/Admin';
+import AddInsta from './pages/addInsta';
+import AddSize from './pages/addSize';
+import AddReligion from './pages/addReligion';
+import AddSEOT from './pages/addSEOT';
+import AddSEOD from './pages/addSEOD';
+import AddSEOK from './pages/addSEOK';
 
 function App() {
   const [backendReady, setBackendReady] = useState(false);
@@ -63,7 +70,8 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/home" element={<Home />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/admin" element={<Admin />} />
         <Route path="/story" element={<StoryGallery />} />
         <Route path="/upload" element={<Upload />} />
         <Route path="/instagram" element={<Insta />} />
@@ -73,10 +81,16 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/UploadCategory" element={<UploadCategory />} />
         <Route path="/UploadSubcategory" element={<UploadSubcategory />} />
-        <Route path="/addTitle" element={<AddItem />} />
+        <Route path="/addTitle" element={<AddTitle />} />
          <Route path="/addPrice" element={<AddPrice />} />
+          <Route path="/addInsta" element={<AddInsta />} />
+          <Route path="/addSize" element={<AddSize />} />
+         <Route path="/addReligion" element={<AddReligion />} />
+          <Route path="/addSEOT" element={<AddSEOT />} />
+         <Route path="/addSEOD" element={<AddSEOD />} />
+          <Route path="/addSEOK" element={<AddSEOK />} />
          <Route path="/addUser" element={<AddUser />} />
-         <Route path="/" element={<Login />} />
+         <Route path="/login" element={<Login />} />
       </Routes>
     </Router>
   );

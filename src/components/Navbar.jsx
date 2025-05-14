@@ -12,7 +12,7 @@ const Navbar = () => {
         rel="noopener noreferrer"
         className="text-2xl text-green-600"
       >
-        <FaFacebookMessenger />
+        <FaFacebookMessenger />       
       </a>
     </div>
   );
