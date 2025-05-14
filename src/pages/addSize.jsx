@@ -10,7 +10,7 @@ export default function AddSize() {
     async function submit(e){
         e.preventDefault();
         try{
-            await axios.post("http://localhost:5000/api/sizes/add",{
+            await axios.post("https://idbackend-rf1u.onrender.com/api/sizes/add",{
                 name
             })
             .then(res=>{
