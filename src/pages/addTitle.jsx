@@ -19,7 +19,7 @@ export default function AddTitle() {
                 }
                 else if(res.data === "notexist"){
                     alert("Title added successfully")
-                    navigate("/")
+                    navigate("/home")
                 }
             })
             .catch(e=>{
@@ -33,7 +33,7 @@ export default function AddTitle() {
         }
     }
     const closeModal = () => {
-        navigate("/");
+        navigate("/home");
      };
 
     return (

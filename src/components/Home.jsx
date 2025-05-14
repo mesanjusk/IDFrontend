@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate, useLocation } from "react-router-dom";
 import { Helmet } from 'react-helmet';
 import Navbar from './Navbar';
 import Footer from './Footer';
@@ -7,13 +8,31 @@ import Category from './Category';
 import Content from './Content';
 
 const Home = () => {
+   const navigate = useNavigate();
+  const location = useLocation();
   const [listings, setListings] = useState([]);
   const [savedPosts, setSavedPosts] = useState({});
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loggedInUser, setLoggedInUser] = useState(null);
 
-  useEffect(() => {
+   useEffect(() => {
+      setTimeout(() => {
+        const userNameFromState = location.state?.id;
+        const user = userNameFromState || localStorage.getItem('User_name');
+        setLoggedInUser(user);
+        if (user) {
+         fetchListings(user);
+        } else {
+          navigate("/");
+        }
+      }, 2000);
+      setTimeout(() => setIsLoading(false), 2000);
+    }, [location.state, navigate]);
+
+  
     const fetchListings = async () => {
       try {
         const response = await axios.get('https://idbackend-rf1u.onrender.com/api/listings');
@@ -25,8 +44,7 @@ const Home = () => {
         setLoading(false);
       }
     };
-    fetchListings();
-  }, []);
+  
 
   // Load saved posts from localStorage
   useEffect(() => {

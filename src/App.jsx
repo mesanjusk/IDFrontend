@@ -12,6 +12,8 @@ import UploadCategory from './components/UploadCategory';
 import UploadSubcategory from './components/UploadSubcategory';
 import AddItem from './pages/addTitle';
 import AddPrice from './pages/addPrice';
+import AddUser from './pages/addUser';
+import Login from './pages/login';
 
 function App() {
   const [backendReady, setBackendReady] = useState(false);
@@ -61,7 +63,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/story" element={<StoryGallery />} />
         <Route path="/upload" element={<Upload />} />
         <Route path="/instagram" element={<Insta />} />
@@ -73,6 +75,8 @@ function App() {
         <Route path="/UploadSubcategory" element={<UploadSubcategory />} />
         <Route path="/addTitle" element={<AddItem />} />
          <Route path="/addPrice" element={<AddPrice />} />
+         <Route path="/addUser" element={<AddUser />} />
+         <Route path="/" element={<Login />} />
       </Routes>
     </Router>
   );

@@ -19,7 +19,7 @@ export default function AddPrice() {
                 }
                 else if(res.data === "notexist"){
                     alert("Price added successfully")
-                    navigate("/")
+                    navigate("/home")
                 }
             })
             .catch(e=>{
@@ -33,7 +33,7 @@ export default function AddPrice() {
         }
     }
     const closeModal = () => {
-        navigate("/");
+        navigate("/home");
      };
 
     return (
