@@ -10,7 +10,7 @@ export default function AddSEOK() {
     async function submit(e){
         e.preventDefault();
         try{
-            await axios.post("http://localhost:5000/api/seoks/add",{
+            await axios.post("https://idbackend-rf1u.onrender.com/api/seoks/add",{
                 name
             })
             .then(res=>{
