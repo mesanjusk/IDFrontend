@@ -8,6 +8,7 @@ const UploadSubcategory = () => {
   const [categories, setCategories] = useState([]);
   const [status, setStatus] = useState('');
   const [subcategories, setSubcategories] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     fetchCategories();
@@ -15,23 +16,27 @@ const UploadSubcategory = () => {
   }, []);
 
   const fetchCategories = () => {
-    axios.get('https://idbackend-rf1u.onrender.com/api/categories')
-      .then(res => setCategories(res.data))
-      .catch(err => console.error('Error fetching categories:', err));
+    axios
+      .get('https://idbackend-rf1u.onrender.com/api/categories')
+      .then((res) => setCategories(res.data))
+      .catch((err) => console.error('Error fetching categories:', err));
   };
 
   const fetchSubcategories = () => {
-    axios.get('https://idbackend-rf1u.onrender.com/api/subcategories')
-      .then(res => setSubcategories(res.data))
-      .catch(err => console.error('Error fetching subcategories:', err));
+    axios
+      .get('https://idbackend-rf1u.onrender.com/api/subcategories')
+      .then((res) => setSubcategories(res.data))
+      .catch((err) => console.error('Error fetching subcategories:', err));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setStatus('');
+    setIsLoading(true);
 
     if (!name || !image || !categoryId) {
-      setStatus('Please provide name, image, and select a category.');
+      setStatus('❌ Please provide name, image, and select a category.');
+      setIsLoading(false);
       return;
     }
 
@@ -50,6 +55,8 @@ const UploadSubcategory = () => {
     } catch (error) {
       console.error('Upload error:', error);
       setStatus('❌ Failed to upload subcategory.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -63,56 +70,100 @@ const UploadSubcategory = () => {
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h2>Upload Subcategory</h2>
-      <form onSubmit={handleSubmit} encType="multipart/form-data">
+    <div className="p-6 max-w-4xl mx-auto">
+      <h2 className="text-2xl font-semibold text-center mb-6">Upload Subcategory</h2>
+      
+      <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-4">
         <div>
-          <label>Name:</label><br />
-          <input type="text" value={name} onChange={e => setName(e.target.value)} required />
+          <label className="block text-sm font-medium text-gray-700">Name:</label>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-md"
+            required
+          />
         </div>
 
         <div>
-          <label>Select Category:</label><br />
-          <select value={categoryId} onChange={e => setCategoryId(e.target.value)} required>
+          <label className="block text-sm font-medium text-gray-700">Select Category:</label>
+          <select
+            value={categoryId}
+            onChange={(e) => setCategoryId(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-md"
+            required
+          >
             <option value="">-- Select a Category --</option>
-            {categories.map(cat => (
-              <option key={cat._id} value={cat._id}>{cat.name}</option>
+            {categories.map((cat) => (
+              <option key={cat._id} value={cat._id}>
+                {cat.name}
+              </option>
             ))}
           </select>
         </div>
 
         <div>
-          <label>Image:</label><br />
-          <input type="file" accept="image/*" onChange={e => setImage(e.target.files[0])} required />
+          <label className="block text-sm font-medium text-gray-700">Image:</label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setImage(e.target.files[0])}
+            className="w-full p-3 border border-gray-300 rounded-md"
+            required
+          />
         </div>
 
-        <button type="submit" style={{ marginTop: '10px' }}>Upload</button>
+        <button
+          type="submit"
+          className={`w-full py-2 mt-4 text-white rounded-md ${isLoading ? 'bg-gray-400' : 'bg-blue-500 hover:bg-blue-600'}`}
+          disabled={isLoading}
+        >
+          {isLoading ? 'Uploading...' : 'Upload'}
+        </button>
       </form>
 
-      {status && <p>{status}</p>}
+      {status && <p className="mt-4 text-center">{status}</p>}
 
-      <hr />
-      <h3>Existing Subcategories</h3>
-      <table border="1" cellPadding="10">
-        <thead>
-          <tr>
-            <th>Image</th>
-            <th>Name</th>
-            <th>Category</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {subcategories.map(sub => (
-            <tr key={sub._id}>
-              <td><img src={sub.imageUrl} alt={sub.name} width="50" /></td>
-              <td>{sub.name}</td>
-              <td>{categories.find(cat => cat._id === sub.categoryId)?.name || 'N/A'}</td>
-              <td><button onClick={() => handleDelete(sub._id)}>Delete</button></td>
+      <hr className="my-6" />
+
+      <h3 className="text-xl font-semibold">Existing Subcategories</h3>
+      <div className="overflow-x-auto mt-4">
+        <table className="min-w-full table-auto">
+          <thead className="bg-gray-200">
+            <tr>
+              <th className="px-4 py-2">Image</th>
+              <th className="px-4 py-2">Name</th>
+              <th className="px-4 py-2">Category</th>
+              <th className="px-4 py-2">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {subcategories.map((sub) => (
+              <tr key={sub._id} className="border-t">
+                <td className="px-4 py-2">
+                  <img src={sub.imageUrl} alt={sub.name} width="50" className="rounded" />
+                </td>
+                <td className="px-4 py-2">{sub.name}</td>
+                <td className="px-4 py-2">
+                  {
+                    categories.find(
+                      (cat) => cat._id === (sub.categoryId?._id || sub.categoryId)
+                    )?.name || 'N/A'
+                  }
+                </td>
+                <td className="px-4 py-2">
+                  <button
+                    onClick={() => handleDelete(sub._id)}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
