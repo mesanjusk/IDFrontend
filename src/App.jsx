@@ -8,8 +8,8 @@ import CreateListing from './components/CreateListing';
 import Listing from './components/listing';
 import ListingDetails from './components/ListingDetails';
 import Profile from './components/Profile';
-import UploadCategory from './components/UploadCategory';
-import UploadSubcategory from './components/UploadSubcategory';
+import UploadCategory from './pages/UploadCategory';
+import UploadSubcategory from './pages/UploadSubcategory';
 import AddItem from './pages/addTitle';
 import AddPrice from './pages/addPrice';
 
