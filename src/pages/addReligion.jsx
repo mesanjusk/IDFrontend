@@ -10,7 +10,7 @@ export default function AddReligion() {
     async function submit(e){
         e.preventDefault();
         try{
-            await axios.post("http://localhost:5000/api/religions/add",{
+            await axios.post("https://idbackend-rf1u.onrender.com/api/religions/add",{
                 name
             })
             .then(res=>{
