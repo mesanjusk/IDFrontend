@@ -49,16 +49,16 @@ const CreateListing = () => {
           titleRes, categoryRes, subcategoryRes, priceRes, instagramUrlRes,
           sizeRes, religionRes, seotRes, seodRes, seokRes
         ] = await Promise.all([
-          axios.get('http://localhost:5000/api/titles/GetTitleList'),
-          axios.get('http://localhost:5000/api/categories/'),
-          axios.get('http://localhost:5000/api/subcategories'),
-          axios.get('http://localhost:5000/api/prices/GetPriceList'),
-          axios.get('http://localhost:5000/api/instas/GetInstaList'),
-          axios.get('http://localhost:5000/api/sizes/GetSizeList'),
-          axios.get('http://localhost:5000/api/religions/GetReligionList'),
-          axios.get('http://localhost:5000/api/seots/GetSEOTitleList'),
-          axios.get('http://localhost:5000/api/seods/GetSEODesList'),
-          axios.get('http://localhost:5000/api/seoks/GetSEOKeyList')
+          axios.get('https://idbackend-rf1u.onrender.com/api/titles/GetTitleList'),
+          axios.get('https://idbackend-rf1u.onrender.com/api/categories/'),
+          axios.get('https://idbackend-rf1u.onrender.com/api/subcategories'),
+          axios.get('https://idbackend-rf1u.onrender.com/api/prices/GetPriceList'),
+          axios.get(https://idbackend-rf1u.onrender.com/api/instas/GetInstaList'),
+          axios.get('https://idbackend-rf1u.onrender.com/api/sizes/GetSizeList'),
+          axios.get('https://idbackend-rf1u.onrender.com/api/religions/GetReligionList'),
+          axios.get('https://idbackend-rf1u.onrender.com/api/seots/GetSEOTitleList'),
+          axios.get('https://idbackend-rf1u.onrender.com/api/seods/GetSEODesList'),
+          axios.get('https://idbackend-rf1u.onrender.com/api/seoks/GetSEOKeyList')
         ]);
 
         setDropdownData({
@@ -164,7 +164,7 @@ const CreateListing = () => {
 
   try {
     await axios.post(
-      'http://localhost:5000/api/listings',
+      'https://idbackend-rf1u.onrender.com/api/listings',
       formData,
       {
         headers: { 'Content-Type': 'multipart/form-data' },
