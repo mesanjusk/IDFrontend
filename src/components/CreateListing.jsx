@@ -53,7 +53,7 @@ const CreateListing = () => {
           axios.get('https://idbackend-rf1u.onrender.com/api/categories/'),
           axios.get('https://idbackend-rf1u.onrender.com/api/subcategories'),
           axios.get('https://idbackend-rf1u.onrender.com/api/prices/GetPriceList'),
-          axios.get(https://idbackend-rf1u.onrender.com/api/instas/GetInstaList'),
+          axios.get('https://idbackend-rf1u.onrender.com/api/instas/GetInstaList'),
           axios.get('https://idbackend-rf1u.onrender.com/api/sizes/GetSizeList'),
           axios.get('https://idbackend-rf1u.onrender.com/api/religions/GetReligionList'),
           axios.get('https://idbackend-rf1u.onrender.com/api/seots/GetSEOTitleList'),
