@@ -19,7 +19,7 @@ export default function AddSEOT() {
                 }
                 else if(res.data === "notexist"){
                     alert("SEOT added successfully")
-                    navigate("/admin")
+                    navigate("/addseot")
                 }
             })
             .catch(e=>{

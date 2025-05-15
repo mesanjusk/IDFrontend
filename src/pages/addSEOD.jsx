@@ -19,7 +19,7 @@ export default function AddSEOD() {
                 }
                 else if(res.data === "notexist"){
                     alert("SEOD added successfully")
-                    navigate("/admin")
+                    navigate("/addseod")
                 }
             })
             .catch(e=>{

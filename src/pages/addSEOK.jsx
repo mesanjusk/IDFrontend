@@ -19,7 +19,7 @@ export default function AddSEOK() {
                 }
                 else if(res.data === "notexist"){
                     alert("SEOK added successfully")
-                    navigate("/admin")
+                    navigate("/addseok")
                 }
             })
             .catch(e=>{
