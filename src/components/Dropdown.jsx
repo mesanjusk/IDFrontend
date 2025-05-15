@@ -15,7 +15,7 @@ const Dropdown = ({ label, options, value, onChange, placeholder = 'Select...' }
       >
         <option value="">{placeholder}</option>
         {normalizedOptions.map((opt) => (
-          <option key={opt._id} value={opt._id}>
+          <option key={opt._id} value={opt.name}>
             {opt.name}
           </option>
         ))}
