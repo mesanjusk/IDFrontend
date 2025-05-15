@@ -1,31 +1,23 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
-import {
-  FaRegHeart,
-  FaRegCommentDots,
-  FaHome,
-  FaSearch,
-  FaShoppingBag,
-  FaUser,
-  FaFacebookMessenger,
-  FaShare,
-  FaBookmark,
-  FaRegBookmark,
-} from 'react-icons/fa';
-import { MdOutlineVideoLibrary } from 'react-icons/md';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
 
-const Listings = () => {
+export default function App() {
   const [listings, setListings] = useState([]);
-  const [savedPosts, setSavedPosts] = useState({});
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [sortOption, setSortOption] = useState("none");
 
   useEffect(() => {
     const fetchListings = async () => {
       try {
-        const response = await axios.get('https://idbackend-rf1u.onrender.com/api/listings');
+        const response = await axios.get(
+          "https://idbackend-rf1u.onrender.com/api/listings"
+        );
         setListings(response.data);
       } catch (err) {
-        console.error('Error fetching listings:', err);
+        console.error("Error fetching listings:", err);
       }
     };
     fetchListings();
@@ -35,200 +27,256 @@ const Listings = () => {
     ? listings.filter((l) => l.category === selectedCategory)
     : listings;
 
+  const sortedListings = [...filteredListings].sort((a, b) => {
+    if (sortOption === "low") return a.price - b.price;
+    if (sortOption === "high") return b.price - a.price;
+    return 0;
+  });
+
   const uniqueCategories = [...new Set(listings.map((item) => item.category))];
 
-  return (
-    <div className="max-w-sm mx-auto min-h-screen bg-white flex flex-col">
-      {/* Header */}
-      <div className="flex justify-between items-center p-3 border-b shadow-sm sticky top-0 bg-white z-10">
-        <h1 className="text-xl font-bold flex items-center gap-2">
-       
-          SK Cards
-        </h1>
-        <a
-  href="https://wa.me/919372333633?text=Hi%2C%20I%20would%20like%20to%20make%20an%20enquiry"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="text-2xl text-green-600"
->
-  <FaFacebookMessenger />
-</a>
-      </div>
+  // Placeholder data arrays for Deals of the Day and Special Categories
+  const dealsOfTheDay = []; // empty placeholder, add later
+  const specialCategories = []; // empty placeholder, add later
 
-      {/* Story-style category filter */}
-      <div className="flex overflow-x-auto px-3 py-2 gap-3">
-        {uniqueCategories.map((category, index) => (
+  return (
+    <div className="font-sans bg-white text-gray-900">
+      {/* HEADER */}
+      <header className="sticky top-0 z-50 bg-white shadow-md">
+        <div className="container mx-auto flex items-center justify-between p-4">
+          <h1 className="text-xl font-bold text-pink-600">Nykaa Clone</h1>
+          <input
+            type="text"
+            placeholder="Search for products, brands and more"
+            className="hidden md:block w-1/2 px-4 py-2 border border-gray-300 rounded-lg"
+          />
+          <div className="text-sm text-gray-500 hidden md:block">Login / Signup</div>
+        </div>
+        <div className="block md:hidden px-4 pb-4">
+          <input
+            type="text"
+            placeholder="Search..."
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+          />
+        </div>
+      </header>
+
+      {/* BANNER CAROUSEL */}
+      <section className="bg-gray-100 py-4">
+        <div className="container mx-auto">
+          <Swiper spaceBetween={10} slidesPerView={1} loop>
+            {["/banner1.jpg", "/banner2.jpg", "/banner3.jpg"].map((img, idx) => (
+              <SwiperSlide key={idx}>
+                <div className="w-full h-40 md:h-64 bg-gray-300 rounded-lg flex items-center justify-center overflow-hidden">
+                  <img src={img} alt={`banner-${idx}`} className="w-full h-full object-cover" />
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </div>
+      </section>
+
+      {/* CATEGORY FILTER + SORT */}
+      <section className="py-4">
+        <div className="container mx-auto px-4">
+          <h2 className="text-xl font-semibold mb-3">Categories</h2>
           <div
-            key={index}
-            className={`w-16 flex-shrink-0 flex flex-col items-center cursor-pointer ${
-              selectedCategory === category ? 'text-pink-600' : ''
-            }`}
-            onClick={() => setSelectedCategory(selectedCategory === category ? null : category)}
+            className="flex flex-wrap gap-2 mb-4 overflow-x-auto scrollbar-hide"
+            style={{ WebkitOverflowScrolling: "touch" }}
           >
-            <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-yellow-400 to-pink-600 p-1">
-              <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-xl font-bold text-pink-600">
-                {category[0].toUpperCase()}
-              </div>
-            </div>
-            <div className="text-xs mt-1 text-center">{category.slice(0, 8)}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* Feed */}
-      <div className="flex-1 overflow-y-auto pb-16">
-        {filteredListings.map((listing) => (
-          <div key={listing._id} className="border-b pb-4">
-            {/* Post Header */}
-            <div className="flex items-center p-3 space-x-3">
-              <img
-                src={listing.images[0]}
-                alt="profile"
-                className="w-9 h-9 rounded-full object-cover"
-              />
-              <span className="font-semibold">{listing.title}</span>
-            </div>
-
-            {/* Image Carousel */}
-            <Carousel images={listing.images} />
-
-            {/* Post Actions */}
-            <div className="px-3 mt-2 flex justify-between items-center text-xl">
-              <div className="flex space-x-4">
-                <FaRegHeart />
-                <FaRegCommentDots />
-                <FaShare
-                  className="cursor-pointer"
-                  onClick={() => {
-                    if (navigator.share) {
-                      navigator
-                        .share({
-                          title: listing.title,
-                          text: listing.location,
-                          url: window.location.href,
-                        })
-                        .catch((err) => console.error('Share failed:', err));
-                    } else {
-                      alert('Sharing not supported in this browser');
-                    }
-                  }}
-                />
-              </div>
-              <div
-                className="cursor-pointer"
-                onClick={() =>
-                  setSavedPosts((prev) => ({
-                    ...prev,
-                    [listing._id]: !prev[listing._id],
-                  }))
-                }
+            <button
+              onClick={() => setSelectedCategory(null)}
+              className={`px-4 py-1 rounded-full border ${
+                selectedCategory === null
+                  ? "bg-pink-600 text-white"
+                  : "bg-white text-gray-700"
+              }`}
+            >
+              All
+            </button>
+            {uniqueCategories.map((cat, idx) => (
+              <button
+                key={idx}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-4 py-1 rounded-full border ${
+                  selectedCategory === cat
+                    ? "bg-pink-600 text-white"
+                    : "bg-white text-gray-700"
+                }`}
               >
-                {savedPosts[listing._id] ? <FaBookmark /> : <FaRegBookmark />}
-              </div>
-            </div>
-
-            {/* Details */}
-            <div className="px-3 text-sm mt-1">{listing.location}</div>
-            <div className="px-3 text-sm text-green-500">{listing.price} ₹</div>
+                {cat}
+              </button>
+            ))}
           </div>
-        ))}
-      </div>
+          <div className="mb-4">
+            <select
+              value={sortOption}
+              onChange={(e) => setSortOption(e.target.value)}
+              className="border px-3 py-2 rounded"
+            >
+              <option value="none">Sort By</option>
+              <option value="low">Price: Low to High</option>
+              <option value="high">Price: High to Low</option>
+            </select>
+          </div>
+        </div>
+      </section>
 
-      {/* Footer Navigation */}
-      <div className="fixed bottom-0 w-full max-w-sm bg-white border-t flex justify-between px-6 py-2 text-xl">
-        <FaHome />
-        <FaSearch />
-        <MdOutlineVideoLibrary />
-        <FaShoppingBag />
-        <FaUser />
-      </div>
-    </div>
-  );
-};
+      <section className="py-6 bg-pink-50">
+        <div className="container mx-auto px-4">
+          <h2 className="text-xl font-semibold mb-4 text-pink-600">
+            Deals of the Day 🔥
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {Array(4)
+              .fill(0)
+              .map((_, i) => (
+                <div
+                  key={i}
+                  className="bg-white border rounded-lg p-4 shadow-sm hover:shadow-md"
+                >
+                  <div className="h-32 bg-gray-200 rounded mb-2" />
+                  <p className="text-sm font-medium">Deal Product {i + 1}</p>
+                  <p className="text-xs text-gray-500">₹XX.XX</p>
+                </div>
+              ))}
+          </div>
+        </div>
+      </section>
 
-// Carousel Component
-const Carousel = ({ images }) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
-  const [dragStart, setDragStart] = useState(0);
-  const [dragging, setDragging] = useState(false);
-  const [isZoomed, setIsZoomed] = useState(false);
+      {/* SPECIAL / LIMITED CATEGORY */}
+       <section className="py-6">
+        <div className="container mx-auto px-4">
+          <h2 className="text-xl font-semibold mb-4 text-purple-600">
+            Limited Edition / Special Picks ✨
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {Array(3)
+              .fill(0)
+              .map((_, i) => (
+                <div
+                  key={i}
+                  className="bg-purple-50 border rounded-lg p-4 text-center"
+                >
+                  <div className="h-32 bg-purple-100 rounded mb-2" />
+                  <p className="font-medium">Special {i + 1}</p>
+                </div>
+              ))}
+          </div>
+        </div>
+      </section>
 
-  const nextImage = () => setCurrentIndex((prev) => (prev + 1) % images.length);
-  const prevImage = () => setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+      {/* PRODUCT LISTINGS */}
+      <section className="py-4">
+        <div className="container mx-auto px-4">
+          <h2 className="text-xl font-semibold mb-4">
+            {selectedCategory || "All"} Products
+          </h2>
+          {sortedListings.length === 0 ? (
+            <div className="text-center text-gray-500">No products found.</div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {sortedListings.map((item, idx) => (
+                <div
+                  key={idx}
+                  onClick={() => setSelectedProduct(item)}
+                  className="cursor-pointer bg-white border rounded-lg p-4 shadow-sm hover:shadow-md"
+                >
+                  <div className="h-32 bg-gray-200 rounded mb-2 overflow-hidden">
+                    {item.image ? (
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="object-cover w-full h-full"
+                      />
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-gray-500">
+                        No Image
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-sm font-medium">{item.title}</p>
+                  <p className="text-xs text-gray-500">₹{item.price || "--"}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
 
-  const handleTouchStart = (e) => setTouchStart(e.touches[0].clientX);
-  const handleTouchEnd = () => {
-    if (touchStart - touchEnd > 50) nextImage();
-    if (touchEnd - touchStart > 50) prevImage();
-  };
+      {/* PRODUCT MODAL */}
+      {selectedProduct && (
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 w-11/12 md:w-1/2">
+            <button
+              onClick={() => setSelectedProduct(null)}
+              className="float-right text-gray-500"
+            >
+              ✕
+            </button>
+            <h3 className="text-lg font-bold mb-2">{selectedProduct.title}</h3>
+            {selectedProduct.image && (
+              <img
+                src={selectedProduct.image}
+                alt="Product"
+                className="w-full h-64 object-cover rounded mb-3"
+              />
+            )}
+            <p className="text-gray-700">₹{selectedProduct.price}</p>
+            <p className="text-sm text-gray-500 mt-2">
+              Category: {selectedProduct.category}
+            </p>
+          </div>
+        </div>
+      )}
 
-  const handleMouseDown = (e) => {
-    setDragging(true);
-    setDragStart(e.clientX);
-  };
-
-  const handleMouseMove = (e) => {
-    if (!dragging) return;
-    const distance = dragStart - e.clientX;
-    if (distance > 100) {
-      nextImage();
-      setDragging(false);
-    } else if (distance < -100) {
-      prevImage();
-      setDragging(false);
+      {/* FOOTER */}
+      <footer className="bg-gray-800 text-gray-200 py-8 mt-6">
+        <div className="container mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div>
+            <h4 className="font-bold mb-2">Nykaa</h4>
+            <ul className="text-sm space-y-1">
+              <li>About Us</li>
+              <li>Careers</li>
+              <li>Press</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-bold mb-2">
+Help</h4>
+<ul className="text-sm space-y-1">
+<li>FAQ</li>
+<li>Shipping</li>
+<li>Returns</li>
+</ul>
+</div>
+<div>
+<h4 className="font-bold mb-2">Categories</h4>
+<ul className="text-sm space-y-1">
+{uniqueCategories.length > 0
+? uniqueCategories.map((cat, idx) => <li key={idx}>{cat}</li>)
+: "No categories"}
+</ul>
+</div>
+<div>
+<h4 className="font-bold mb-2">Contact</h4>
+<p className="text-sm">Email: support@nykaaclone.com</p>
+<p className="text-sm">Phone: +91 1234567890</p>
+</div>
+</div>
+<div className="mt-6 text-center text-xs text-gray-500">
+© 2025 Nykaa Clone. All rights reserved.
+</div>
+</footer>  {/* Scrollbar hide style */}
+  <style>{`
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
     }
-  };
-
-  const handleMouseUp = () => setDragging(false);
-  const toggleZoom = () => setIsZoomed(!isZoomed);
-
-  return (
-    <div
-      className="relative select-none"
-      onTouchStart={handleTouchStart}
-      onTouchEnd={(e) => setTouchEnd(e.changedTouches[0].clientX) || handleTouchEnd()}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-    >
-      <img
-        src={images[currentIndex]}
-        alt=""
-        className={`w-full aspect-square object-cover transition-transform duration-300 ${
-          isZoomed ? 'scale-125' : ''
-        }`}
-        onClick={toggleZoom}
-      />
-
-      {/* Arrows only on desktop */}
-      <button
-        className="hidden sm:flex absolute left-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-40 text-white p-1 rounded-full"
-        onClick={prevImage}
-      >
-        &#10094;
-      </button>
-      <button
-        className="hidden sm:flex absolute right-2 top-1/2 -translate-y-1/2 bg-black bg-opacity-40 text-white p-1 rounded-full"
-        onClick={nextImage}
-      >
-        &#10095;
-      </button>
-
-      {/* Dots */}
-      <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1">
-        {images.map((_, index) => (
-          <div
-            key={index}
-            className={`w-2 h-2 rounded-full ${
-              index === currentIndex ? 'bg-white' : 'bg-white/50'
-            }`}
-          ></div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-export default Listings;
+    .scrollbar-hide {
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+    }
+  `}</style>
+</div>
+);
+}

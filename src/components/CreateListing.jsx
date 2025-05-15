@@ -155,7 +155,7 @@ const CreateListing = () => {
     const formData = new FormData();
 
     Object.entries(form).forEach(([key, value]) => {
-      formData.append(key, key === 'price' ? Number(value) : value);
+      formData.append(key, key === 'name' ? Number(value) : value);
     });
 
     images.forEach(img => formData.append('images', img));
@@ -215,7 +215,7 @@ const CreateListing = () => {
         />
         <Dropdown
           label="Price"
-          options={(dropdownData?.prices || []).map(p => ({ _id: p.price, name: `₹${p.price}` }))}
+          options={dropdownData?.prices || []}
           value={form.price}
           onChange={handleInputChange('price')}
           getLabel={(option) => option.name}
