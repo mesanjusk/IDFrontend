@@ -21,6 +21,7 @@ import AddReligion from './pages/addReligion';
 import AddSEOT from './pages/addSEOT';
 import AddSEOD from './pages/addSEOD';
 import AddSEOK from './pages/addSEOK';
+import UploadBanner from './pages/UploadBanner';
 
 function App() {
   const [backendReady, setBackendReady] = useState(false);
@@ -81,6 +82,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/UploadCategory" element={<UploadCategory />} />
         <Route path="/UploadSubcategory" element={<UploadSubcategory />} />
+        <Route path="/UploadBanner" element={<UploadBanner />} />
         <Route path="/addTitle" element={<AddTitle />} />
          <Route path="/addPrice" element={<AddPrice />} />
           <Route path="/addInsta" element={<AddInsta />} />

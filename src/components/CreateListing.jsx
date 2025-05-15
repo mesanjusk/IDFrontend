@@ -163,7 +163,7 @@ const CreateListing = () => {
 
     try {
       await axios.post(
-        'http://localhost:5000/api/listings',
+        'https://idbackend-rf1u.onrender.com/api/listings',
         formData,
         {
           headers: { 'Content-Type': 'multipart/form-data' },
@@ -316,7 +316,7 @@ const CreateListing = () => {
     value={form.Description}
     onChange={handleInputChange('Description')}
     className="w-full p-2 border border-gray-300 rounded-md"
-    placeholder="Enter price"
+    placeholder="Enter description"
   />
 </div>
         <div className="flex flex-col items-center">
