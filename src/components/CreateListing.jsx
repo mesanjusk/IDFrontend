@@ -14,7 +14,11 @@ const CreateListing = () => {
     religions: '',
     seoTitle: '',
     seoDescription: '',
-    seoKeywords: ''
+    seoKeywords: '',
+    discount: '',
+    Description: '',
+    MOQ: '',
+    favorite: ''
   });
 
   const [images, setImages] = useState([]);
@@ -25,13 +29,12 @@ const CreateListing = () => {
     titles: [],
     categories: [],
     subcategories: [],
-    prices: [],
     instagramUrls: [],
     sizes: [],
     religions: [],
     seot: [],
     seod: [],
-    seok: []
+    seok: [],
   });
 
   const fileInputRef = useRef(null);
@@ -46,13 +49,12 @@ const CreateListing = () => {
     const fetchDropdowns = async () => {
       try {
         const [
-          titleRes, categoryRes, subcategoryRes, priceRes, instagramUrlRes,
+          titleRes, categoryRes, subcategoryRes, instagramUrlRes,
           sizeRes, religionRes, seotRes, seodRes, seokRes
         ] = await Promise.all([
           axios.get('https://idbackend-rf1u.onrender.com/api/titles/GetTitleList'),
           axios.get('https://idbackend-rf1u.onrender.com/api/categories/'),
           axios.get('https://idbackend-rf1u.onrender.com/api/subcategories'),
-          axios.get('https://idbackend-rf1u.onrender.com/api/prices/GetPriceList'),
           axios.get('https://idbackend-rf1u.onrender.com/api/instas/GetInstaList'),
           axios.get('https://idbackend-rf1u.onrender.com/api/sizes/GetSizeList'),
           axios.get('https://idbackend-rf1u.onrender.com/api/religions/GetReligionList'),
@@ -65,7 +67,6 @@ const CreateListing = () => {
           titles: safeExtract(titleRes.data),
           categories: safeExtract(categoryRes.data),
           subcategories: safeExtract(subcategoryRes.data),
-          prices: safeExtract(priceRes.data),
           instagramUrls: safeExtract(instagramUrlRes.data),
           sizes: safeExtract(sizeRes.data),
           religions: safeExtract(religionRes.data),
@@ -162,7 +163,7 @@ const CreateListing = () => {
 
     try {
       await axios.post(
-        'https://idbackend-rf1u.onrender.com/api/listings',
+        'http://localhost:5000/api/listings',
         formData,
         {
           headers: { 'Content-Type': 'multipart/form-data' },
@@ -176,7 +177,10 @@ const CreateListing = () => {
       setForm({
         title: '', category: '', subcategory: '', price: '',
         instagramUrl: '', size: '', religions: '',
-        seoTitle: '', seoDescription: '', seoKeywords: ''
+        seoTitle: '', seoDescription: '', seoKeywords: '', discount: '',
+    Description: '',
+    MOQ: '',
+    favorite: ''
       });
       setImages([]);
       setPreviewImages([]);
@@ -213,13 +217,17 @@ const CreateListing = () => {
           onChange={handleInputChange('subcategory')}
           getLabel={(option) => option.name}
         />
-        <Dropdown
-          label="Price"
-          options={dropdownData?.prices || []}
-          value={form.price}
-          onChange={handleInputChange('price')}
-          getLabel={(option) => option.name}
-        />
+        <div className="mb-4">
+  <label className="block text-sm font-medium text-gray-700 mb-1">Price</label>
+  <input
+    type="text"
+    name="price"
+    value={form.price}
+    onChange={handleInputChange('price')}
+    className="w-full p-2 border border-gray-300 rounded-md"
+    placeholder="Enter price"
+  />
+</div>
         <Dropdown
           label="Instagram URL"
           options={dropdownData?.instagramUrls || []}
@@ -262,7 +270,55 @@ const CreateListing = () => {
           onChange={handleInputChange('seoKeywords')}
           getLabel={(option) => option.name}
         />
+       <div className="mb-4">
+  <label className="block text-sm font-medium text-gray-700 mb-1">MOQ</label>
+  <select
+    name="moq"
+    value={form.MOQ}
+    onChange={handleInputChange('MOQ')}
+    className="w-full p-2 border border-gray-300 rounded-md"
+  >
+    <option value="">Select...</option>
+   <option value="1">1</option>
+   <option value="0">0</option>
+  </select>
+</div>
 
+       <div className="mb-4">
+  <label className="block text-sm font-medium text-gray-700 mb-1">Favorite</label>
+  <select
+    name="favorite"
+    value={form.favorite}
+    onChange={handleInputChange('favorite')}
+    className="w-full p-2 border border-gray-300 rounded-md"
+  >
+    <option value="">Select...</option>
+   <option value="0">0</option>
+   <option value="1">1</option>
+  </select>
+</div>
+ <div className="mb-4">
+  <label className="block text-sm font-medium text-gray-700 mb-1">Discount</label>
+  <input
+    type="text"
+    name="discount"
+    value={form.discount}
+    onChange={handleInputChange('discount')}
+    className="w-full p-2 border border-gray-300 rounded-md"
+    placeholder="Enter discount"
+  />
+</div>
+ <div className="mb-4">
+  <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+  <input
+    type="text"
+    name="description"
+    value={form.Description}
+    onChange={handleInputChange('Description')}
+    className="w-full p-2 border border-gray-300 rounded-md"
+    placeholder="Enter price"
+  />
+</div>
         <div className="flex flex-col items-center">
           <input
             type="file"

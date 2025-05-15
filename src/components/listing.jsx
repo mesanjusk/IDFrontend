@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
+import Carousel from './Carousel';
 
 export default function App() {
   const [listings, setListings] = useState([]);
@@ -183,12 +184,8 @@ export default function App() {
                   className="cursor-pointer bg-white border rounded-lg p-4 shadow-sm hover:shadow-md"
                 >
                   <div className="h-32 bg-gray-200 rounded mb-2 overflow-hidden">
-                    {item.image ? (
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        className="object-cover w-full h-full"
-                      />
+                    {item.images ? (
+                       <Carousel images={item.images} />
                     ) : (
                       <div className="flex items-center justify-center h-full text-gray-500">
                         No Image
