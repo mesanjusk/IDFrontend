@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 
 const UploadSubcategory = () => {
+  const navigate = useNavigate();
   const [name, setName] = useState('');
   const [image, setImage] = useState(null);
   const [categoryId, setCategoryId] = useState('');
@@ -9,6 +11,22 @@ const UploadSubcategory = () => {
   const [status, setStatus] = useState('');
   const [subcategories, setSubcategories] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [loggedInUser, setLoggedInUser] = useState(null); 
+
+   useEffect(() => {
+        setTimeout(() => {
+          const userNameFromState = location.state?.id;
+          const user = userNameFromState || localStorage.getItem('User_name');
+          setLoggedInUser(user);
+          if (user) {
+            fetchCategories(user);
+            fetchSubcategories(user)
+          } else {
+            navigate("/login");
+          }
+        }, 2000);
+        setTimeout(() => setIsLoading(false), 2000);
+      }, [location.state, navigate]);
 
   useEffect(() => {
     fetchCategories();

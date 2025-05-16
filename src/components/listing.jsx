@@ -2,16 +2,34 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Helmet } from 'react-helmet';
 import Navbar from './Navbar';
-import Footer from './Footer';
+import Footer from './Footer1';
 import Category from './Category';
 import Content from './Content';
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+  const navigate = useNavigate();
   const [listings, setListings] = useState([]);
   const [savedPosts, setSavedPosts] = useState({});
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+
+    useEffect(() => {
+            setTimeout(() => {
+              const userNameFromState = location.state?.id;
+              const user = userNameFromState || localStorage.getItem('User_name');
+              setLoggedInUser(user);
+              if (user) {
+               setLoggedInUser(user)
+              } else {
+                navigate("/login");
+              }
+            }, 2000);
+            setTimeout(() => setLoading(false), 2000);
+          }, [location.state, navigate]);
+  
 
   useEffect(() => {
     const fetchListings = async () => {

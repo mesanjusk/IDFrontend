@@ -1,15 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 
 const API_URL = 'https://idbackend-rf1u.onrender.com/api/categories';
 
 const UploadCategory = () => {
+  const navigate = useNavigate();
   const [categoryName, setCategoryName] = useState('');
   const [categoryImage, setCategoryImage] = useState(null);
   const [categories, setCategories] = useState([]);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [loggedInUser, setLoggedInUser] = useState(null); 
+       
+
+   useEffect(() => {
+        setTimeout(() => {
+          const userNameFromState = location.state?.id;
+          const user = userNameFromState || localStorage.getItem('User_name');
+          setLoggedInUser(user);
+          if (user) {
+            fetchCategories(user);
+          } else {
+            navigate("/login");
+          }
+        }, 2000);
+        setTimeout(() => setIsLoading(false), 2000);
+      }, [location.state, navigate]);
 
   const fetchCategories = async () => {
     try {

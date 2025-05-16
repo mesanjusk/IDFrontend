@@ -22,6 +22,7 @@ import AddSEOT from './pages/addSEOT';
 import AddSEOD from './pages/addSEOD';
 import AddSEOK from './pages/addSEOK';
 import UploadBanner from './pages/UploadBanner';
+import AllListing from './components/allLisiting';
 
 function App() {
   const [backendReady, setBackendReady] = useState(false);
@@ -72,6 +73,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/allListing" element={<AllListing />} />
         <Route path="/admin" element={<Admin />} />
         <Route path="/story" element={<StoryGallery />} />
         <Route path="/upload" element={<Upload />} />

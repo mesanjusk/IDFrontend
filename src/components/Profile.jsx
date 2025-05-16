@@ -1,7 +1,7 @@
 import React from 'react';
 import { FaCamera, FaInstagram, FaMapMarkerAlt, FaPen } from 'react-icons/fa';
 import { Helmet } from 'react-helmet';
-import Footer from './Footer';
+import Footer from './Footer1';
 
 const Profile = () => {
   const userProfile = {

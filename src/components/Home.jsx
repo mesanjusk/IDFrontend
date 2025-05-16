@@ -6,6 +6,8 @@ import { Autoplay, Pagination } from "swiper/modules";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import Carousel from "./Carousel";
+import Footer from "./Footer";
+import Header from "./Header";
 
 export default function App() {
   const [listings, setListings] = useState([]);
@@ -86,28 +88,7 @@ export default function App() {
 
   return (
     <div className="font-sans bg-white text-gray-900">
-      {/* HEADER */}
-      <header className="sticky top-0 z-50 bg-white shadow-md">
-        <div className="container mx-auto flex items-center justify-between p-4">
-          <h1 className="text-xl font-bold text-pink-600">SK Cards</h1>
-          <input
-            type="text"
-            placeholder="Search for products, brands and more"
-            className="hidden md:block w-1/2 px-4 py-2 border border-gray-300 rounded-lg"
-          />
-          <div className="text-sm text-gray-500 hidden md:block">
-            Login / Signup
-          </div>
-        </div>
-        <div className="block md:hidden px-4 pb-4">
-          <input
-            type="text"
-            placeholder="Search..."
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-          />
-        </div>
-      </header>
-
+    <Header />
       {/* BANNER CAROUSEL */}
       <section className="bg-gray-100 py-4">
         <div className="container mx-auto">
@@ -301,31 +282,7 @@ export default function App() {
         </div>
       )}
 
-      {/* FOOTER */}
-      <footer className="bg-gray-800 text-gray-200 py-8 mt-6">
-        <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-          <div>
-            <h3 className="font-semibold mb-2">SK Cards</h3>
-            <p>Premium digital and print ID card solutions.</p>
-          </div>
-          <div>
-            <h3 className="font-semibold mb-2">Quick Links</h3>
-            <ul>
-              <li>Home</li>
-              <li>Categories</li>
-              <li>Contact Us</li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="font-semibold mb-2">Contact</h3>
-            <p>Email: support@skcards.com</p>
-            <p>Phone: +91 99999 99999</p>
-          </div>
-        </div>
-        <div className="text-center mt-6 text-xs text-gray-400">
-          © {new Date().getFullYear()} SK Cards. All rights reserved.
-        </div>
-      </footer>
+     <Footer />
     </div>
   );
 }

@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 import imageCompression from 'browser-image-compression';
 import Dropdown from './Dropdown';
 
 const CreateListing = () => {
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     title: '',
     category: '',
@@ -44,6 +46,20 @@ const CreateListing = () => {
     if (res?.result) return res.result;
     return [];
   };
+
+ useEffect(() => {
+          setTimeout(() => {
+            const userNameFromState = location.state?.id;
+            const user = userNameFromState || localStorage.getItem('User_name');
+            setLoggedInUser(user);
+            if (user) {
+             setLoggedInUser(user)
+            } else {
+              navigate("/login");
+            }
+          }, 2000);
+          setTimeout(() => setLoading(false), 2000);
+        }, [location.state, navigate]);
 
   useEffect(() => {
     const fetchDropdowns = async () => {

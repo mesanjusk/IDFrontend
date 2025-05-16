@@ -4,11 +4,25 @@ import axios from "axios"
 
 export default function AddUser() {
     const navigate = useNavigate();
-
+const [loggedInUser, setLoggedInUser] = useState(null); 
+    const [isLoading, setIsLoading] = useState(false);
     const [User_name,setUser_Name]=useState('')
     const [Password,setPassword]=useState('')
     const [Mobile_number,setMobile_Number]=useState('')
 
+     useEffect(() => {
+          setTimeout(() => {
+            const userNameFromState = location.state?.id;
+            const user = userNameFromState || localStorage.getItem('User_name');
+            setLoggedInUser(user);
+            if (user) {
+             setLoggedInUser(user)
+            } else {
+              navigate("/login");
+            }
+          }, 2000);
+          setTimeout(() => setIsLoading(false), 2000);
+        }, [location.state, navigate]);
 
     async function submit(e){
         e.preventDefault();

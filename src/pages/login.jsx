@@ -7,13 +7,6 @@ export default function Login() {
     const [User_name, setUser_Name] = useState('');
     const [Password, setPassword] = useState('');
 
-    useEffect(() => {
-        const loggedInUser = localStorage.getItem('User_name');
-        if (loggedInUser) {
-            navigate("/", { state: { id: loggedInUser } });
-        }
-    }, [navigate]);
-
     async function submit(e) {
         e.preventDefault();
     
