@@ -2,11 +2,10 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
-import Carousel from './Carousel';
-import { Autoplay, Pagination, Navigation } from "swiper/modules";
+import { Autoplay, Pagination } from "swiper/modules";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-
+import Carousel from "./Carousel";
 
 export default function App() {
   const [listings, setListings] = useState([]);
@@ -18,30 +17,34 @@ export default function App() {
   const [subcategories, setSubcategories] = useState([]);
 
   useEffect(() => {
-  const fetchSubcategories = async () => {
-    try {
-      const response = await axios.get("https://idbackend-rf1u.onrender.com/api/subcategories");
-      setSubcategories(response.data);
-    } catch (err) {
-      console.error("Error fetching subcategories:", err);
-    }
-  };
-  fetchSubcategories();
-}, []);
+    const fetchSubcategories = async () => {
+      try {
+        const response = await axios.get(
+          "https://idbackend-rf1u.onrender.com/api/subcategories"
+        );
+        setSubcategories(response.data);
+      } catch (err) {
+        console.error("Error fetching subcategories:", err);
+      }
+    };
+    fetchSubcategories();
+  }, []);
 
   useEffect(() => {
-  const fetchFavoriteListings = async () => {
-    try {
-      const response = await axios.get("https://idbackend-rf1u.onrender.com/api/listings/favorite?favorite=1");
-      setFavoriteListings(response.data);
-    } catch (err) {
-      console.error("Error fetching favorite listings:", err);
-    }
-  };
-  fetchFavoriteListings();
-}, []);
+    const fetchFavoriteListings = async () => {
+      try {
+        const response = await axios.get(
+          "https://idbackend-rf1u.onrender.com/api/listings/favorite?favorite=1"
+        );
+        setFavoriteListings(response.data);
+      } catch (err) {
+        console.error("Error fetching favorite listings:", err);
+      }
+    };
+    fetchFavoriteListings();
+  }, []);
 
-   useEffect(() => {
+  useEffect(() => {
     const fetchBanners = async () => {
       try {
         const response = await axios.get(
@@ -49,7 +52,7 @@ export default function App() {
         );
         setBanners(response.data);
       } catch (err) {
-        console.error("Error fetching listings:", err);
+        console.error("Error fetching banners:", err);
       }
     };
     fetchBanners();
@@ -81,22 +84,20 @@ export default function App() {
 
   const uniqueCategories = [...new Set(listings.map((item) => item.category))];
 
-  // Placeholder data arrays for Deals of the Day and Special Categories
-  const dealsOfTheDay = []; // empty placeholder, add later
-  const specialCategories = []; // empty placeholder, add later
-
   return (
     <div className="font-sans bg-white text-gray-900">
       {/* HEADER */}
       <header className="sticky top-0 z-50 bg-white shadow-md">
         <div className="container mx-auto flex items-center justify-between p-4">
-          <h1 className="text-xl font-bold text-pink-600">Nykaa Clone</h1>
+          <h1 className="text-xl font-bold text-pink-600">SK Cards</h1>
           <input
             type="text"
             placeholder="Search for products, brands and more"
             className="hidden md:block w-1/2 px-4 py-2 border border-gray-300 rounded-lg"
           />
-          <div className="text-sm text-gray-500 hidden md:block">Login / Signup</div>
+          <div className="text-sm text-gray-500 hidden md:block">
+            Login / Signup
+          </div>
         </div>
         <div className="block md:hidden px-4 pb-4">
           <input
@@ -110,194 +111,197 @@ export default function App() {
       {/* BANNER CAROUSEL */}
       <section className="bg-gray-100 py-4">
         <div className="container mx-auto">
-         <Swiper
-  spaceBetween={10}
-  slidesPerView={1}
-  loop={true}
-  autoplay={{ delay: 3000 }}
-  pagination={{ clickable: true }}
-  modules={[Autoplay, Pagination]}
->
-  {banners.map((img, idx) => (
-    <SwiperSlide key={idx}>
-      <div className="w-full h-40 md:h-64 bg-gray-300 rounded-lg flex items-center justify-center overflow-hidden">
-        <img src={img.imageUrl} alt={`banner-${idx}`} className="w-full h-full object-cover" />
-      </div>
-    </SwiperSlide>
-  ))}
-</Swiper>
-
+          <Swiper
+            spaceBetween={10}
+            slidesPerView={1}
+            loop={true}
+            autoplay={{ delay: 3000 }}
+            pagination={{ clickable: true }}
+            modules={[Autoplay, Pagination]}
+          >
+            {banners.map((img, idx) => (
+              <SwiperSlide key={idx}>
+                <div className="w-full h-40 md:h-64 bg-gray-300 rounded-lg flex items-center justify-center overflow-hidden">
+                  <img
+                    src={img.imageUrl}
+                    alt={`banner-${idx}`}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
         </div>
       </section>
 
       {/* CATEGORY FILTER + SORT */}
       <section className="py-4">
         <div className="container mx-auto px-4">
-          <h2 className="text-xl font-semibold mb-3">Categories</h2>
+  {/* Sort Dropdown */}
+  <div className="mb-4">
+    <select
+      value={sortOption}
+      onChange={(e) => setSortOption(e.target.value)}
+      className="border px-3 py-2 rounded"
+    >
+      <option value="none">Sort By</option>
+      <option value="low">Price: Low to High</option>
+      <option value="high">Price: High to Low</option>
+    </select>
+  </div>
+
+  {/* Scrollable Category Buttons */}
+  <div className="flex gap-2 mb-4 overflow-x-auto scrollbar-hide px-1">
+    <button
+      onClick={() => setSelectedCategory(null)}
+      className={`px-4 py-1 whitespace-nowrap rounded-full border ${
+        selectedCategory === null
+          ? "bg-pink-600 text-white"
+          : "bg-white text-gray-700"
+      }`}
+    >
+      All
+    </button>
+    {uniqueCategories.map((cat, idx) => (
+      <button
+        key={idx}
+        onClick={() => setSelectedCategory(cat)}
+        className={`px-4 py-1 whitespace-nowrap rounded-full border ${
+          selectedCategory === cat
+            ? "bg-pink-600 text-white"
+            : "bg-white text-gray-700"
+        }`}
+      >
+        {cat}
+      </button>
+    ))}
+  </div>
+
+  {/* Scrollable Product Cards */}
+  {sortedListings.length === 0 ? (
+    <div className="text-center text-gray-500">No products found.</div>
+  ) : (
+    <div className="overflow-x-auto scrollbar-hide -mx-2">
+      <div className="flex gap-4 px-2 min-w-max">
+        {sortedListings.map((item, idx) => (
           <div
-            className="flex flex-wrap gap-2 mb-4 overflow-x-auto scrollbar-hide"
-            style={{ WebkitOverflowScrolling: "touch" }}
+            key={idx}
+            onClick={() => setSelectedProduct(item)}
+            className="min-w-[160px] max-w-[200px] cursor-pointer bg-white border rounded-lg p-3 shadow-sm hover:shadow-md flex-shrink-0"
           >
-            <button
-              onClick={() => setSelectedCategory(null)}
-              className={`px-4 py-1 rounded-full border ${
-                selectedCategory === null
-                  ? "bg-pink-600 text-white"
-                  : "bg-white text-gray-700"
-              }`}
-            >
-              All
-            </button>
-            {uniqueCategories.map((cat, idx) => (
-              <button
+            <div className="aspect-square bg-gray-200 rounded mb-2 overflow-hidden relative">
+              {item.images?.length ? (
+                <Carousel
+                  images={item.images}
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full text-gray-500">
+                  No Image
+                </div>
+              )}
+            </div>
+            <p className="text-sm font-medium truncate">{item.title}</p>
+            <p className="text-xs text-gray-500">₹{item.price || "--"}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  )}
+</div>
+
+      </section>
+
+      {/* DEALS */}
+      <section className="py-6 bg-pink-50">
+        <div className="container mx-auto px-4">
+          <h2 className="text-xl font-semibold mb-4 text-pink-600">
+            Deals of the Day 🔥
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {favoriteListings.map((item, idx) => (
+              <div
                 key={idx}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-4 py-1 rounded-full border ${
-                  selectedCategory === cat
-                    ? "bg-pink-600 text-white"
-                    : "bg-white text-gray-700"
-                }`}
+                className="bg-white border rounded-lg p-4 shadow-sm hover:shadow-md"
               >
-                {cat}
-              </button>
+                <div className="h-32 bg-gray-200 rounded mb-2 overflow-hidden">
+                  {item.images?.length ? (
+                    <Carousel images={item.images} />
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-gray-500">
+                      No Image
+                    </div>
+                  )}
+                </div>
+                <p className="text-sm font-medium">{item.title}</p>
+                <p className="text-xs text-gray-500">₹{item.price || "--"}</p>
+              </div>
             ))}
           </div>
-          <div className="mb-4">
-            <select
-              value={sortOption}
-              onChange={(e) => setSortOption(e.target.value)}
-              className="border px-3 py-2 rounded"
-            >
-              <option value="none">Sort By</option>
-              <option value="low">Price: Low to High</option>
-              <option value="high">Price: High to Low</option>
-            </select>
-          </div>
         </div>
       </section>
 
-      <section className="py-6 bg-pink-50">
-  <div className="container mx-auto px-4">
-    <h2 className="text-xl font-semibold mb-4 text-pink-600">
-      Deals of the Day 🔥
-    </h2>
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-      {favoriteListings.map((item, idx) => (
-        <div
-          key={idx}
-          className="bg-white border rounded-lg p-4 shadow-sm hover:shadow-md"
-        >
-          <div className="h-32 bg-gray-200 rounded mb-2 overflow-hidden">
-            {item.images ? (
-              <Carousel images={item.images} />
-            ) : (
-              <div className="flex items-center justify-center h-full text-gray-500">
-                No Image
-              </div>
-            )}
-          </div>
-          <p className="text-sm font-medium">{item.title}</p>
-          <p className="text-xs text-gray-500">₹{item.price || "--"}</p>
-        </div>
-      ))}
-    </div>
-  </div>
-</section>
-
-
-      {/* SPECIAL / LIMITED CATEGORY */}
+      {/* SPECIAL PICKS */}
       <section className="py-6">
-  <div className="container mx-auto px-4">
-    <h2 className="text-xl font-semibold mb-4 text-purple-600">
-      Limited Edition / Special Picks ✨
-    </h2>
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-      {subcategories.map((subcat, idx) => (
-        <div
-          key={idx}
-          className="bg-purple-50 border rounded-lg p-4 text-center"
-        >
-          <div className="h-32 bg-purple-100 rounded mb-2 overflow-hidden">
-            {subcat.imageUrl ? (
-              <img
-                src={subcat.imageUrl}
-                alt={subcat.name}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="flex items-center justify-center h-full text-gray-500">
-                No Image
-              </div>
-            )}
-          </div>
-          <p className="font-medium">{subcat.name}</p>
-        </div>
-      ))}
-    </div>
-  </div>
-</section>
-
-
-      {/* PRODUCT LISTINGS */}
-      <section className="py-4">
         <div className="container mx-auto px-4">
-          <h2 className="text-xl font-semibold mb-4">
-            {selectedCategory || "All"} Products
+          <h2 className="text-xl font-semibold mb-4 text-purple-600">
+            Hot Selling Item ✨
           </h2>
-          {sortedListings.length === 0 ? (
-            <div className="text-center text-gray-500">No products found.</div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {sortedListings.map((item, idx) => (
-                <div
-                  key={idx}
-                  onClick={() => setSelectedProduct(item)}
-                  className="cursor-pointer bg-white border rounded-lg p-4 shadow-sm hover:shadow-md"
-                >
-                  <div className="h-32 bg-gray-200 rounded mb-2 overflow-hidden">
-                    {item.images ? (
-                       <Carousel images={item.images} />
-                    ) : (
-                      <div className="flex items-center justify-center h-full text-gray-500">
-                        No Image
-                      </div>
-                    )}
-                  </div>
-                  <p className="text-sm font-medium">{item.title}</p>
-                  <p className="text-xs text-gray-500">₹{item.price || "--"}</p>
+          <div className="grid grid-cols-2 md:grid-cols-8 gap-4">
+            {subcategories.map((subcat, idx) => (
+              <div
+                key={idx}
+                className="bg-purple-50 border rounded-lg p-4 text-center"
+              >
+                <div className="h-32 bg-purple-100 rounded mb-2 overflow-hidden">
+                  {subcat.imageUrl ? (
+                    <img
+                      src={subcat.imageUrl}
+                      alt={subcat.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-gray-500">
+                      No Image
+                    </div>
+                  )}
                 </div>
-              ))}
-            </div>
-          )}
+                <p className="font-medium">{subcat.name}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
+
+      
 
       {/* PRODUCT MODAL */}
       {selectedProduct && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white rounded-lg p-6 w-11/12 md:w-1/2">
+        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center overflow-y-auto">
+          <div className="bg-white rounded-lg p-6 w-11/12 md:w-1/2 relative">
             <button
               onClick={() => setSelectedProduct(null)}
-              className="float-right text-gray-500"
+              className="absolute top-2 right-2 text-xl text-gray-500 hover:text-gray-700"
             >
               ✕
             </button>
-            <h3 className="text-lg font-bold mb-2">{selectedProduct.title}</h3>
-            {selectedProduct.image && (
-              <img
-                src={selectedProduct.image}
-                alt="Product"
-                className="w-full h-64 object-cover rounded mb-3"
-              />
+            <h3 className="text-lg font-bold mb-3">{selectedProduct.title}</h3>
+            {selectedProduct.images?.length > 0 ? (
+              <div className="mb-4">
+                <Carousel images={selectedProduct.images} />
+              </div>
+            ) : (
+              <div className="mb-4 h-48 bg-gray-200 flex items-center justify-center text-gray-500 rounded">
+                No Image Available
+              </div>
             )}
             <p className="text-gray-700">₹{selectedProduct.price}</p>
-            <p className="text-sm text-gray-500 mt-2">
-              Category: {selectedProduct.category}
+            <p className="mt-2 text-sm text-gray-500">
+              {selectedProduct.description || "No description available."}
             </p>
           </div>
         </div>
       )}
-
       {/* FOOTER */}
       <footer className="bg-gray-800 text-gray-200 py-8 mt-6">
         <div className="container mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -328,12 +332,12 @@ Help</h4>
 </div>
 <div>
 <h4 className="font-bold mb-2">Contact</h4>
-<p className="text-sm">Email: support@nykaaclone.com</p>
-<p className="text-sm">Phone: +91 1234567890</p>
+<p className="text-sm">Email: support@sanjusk.com</p>
+<p className="text-sm">Phone: +91 9372333633</p>
 </div>
 </div>
 <div className="mt-6 text-center text-xs text-gray-500">
-© 2025 Nykaa Clone. All rights reserved.
+© 2025 SK Cards. All rights reserved.
 </div>
 </footer>  {/* Scrollbar hide style */}
   <style>{`
@@ -345,6 +349,6 @@ Help</h4>
       scrollbar-width: none;  /* Firefox */
     }
   `}</style>
-</div>
-);
+    </div>
+  );
 }
