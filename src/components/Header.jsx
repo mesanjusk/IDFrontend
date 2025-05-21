@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FiShoppingCart,
   FiUser,
@@ -6,13 +6,14 @@ import {
   FiMenu,
   FiX,
 } from "react-icons/fi";
-import { FaRocket } from "react-icons/fa";
 import { Link } from "react-router-dom"; // Optional for routing
+import axios from "axios"; // ✅ Needed to fetch data
 
 export default function Header() {
   const [openDropdown, setOpenDropdown] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [config, setConfig] = useState({ name: "", logo: "" }); 
 
   const navItems = [
     {
@@ -33,13 +34,29 @@ export default function Header() {
     },
   ];
 
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const response = await axios.get("https://idbackend-rf1u.onrender.com/api/confi/GetConfiList"); 
+        if (response.data.success && response.data.result.length > 0) {
+          setConfig(response.data.result[0]); 
+        }
+
+      } catch (error) {
+        console.error("Failed to fetch configuration:", error);
+      }
+    };
+    fetchConfig();
+  }, []);
+
   return (
     <header className="bg-white shadow-md w-full z-50">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-        {/* Logo & Brand */}
         <div className="flex items-center space-x-2 text-blue-600 text-2xl font-bold">
-          <FaRocket />
-          <Link to="/">SK Cards</Link>
+         
+            <img src={config.logo} alt="Logo" className="w-8 h-8 object-contain" />
+        
+          <Link to="/">{config.name}</Link>
         </div>
 
         {/* Desktop Navigation */}
