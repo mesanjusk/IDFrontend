@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import Footer from "./Footer";
+import Header from "./Header";
+import Banner from "./Banner";
+import FilterCategory from "./filterCategory";
+import FavoriteDeal from "./favoriteDeal";
+import SpecialPicks from "./specialPicks";
+import ProductModal from "./productModal";
+import AllCategory from "./allCategory";
 
 export default function SubCategory() {
   const { id } = useParams();
@@ -29,6 +37,7 @@ export default function SubCategory() {
 
   return (
     <div className="p-4">
+      <Header />
       <h2 className="text-xl font-semibold mb-4">Subcategories</h2>
 
       {subcategories.length > 0 ? (
@@ -52,6 +61,7 @@ export default function SubCategory() {
       ) : (
         <p className="text-gray-500 text-center">No subcategories found.</p>
       )}
+      <Footer />
     </div>
   );
 }
