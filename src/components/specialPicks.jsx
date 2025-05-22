@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export default function SpecialPicks() {
+  const navigate = useNavigate();
   const [subcategories, setSubcategories] = useState([]);
 
   useEffect(() => {
@@ -32,6 +34,7 @@ export default function SpecialPicks() {
             {subcategories.map((subcat, idx) => (
               <div
                 key={idx}
+                onClick={() => navigate(`/list/${subcat.name}`)}
                 className="bg-purple-50 border rounded-lg p-4 text-center"
               >
                 <div className="h-32 bg-purple-100 rounded mb-2 overflow-hidden">

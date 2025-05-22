@@ -3,13 +3,12 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 
 export default function ListingPage() {
-  const { subcategoryName } = useParams();  // changed param name
+  const { subcategoryName } = useParams();  
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchItems = async () => {
-      console.log("Fetching items for subcategoryName:", subcategoryName);
       if (!subcategoryName) {
     setLoading(false);
     setItems([]);

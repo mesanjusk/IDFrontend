@@ -24,8 +24,8 @@ import AddSEOK from './pages/addSEOK';
 import UploadBanner from './pages/UploadBanner';
 import AllListing from './components/allLisiting';
 import AddConfi from './pages/addConfi';
-import SubCategory from './components/subCategory';
 import List from './components/list';
+import FilterSubategory from './components/filterSubcategory';
 
 function App() {
   const [backendReady, setBackendReady] = useState(false);
@@ -99,7 +99,7 @@ function App() {
          <Route path="/addUser" element={<AddUser />} />
          <Route path="/login" element={<Login />} />
          <Route path="/addConfi" element={<AddConfi />} />
-         <Route path="/subcategory/:id" element={<SubCategory />} />
+         <Route path="/subcategory/:id" element={<FilterSubategory />} />
          <Route path="/list/:subcategoryName" element={<List />} />
       </Routes>
     </Router>

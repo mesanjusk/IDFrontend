@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Carousel from "./Carousel";
 
 
 export default function FavoriteDeal() {
+   const navigate = useNavigate();
   const [favoriteListings, setFavoriteListings] = useState([]);
 
 
@@ -21,6 +23,10 @@ export default function FavoriteDeal() {
     fetchFavoriteListings();
   }, []);
 
+  const handleClick = async (item) => {
+  const subcategoryName = item.subcategory;
+  navigate(`/list/${subcategoryName}`);
+};
 
   return (
     <div className="font-sans bg-white text-gray-900">
@@ -35,6 +41,7 @@ export default function FavoriteDeal() {
             {favoriteListings.map((item, idx) => (
               <div
                 key={idx}
+                onClick={() => navigate(`/list/${item.subcategory}`)}
                 className="bg-white border rounded-lg p-4 shadow-sm hover:shadow-md"
               >
                 <div className="h-32 bg-gray-200 rounded mb-2 overflow-hidden">
