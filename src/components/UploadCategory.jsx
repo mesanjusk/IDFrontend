@@ -39,7 +39,7 @@ const UploadCategory = () => {
   const fetchCategories = async (pageNum) => {
     try {
       const res = await axios.get(
-        `https://idbackend-rf1u.onrender.com/api/categories?page=${pageNum}&limit=${PAGE_SIZE}`
+        `/api/categories?page=${pageNum}&limit=${PAGE_SIZE}`
       );
       setCategories(res.data.categories);
       setTotalPages(Math.ceil(res.data.total / PAGE_SIZE));

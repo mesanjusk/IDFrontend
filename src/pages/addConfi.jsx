@@ -33,7 +33,7 @@ export default function AddConfi() {
         formData.append('address', address);
 
         try {
-            const res = await axios.post("https://idbackend-rf1u.onrender.com/api/confi/add", formData, {
+            const res = await axios.post("/api/confi/add", formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
 

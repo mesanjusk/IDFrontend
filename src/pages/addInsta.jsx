@@ -25,7 +25,7 @@ export default function AddInsta() {
     async function submit(e){
         e.preventDefault();
         try{
-            await axios.post("https://idbackend-rf1u.onrender.com/api/instas/add",{
+            await axios.post("/api/instas/add",{
                 name
             })
             .then(res=>{

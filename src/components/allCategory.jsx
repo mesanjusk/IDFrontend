@@ -12,7 +12,7 @@ export default function AllCategory() {
     const fetchCategories = async () => {
       try {
         const response = await axios.get(
-          "https://idbackend-rf1u.onrender.com/api/categories"
+          "/api/categories"
         );
         setCategories(response.data);
       } catch (err) {

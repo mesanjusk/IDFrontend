@@ -33,7 +33,7 @@ const UploadCategory = () => {
     try {
       // Make POST request to your deployed backend
       const response = await axios.post(
-        'https://idbackend-rf1u.onrender.com/api/categories', // Updated URL
+        '/api/categories', // Updated URL
         formData,
         {
           headers: {

@@ -3,12 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Footer from "./Footer";
 import Header from "./Header";
-import Banner from "./Banner";
-import FilterCategory from "./filterCategory";
-import FavoriteDeal from "./favoriteDeal";
-import SpecialPicks from "./specialPicks";
-import ProductModal from "./productModal";
-import AllCategory from "./allCategory";
 
 export default function SubCategory() {
   const { id } = useParams();
@@ -18,7 +12,7 @@ export default function SubCategory() {
   useEffect(() => {
     const fetchSubcategories = async () => {
       try {
-        const response = await axios.get("https://idbackend-rf1u.onrender.com/api/subcategories");
+        const response = await axios.get("/api/subcategories");
         const matched = response.data.filter((sub) => {
           const catId = sub.categoryId?._id || sub.categoryId?.$oid || sub.categoryId;
           return catId?.toString() === id?.toString();

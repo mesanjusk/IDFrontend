@@ -33,7 +33,7 @@ const Admin = () => {
 
     const fetchListings = async () => {
       try {
-        const response = await axios.get('https://idbackend-rf1u.onrender.com/api/listings');
+        const response = await axios.get('api/listings');
         setListings(response.data);
       } catch (err) {
         console.error('Error fetching listings:', err);

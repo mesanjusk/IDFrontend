@@ -15,7 +15,7 @@ const UploadSubcategory = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get('https://idbackend-rf1u.onrender.com/api/subcategories');
+      const res = await axios.get('/api/subcategories');
       setAllSubcategories(res.data);
     } catch (err) {
       console.error("Failed to fetch categories:", err);
@@ -44,7 +44,7 @@ const UploadSubcategory = () => {
     setLoading(true);
 
     try {
-      await axios.post('https://idbackend-rf1u.onrender.com/api/subcategories', formData, {
+      await axios.post('/api/subcategories', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 

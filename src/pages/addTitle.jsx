@@ -25,7 +25,7 @@ export default function AddTitle() {
     async function submit(e) {
         e.preventDefault();
         try {
-            const res = await axios.post("https://idbackend-rf1u.onrender.com/api/titles/add", { name });
+            const res = await axios.post("/api/titles/add", { name });
             if (res.data === "exist") {
                 alert("Title already exists");
             } else if (res.data === "notexist") {

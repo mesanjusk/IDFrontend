@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-const API_URL = 'https://idbackend-rf1u.onrender.com/api/banners';
+const API_URL = '/api/banners';
 
 const UploadBanner = () => {
   const navigate = useNavigate();

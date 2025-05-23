@@ -11,7 +11,7 @@ export default function Login() {
         e.preventDefault();
     
         try {
-            const response = await axios.post("https://idbackend-rf1u.onrender.com/api/users/login", {
+            const response = await axios.post("/api/users/login", {
                 User_name,
                 Password
             });

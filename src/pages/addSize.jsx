@@ -25,7 +25,7 @@ const [loggedInUser, setLoggedInUser] = useState(null);
     async function submit(e){
         e.preventDefault();
         try{
-            await axios.post("https://idbackend-rf1u.onrender.com/api/sizes/add",{
+            await axios.post("/api/sizes/add",{
                 name
             })
             .then(res=>{

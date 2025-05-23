@@ -68,15 +68,15 @@ const CreateListing = () => {
           titleRes, categoryRes, subcategoryRes, instagramUrlRes,
           sizeRes, religionRes, seotRes, seodRes, seokRes
         ] = await Promise.all([
-          axios.get('https://idbackend-rf1u.onrender.com/api/titles/GetTitleList'),
-          axios.get('https://idbackend-rf1u.onrender.com/api/categories/'),
-          axios.get('https://idbackend-rf1u.onrender.com/api/subcategories'),
-          axios.get('https://idbackend-rf1u.onrender.com/api/instas/GetInstaList'),
-          axios.get('https://idbackend-rf1u.onrender.com/api/sizes/GetSizeList'),
-          axios.get('https://idbackend-rf1u.onrender.com/api/religions/GetReligionList'),
-          axios.get('https://idbackend-rf1u.onrender.com/api/seots/GetSEOTitleList'),
-          axios.get('https://idbackend-rf1u.onrender.com/api/seods/GetSEODesList'),
-          axios.get('https://idbackend-rf1u.onrender.com/api/seoks/GetSEOKeyList')
+          axios.get('/api/titles/GetTitleList'),
+          axios.get('/api/categories/'),
+          axios.get('/api/subcategories'),
+          axios.get('/api/instas/GetInstaList'),
+          axios.get('/api/sizes/GetSizeList'),
+          axios.get('/api/religions/GetReligionList'),
+          axios.get('/api/seots/GetSEOTitleList'),
+          axios.get('/api/seods/GetSEODesList'),
+          axios.get('/api/seoks/GetSEOKeyList')
         ]);
 
         setDropdownData({
@@ -179,7 +179,7 @@ const CreateListing = () => {
 
     try {
       await axios.post(
-        'https://idbackend-rf1u.onrender.com/api/listings',
+        '/api/listings',
         formData,
         {
           headers: { 'Content-Type': 'multipart/form-data' },

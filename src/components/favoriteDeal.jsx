@@ -13,7 +13,7 @@ export default function FavoriteDeal() {
     const fetchFavoriteListings = async () => {
       try {
         const response = await axios.get(
-          "https://idbackend-rf1u.onrender.com/api/listings/favorite?favorite=1"
+          "/api/listings/favorite?favorite=1"
         );
         setFavoriteListings(response.data);
       } catch (err) {
@@ -22,11 +22,6 @@ export default function FavoriteDeal() {
     };
     fetchFavoriteListings();
   }, []);
-
-  const handleClick = async (item) => {
-  const subcategoryName = item.subcategory;
-  navigate(`/list/${subcategoryName}`);
-};
 
   return (
     <div className="font-sans bg-white text-gray-900">
@@ -41,7 +36,7 @@ export default function FavoriteDeal() {
             {favoriteListings.map((item, idx) => (
               <div
                 key={idx}
-                onClick={() => navigate(`/list/${item.subcategory}`)}
+                onClick={() => navigate(`/list/${item._id}`)}
                 className="bg-white border rounded-lg p-4 shadow-sm hover:shadow-md"
               >
                 <div className="h-32 bg-gray-200 rounded mb-2 overflow-hidden">

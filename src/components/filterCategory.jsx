@@ -12,7 +12,7 @@ export default function FilterCategory() {
     const fetchListings = async () => {
       try {
         const response = await axios.get(
-          "https://idbackend-rf1u.onrender.com/api/listings"
+          "/api/listings"
         );
         setListings(response.data);
       } catch (err) {

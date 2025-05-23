@@ -10,7 +10,7 @@ export default function SpecialPicks() {
     const fetchSubcategories = async () => {
       try {
         const response = await axios.get(
-          "https://idbackend-rf1u.onrender.com/api/subcategories"
+          "/api/subcategories"
         );
         setSubcategories(response.data);
       } catch (err) {
@@ -34,7 +34,6 @@ export default function SpecialPicks() {
             {subcategories.map((subcat, idx) => (
               <div
                 key={idx}
-                onClick={() => navigate(`/list/${subcat.name}`)}
                 className="bg-purple-50 border rounded-lg p-4 text-center"
               >
                 <div className="h-32 bg-purple-100 rounded mb-2 overflow-hidden">

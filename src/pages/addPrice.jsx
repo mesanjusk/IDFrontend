@@ -25,7 +25,7 @@ export default function AddPrice() {
     async function submit(e){
         e.preventDefault();
         try{
-            await axios.post("https://idbackend-rf1u.onrender.com/api/prices/add",{
+            await axios.post("/api/prices/add",{
                 price
             })
             .then(res=>{

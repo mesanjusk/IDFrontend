@@ -21,7 +21,7 @@ export default function Banner() {
     const fetchBanners = async () => {
       try {
         const response = await axios.get(
-          "https://idbackend-rf1u.onrender.com/api/banners"
+          "/api/banners"
         );
         setBanners(response.data);
       } catch (err) {

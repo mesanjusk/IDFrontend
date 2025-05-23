@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 
-const API_URL = 'https://idbackend-rf1u.onrender.com/api/categories';
+const API_URL = '/api/categories';
 
 const UploadCategory = () => {
   const navigate = useNavigate();

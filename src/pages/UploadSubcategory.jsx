@@ -35,14 +35,14 @@ const UploadSubcategory = () => {
 
   const fetchCategories = () => {
     axios
-      .get('https://idbackend-rf1u.onrender.com/api/categories')
+      .get('/api/categories')
       .then((res) => setCategories(res.data))
       .catch((err) => console.error('Error fetching categories:', err));
   };
 
   const fetchSubcategories = () => {
     axios
-      .get('https://idbackend-rf1u.onrender.com/api/subcategories')
+      .get('/api/subcategories')
       .then((res) => setSubcategories(res.data))
       .catch((err) => console.error('Error fetching subcategories:', err));
   };
@@ -64,7 +64,7 @@ const UploadSubcategory = () => {
     formData.append('image', image);
 
     try {
-      await axios.post('https://idbackend-rf1u.onrender.com/api/subcategories', formData);
+      await axios.post('/api/subcategories', formData);
       setStatus('✅ Subcategory uploaded successfully!');
       setName('');
       setImage(null);
@@ -80,7 +80,7 @@ const UploadSubcategory = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`https://idbackend-rf1u.onrender.com/api/subcategories/${id}`);
+      await axios.delete(`/api/subcategories/${id}`);
       fetchSubcategories();
     } catch (error) {
       console.error('Delete error:', error);

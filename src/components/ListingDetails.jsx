@@ -9,7 +9,7 @@ const ListingDetails = () => {
   useEffect(() => {
     const fetchListing = async () => {
       try {
-        const response = await axios.get(`https://idbackend-rf1u.onrender.com/api/listings/${id}`);
+        const response = await axios.get(`/api/listings/${id}`);
         setListing(response.data);
       } catch (err) {
         console.error('Error fetching listing:', err);

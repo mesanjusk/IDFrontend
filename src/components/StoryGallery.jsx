@@ -11,7 +11,7 @@ export default function StoryGallery() {
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const res = await axios.get("https://idbackend-rf1u.onrender.com/api/images");
+        const res = await axios.get("/api/images");
         setImages(res.data);
       } catch (err) {
         console.error("Error fetching story images:", err);

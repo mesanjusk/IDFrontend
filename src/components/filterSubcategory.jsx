@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import Header from "./Header";
+import Footer from "./Footer";
 
 export default function FilterSubcategory() {
   const { id } = useParams();
@@ -9,7 +11,6 @@ export default function FilterSubcategory() {
   const [subcategories, setSubcategories] = useState([]);
   const [allListings, setAllListings] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [isOpenList, setIsOpenList] = useState(false);
   const [subItems, setSubItems] = useState([]);
   const [sub, setSub] = useState('');
   const [selectedCategoryName, setSelectedCategoryName] = useState('');
@@ -22,8 +23,8 @@ export default function FilterSubcategory() {
   const fetchListingsByCategoryId = async () => {
     try {
       const [listingsRes, categoriesRes] = await Promise.all([
-        axios.get("https://idbackend-rf1u.onrender.com/api/listings"),
-        axios.get("https://idbackend-rf1u.onrender.com/api/categories")
+        axios.get("/api/listings"),
+        axios.get("/api/categories")
       ]);
 
       const listings = listingsRes.data;
@@ -61,7 +62,7 @@ export default function FilterSubcategory() {
   useEffect(() => {
     const fetchSubcategories = async () => {
       try {
-        const response = await axios.get("https://idbackend-rf1u.onrender.com/api/subcategories");
+        const response = await axios.get("/api/subcategories");
         const matched = response.data.filter((sub) => {
           const catId = sub.categoryId?._id || sub.categoryId?.$oid || sub.categoryId;
           return catId?.toString() === id?.toString();
@@ -78,15 +79,14 @@ export default function FilterSubcategory() {
   const subcategoryId = item._id;
   setSelectedCategory(item);
   const subcategoryName = item.subcategory;
-  navigate(`/list/${subcategoryName}`);
+  navigate(`/list/${subcategoryId}`);
   await fetchItems(subcategoryId);
-  setIsOpenList(true);
 };
 
 const fetchItems = async (subcategoryId) => {
   try {
     const response = await axios.get(
-      `https://idbackend-rf1u.onrender.com/api/listings/sub?subcategory=${subcategoryId}`
+      `/api/listings/sub?subcategory=${subcategoryId}`
     );
     setSubItems(response.data);
   } catch (err) {
@@ -98,6 +98,7 @@ const fetchItems = async (subcategoryId) => {
 
   return (
     <>
+    <Header />
       <div className="font-sans bg-white text-gray-900">
         <section className="py-4">
           <div className="container mx-auto px-4">
@@ -164,44 +165,7 @@ const fetchItems = async (subcategoryId) => {
 )}
 
 
-      {isOpenList && (
-        <div className="p-4">
-          <h2 className="text-xl font-semibold mb-4">Items in selected Subcategory</h2>
-
-          {subItems.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="min-w-full border border-gray-300">
-                <thead>
-                  <tr className="bg-gray-100">
-                    <th className="border px-4 py-2 text-left">Name</th>
-                    <th className="border px-4 py-2 text-left">Description</th>
-                    <th className="border px-4 py-2 text-left">Price</th>
-                    <th className="border px-4 py-2 text-left">Image</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {subItems.map((item) => (
-                    <tr key={item._id} className="hover:bg-gray-50">
-                      <td className="border px-4 py-2">{item.title}</td>
-                      <td className="border px-4 py-2">{item.Description || "-"}</td>
-                      <td className="border px-4 py-2">{item.price || "-"}</td>
-                      <td className="border px-4 py-2">
-                        {item.images && Array.isArray(item.images) ? (
-                          <img src={item.images[0]} alt={item.title} className="h-16 w-16 object-cover" />
-                        ) : (
-                          "-"
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <p>No items found for this subcategory.</p>
-          )}
-        </div>
-      )}
+   <Footer />
     </>
   );
 }
