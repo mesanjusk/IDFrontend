@@ -27,6 +27,7 @@ import AddConfi from './pages/addConfi';
 import List from './components/list';
 import FilterSubategory from './components/filterSubcategory';
 import axios from 'axios';
+import SocialMedia from './components/SocialMedia';
 
 function App() {
   const [backendReady, setBackendReady] = useState(false);
@@ -102,6 +103,7 @@ function App() {
          <Route path="/addConfi" element={<AddConfi />} />
          <Route path="/subcategory/:id" element={<FilterSubategory />} />
          <Route path="/list/:itemId" element={<List />} />
+         <Route path="/SocialMedia" element={<SocialMedia />} />
       </Routes>
     </Router>
   );

@@ -6,6 +6,7 @@ import FavoriteDeal from "./favoriteDeal";
 import SpecialPicks from "./specialPicks";
 import ProductModal from "./productModal";
 import AllCategory from "./allCategory";
+import SocialMedia from "./SocialMedia.jsx";
 
 export default function Home() {
   return (
@@ -14,8 +15,9 @@ export default function Home() {
       <Banner />
       <AllCategory />
 
-
+      
       <Footer />
+      <SocialMedia />
     </div>
   );
 }

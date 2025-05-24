@@ -25,68 +25,65 @@ export default function AllCategory() {
   }, []);
 
   return (
-    <div className="font-sans bg-white text-gray-900">
-      <section className="py-4">
-        <div className="container mx-auto px-4">
-          {loading ? (
-            <div className="flex gap-4 overflow-x-auto px-2">
-              {[...Array(4)].map((_, i) => (
-                <div
-                  key={i}
-                  className="min-w-[160px] max-w-[200px] bg-gray-100 animate-pulse rounded-lg p-3"
-                >
-                  <div className="aspect-square bg-gray-300 rounded-full mb-2"></div>
-                  <div className="h-4 bg-gray-300 rounded w-3/4"></div>
-                </div>
-              ))}
-            </div>
-          ) : error ? (
-            <div className="text-center text-red-500">{error}</div>
-          ) : categories.length === 0 ? (
-            <div className="text-center text-gray-500">No categories found.</div>
-          ) : (
-            <div className="overflow-x-auto scrollbar-hide -mx-2">
-  <div className="flex gap-4 px-2 min-w-max md:gap-6">
-    {categories.map((item) => (
-      <div
-        key={item._id}
-        onClick={() => navigate(`/subcategory/${item._id}`)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            navigate(`/subcategory/${item._id}`);
-          }
-        }}
-        role="button"
-        tabIndex={0}
-        className="min-w-[160px] max-w-[200px] cursor-pointer bg-white p-3 shadow-sm hover:shadow-md transform hover:scale-105 transition duration-300 ease-in-out flex-shrink-0 text-center"
-      >
-        <div className="aspect-square bg-gray-200 rounded-full mb-2 overflow-hidden relative group mx-auto w-full max-w-[120px]">
-          {item.imageUrl?.length ? (
-            <img
-              src={item.imageUrl}
-              alt={item.name || "Category"}
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-110"
-            />
-          ) : (
-            <div className="flex items-center justify-center h-full text-gray-500">
-              No Image
-            </div>
-          )}
-        </div>
-
-        {/* Title below the image, centered */}
-        <p className="text-sm font-medium truncate transition-colors duration-300 group-hover:text-blue-600">
-          {item.name}
-        </p>
+    <div >
+      <section className="py-4"> 
+  <div className="container mx-auto px-4">
+    {loading ? (
+      <div className="grid grid-cols-2 md:grid-cols-7 gap-4">
+        {[...Array(4)].map((_, i) => (
+          <div
+            key={i}
+            className="bg-gray-100 animate-pulse rounded-lg p-3"
+          >
+            <div className="aspect-square bg-gray-300 rounded-full mb-2"></div>
+            <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+          </div>
+        ))}
       </div>
-    ))}
-  </div>
-</div>
+    ) : error ? (
+      <div className="text-center text-red-500">{error}</div>
+    ) : categories.length === 0 ? (
+      <div className="text-center text-gray-500">No categories found.</div>
+    ) : (
+      <div className="grid grid-cols-2 md:grid-cols-7 gap-6">
+        {categories.map((item) => (
+          <div
+            key={item._id}
+            onClick={() => navigate(`/subcategory/${item._id}`)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                navigate(`/subcategory/${item._id}`);
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            className="cursor-pointer bg-white p-3  transform hover:scale-105 transition duration-300 ease-in-out text-center rounded-lg"
+          >
+            <div className="aspect-square bg-gray-200 rounded-full mb-2 overflow-hidden relative group mx-auto w-full max-w-[120px]">
+              {item.imageUrl?.length ? (
+                <img
+                  src={item.imageUrl}
+                  alt={item.name || "Category"}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-110"
+                />
+              ) : (
+                <div className="flex items-center justify-center h-full text-gray-500">
+                  No Image
+                </div>
+              )}
+            </div>
 
-          )}
-        </div>
-      </section>
+            <p className="text-sm font-medium truncate transition-colors duration-300 group-hover:text-blue-600">
+              {item.name}
+            </p>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+</section>
+
     </div>
   );
 }
