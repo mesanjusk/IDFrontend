@@ -115,7 +115,7 @@ export default function FilterSubcategory() {
                     className="flex flex-col items-center cursor-pointer focus:outline-none"
                     aria-label={`Filter by ${item.name}`}
                   >
-                    <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-gray-300 hover:border-indigo-500 transition">
+                    <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-gray-300 hover:border-indigo-500 transition">
                       {item.imageUrl ? (
                         <img
                           src={item.imageUrl}

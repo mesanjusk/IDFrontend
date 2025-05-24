@@ -54,7 +54,7 @@ export default function Banner() {
             >
               {banners.map((img, idx) => (
                 <SwiperSlide key={idx}>
-                  <div className="w-full h-40 md:h-64 bg-gray-300 rounded-lg flex items-center justify-center overflow-hidden">
+                  <div className="w-full h-64 md:h-96 bg-gray-300 rounded-lg flex items-center justify-center overflow-hidden">
                     <img
                       src={img.imageUrl}
                       alt={img.altText || `Banner image ${idx + 1}`}
