@@ -85,7 +85,7 @@ export default function Header() {
             alt="Logo"
             className="w-8 h-8 object-contain"
           />
-          <Link to="/">{config.name || "Brand Name"}</Link>
+          <Link to="/">{config.name || ""}</Link>
         </div>
 
         {/* Desktop Navigation */}
