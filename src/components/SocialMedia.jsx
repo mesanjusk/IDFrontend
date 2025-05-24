@@ -3,8 +3,7 @@ export default function SocialMedia() {
   return (
     <section className="py-6 bg-gray-50">
       <div className="container mx-auto px-4 text-center">
-        <h2 className="text-xl font-semibold mb-4">Follow us on</h2>
-        <div className="flex justify-center gap-6 text-gray-600">
+                <div className="flex justify-center gap-6 text-gray-600">
           <a
             href="https://facebook.com/yourpage"
             target="_blank"
@@ -40,7 +39,7 @@ export default function SocialMedia() {
           </a>
 
           <a
-            href="https://instagram.com/yourprofile"
+            href="https://www.instagram.com/sanju.sk.digital/"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Instagram"
