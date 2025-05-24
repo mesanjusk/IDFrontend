@@ -27,6 +27,7 @@ const CreateListing = () => {
   const [previewImages, setPreviewImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [loggedInUser, setLoggedInUser] = useState(null);
   const [dropdownData, setDropdownData] = useState({
     titles: [],
     categories: [],
@@ -97,6 +98,9 @@ const CreateListing = () => {
 
     fetchDropdowns();
   }, []);
+
+  const selectedCategory = dropdownData.categories.find(c => c.category_uuid === form.category) || null;
+const selectedSubcategory = dropdownData.subcategories.find(s => s.subcategory_uuid === form.subcategory) || null;
 
   const handleInputChange = (field) => (e) => {
     setForm({ ...form, [field]: e.target.value });
@@ -222,14 +226,14 @@ const CreateListing = () => {
         <Dropdown
           label="Category"
           options={dropdownData?.categories || []}
-          value={form.category}
+          value={selectedCategory}
           onChange={handleInputChange('category')}
           getLabel={(option) => option.name}
         />
         <Dropdown
           label="Subcategory"
           options={dropdownData?.subcategories || []}
-          value={form.subcategory}
+          value={selectedSubcategory}
           onChange={handleInputChange('subcategory')}
           getLabel={(option) => option.name}
         />

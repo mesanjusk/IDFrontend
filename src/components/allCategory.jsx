@@ -49,11 +49,11 @@ export default function AllCategory() {
         {categories.map((item) => (
           <div
             key={item._id}
-            onClick={() => navigate(`/subcategory/${item._id}`)}
+            onClick={() => navigate(`/subcategory/${item.category_uuid}`)}
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
-                navigate(`/subcategory/${item._id}`);
+                navigate(`/subcategory/${item.category_uuid}`);
               }
             }}
             role="button"

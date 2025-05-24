@@ -17,78 +17,66 @@ export default function FilterSubcategory() {
   const [originalListings, setOriginalListings] = useState([]);
 
   useEffect(() => {
-    const fetchListingsByCategoryId = async () => {
-      try {
-        const [listingsRes, categoriesRes] = await Promise.all([
-          axios.get("/api/listings"),
-          axios.get("/api/categories")
-        ]);
+  const fetchListingsByCategoryId = async () => {
+    try {
+      const [listingsRes, categoriesRes] = await Promise.all([
+        axios.get("/api/listings"),
+        axios.get("/api/categories")
+      ]);
 
-        const listings = listingsRes.data;
-        const categories = categoriesRes.data;
+      const listings = listingsRes.data;
+      const categories = categoriesRes.data;
 
-        const matchedCategory = categories.find(cat => cat._id === id);
-        if (!matchedCategory) {
-          console.warn("No category found with ID:", id);
-          setOriginalListings([]); 
-          setAllListings([]);
-          setSelectedCategoryName('');
-          return;
-        }
 
-        const catName = matchedCategory.name?.trim().toLowerCase();
-        setSelectedCategoryName(matchedCategory.name); // Store for display
-
-        const filtered = listings.filter(
-          (listing) => listing.category?.trim().toLowerCase() === catName
-        );
-        setOriginalListings(filtered); 
-        setAllListings(filtered);
-      } catch (err) {
-        console.error("Error fetching listings or categories:", err);
+      const matchedCategory = categories.find(cat => cat.category_uuid === id);
+      if (!matchedCategory) {
+        console.warn("No category found with ID:", id);
+        setOriginalListings([]);
+        setAllListings([]);
+        setSelectedCategoryName('');
+        return;
       }
-    };
 
-    if (id) {
-      fetchListingsByCategoryId();
+      setSelectedCategoryName(matchedCategory.name);
+
+     
+const filtered = listings.filter(
+  (listing) => listing.category === matchedCategory.category_uuid || listing.category === matchedCategory._id
+);
+      setOriginalListings(filtered);
+      setAllListings(filtered);
+    } catch (err) {
+      console.error("Error fetching listings or categories:", err);
     }
-  }, [id]);
-
-  // Fetch subcategories based on category ID
-  useEffect(() => {
-    const fetchSubcategories = async () => {
-      try {
-        const response = await axios.get("/api/subcategories");
-        const matched = response.data.filter((sub) => {
-          const catId = sub.categoryId?._id || sub.categoryId?.$oid || sub.categoryId;
-          return catId?.toString() === id?.toString();
-        });
-        setSubcategories(matched);
-      } catch (err) {
-        console.error("Error fetching subcategories:", err);
-      }
-    };
-    fetchSubcategories();
-  }, [id]);
-
-  const handleClick = async (item) => {
-    const subcategoryId = item._id;
-    setSelectedCategory(item);
-    const subcategoryName = item.subcategory;
-    navigate(`/list/${subcategoryId}`);
-    await fetchItems(subcategoryId);
   };
 
-  const fetchItems = async (subcategoryId) => {
+  if (id) {
+    fetchListingsByCategoryId();
+  }
+}, [id]);
+
+
+  // Fetch subcategories based on category ID
+useEffect(() => {
+  const fetchSubcategories = async () => {
     try {
-      const response = await axios.get(
-        `/api/listings/sub?subcategory=${subcategoryId}`
-      );
-      setSubItems(response.data);
+      const response = await axios.get("/api/subcategories");
+      const matched = response.data.filter((sub) => {
+        const catId = sub.categoryId?._id || sub.categoryId?.$oid || sub.categoryId;
+        return catId?.toString() === id?.toString();
+      });
+      setSubcategories(matched);
     } catch (err) {
-      console.error("Error fetching items:", err);
-      setSubItems([]);
+      console.error("Error fetching subcategories:", err);
     }
+  };
+  fetchSubcategories();
+}, [id]);
+
+const handleClick = async (item) => {
+    const subcategoryId = item._id;
+    setSelectedCategory(item);
+    navigate(`/list/${subcategoryId}`);
   };
 
   return (
@@ -146,7 +134,7 @@ export default function FilterSubcategory() {
               <div
                 key={listing._id}
                 className="border rounded-lg p-3 shadow hover:shadow-md transition cursor-pointer"
-                onClick={() => handleClick(listing)}
+                 onClick={() => handleClick(listing)}
               >
                 <div className="w-full aspect-square overflow-hidden rounded mb-2">
                   <img

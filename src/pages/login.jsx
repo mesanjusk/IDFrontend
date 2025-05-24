@@ -29,7 +29,7 @@ export default function Login() {
             localStorage.setItem('User_name', User_name);
 
           
-                navigate("/", { state: { id: User_name } });
+                navigate("/admin", { state: { id: User_name } });
 
         } catch (e) {
             alert("An error occurred during login. Please try again.");

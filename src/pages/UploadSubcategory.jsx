@@ -177,7 +177,7 @@ const UploadSubcategory = () => {
           >
             <option value="">-- Select a Category --</option>
             {categories.map((cat) => (
-              <option key={cat._id} value={cat._id}>
+              <option key={cat._id} value={cat.category_uuid}>
                 {cat.name}
               </option>
             ))}

@@ -12,6 +12,7 @@ import AddSize from '../pages/addSize';
 import AddSEOK from '../pages/addSEOK';
 import AddSEOT from '../pages/addSEOT';
 import AddConfi from '../pages/addConfi';
+import CreateListing from './CreateListing';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('categories');
@@ -20,6 +21,7 @@ export default function AdminDashboard() {
     { key: 'categories', label: '📂 Categories' },
     { key: 'subcategories', label: '📁 Subcategories' },
     { key: 'banners', label: '📁 Banners' },
+     { key: 'listings', label: '📁 Listings' },
     { key: 'titles', label: '🏷️ Titles' },
     { key: 'prices', label: '💰 Prices' },
      { key: 'users', label: '📂 Users' },
@@ -58,6 +60,7 @@ export default function AdminDashboard() {
         {activeTab === 'categories' && <UploadCategory />}
         {activeTab === 'subcategories' && <UploadSubcategory />}
          {activeTab === 'banners' && <UploadBanner />}
+         {activeTab === 'listings' && <CreateListing />}
         {activeTab === 'titles' && <AddTitle />}
         {activeTab === 'prices' && <AddPrice />}
          {activeTab === 'users' && <AddUser />}
