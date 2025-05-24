@@ -29,11 +29,11 @@ export default function AllCategory() {
       <section className="py-4"> 
   <div className="container mx-auto px-4">
     {loading ? (
-      <div className="grid grid-cols-3 md:grid-cols-7 gap-3">
+      <div className="grid grid-cols-3 md:grid-cols-9 gap-6">
         {[...Array(4)].map((_, i) => (
           <div
             key={i}
-            className="bg-gray-100 animate-pulse rounded-lg p-3"
+            className="bg-gray-100 animate-pulse  p-3"
           >
             <div className="aspect-square bg-gray-300 rounded-full mb-2"></div>
             <div className="h-4 bg-gray-300 rounded w-3/4"></div>
@@ -45,7 +45,7 @@ export default function AllCategory() {
     ) : categories.length === 0 ? (
       <div className="text-center text-gray-500">No categories found.</div>
     ) : (
-      <div className="grid grid-cols-2 md:grid-cols-7 gap-6">
+      <div className="grid grid-cols-3 md:grid-cols-9 gap-3">
         {categories.map((item) => (
           <div
             key={item._id}
