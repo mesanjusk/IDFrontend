@@ -36,7 +36,7 @@ const [loggedInUser, setLoggedInUser] = useState(null);
                 }
                 else if(res.data=="notexist"){
                     alert("User added successfully")
-                    navigate("/")
+                    navigate("/admin")
                 }
             })
             .catch(e=>{

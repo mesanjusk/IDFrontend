@@ -41,7 +41,7 @@ export default function AddConfi() {
                 alert("Configuration already exists");
             } else if (res.data === "notexist") {
                 alert("Configuration added successfully");
-                navigate("/");
+                navigate("/admin");
             }
         } catch (e) {
             alert("Error uploading data");

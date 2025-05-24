@@ -14,7 +14,6 @@ import AddTitle from './pages/addTitle';
 import AddPrice from './pages/addPrice';
 import AddUser from './pages/addUser';
 import Login from './pages/login';
-import Admin from './pages/Admin';
 import AddInsta from './pages/addInsta';
 import AddSize from './pages/addSize';
 import AddReligion from './pages/addReligion';
@@ -28,6 +27,7 @@ import List from './components/list';
 import FilterSubategory from './components/filterSubcategory';
 import axios from 'axios';
 import SocialMedia from './components/SocialMedia';
+import AdminDashboard from './components/AdminDashboard';
 
 function App() {
   const [backendReady, setBackendReady] = useState(false);
@@ -79,7 +79,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/allListing" element={<AllListing />} />
-        <Route path="/admin" element={<Admin />} />
+        <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/story" element={<StoryGallery />} />
         <Route path="/upload" element={<Upload />} />
         <Route path="/instagram" element={<Insta />} />

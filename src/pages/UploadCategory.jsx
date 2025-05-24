@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -13,6 +13,10 @@ const UploadCategory = () => {
   const [previewImage, setPreviewImage] = useState(null);
   const [categories, setCategories] = useState([]);
   const [filteredCategories, setFilteredCategories] = useState([]);
+  const [usedCategoryNames, setUsedCategoryNames] = useState([]);
+const [editCategoryImage, setEditCategoryImage] = useState(null);
+const [editPreviewImage, setEditPreviewImage] = useState(null);
+
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -20,7 +24,6 @@ const UploadCategory = () => {
   const [loggedInUser, setLoggedInUser] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Modal states
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [modalImageSrc, setModalImageSrc] = useState(null);
 
@@ -28,7 +31,6 @@ const UploadCategory = () => {
   const [editCategoryId, setEditCategoryId] = useState(null);
   const [editCategoryName, setEditCategoryName] = useState('');
 
-  // User check and fetch categories
   useEffect(() => {
     const userNameFromState = location.state?.id;
     const user = userNameFromState || localStorage.getItem('User_name');
@@ -40,13 +42,13 @@ const UploadCategory = () => {
     fetchCategories();
   }, [location.state, navigate]);
 
-  // Fetch categories
   const fetchCategories = async () => {
     setIsLoading(true);
     try {
       const res = await axios.get(API_URL);
       setCategories(res.data);
       setFilteredCategories(res.data);
+      setUsedCategoryNames(res.data.map((cat) => cat.name.toLowerCase()));
       setError('');
     } catch (err) {
       setError('Failed to fetch categories. Please try again.');
@@ -56,11 +58,9 @@ const UploadCategory = () => {
     }
   };
 
-  // Handle file change and preview image
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     setCategoryImage(file);
-
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => setPreviewImage(reader.result);
@@ -70,19 +70,26 @@ const UploadCategory = () => {
     }
   };
 
-  // Handle submit new category
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!categoryName.trim() || !categoryImage) {
+    const name = categoryName.trim();
+
+    if (!name || !categoryImage) {
       setError('Please provide both category name and image.');
       return;
     }
+
+    if (usedCategoryNames.includes(name.toLowerCase())) {
+      setError('Category name already exists.');
+      return;
+    }
+
     setError('');
     setSuccess('');
     setIsSubmitting(true);
 
     const formData = new FormData();
-    formData.append('name', categoryName.trim());
+    formData.append('name', name);
     formData.append('image', categoryImage);
 
     try {
@@ -96,8 +103,7 @@ const UploadCategory = () => {
       fetchCategories();
     } catch (err) {
       setError(
-        err.response?.data?.message ||
-          '❌ Error uploading category. Please try again.'
+        err.response?.data?.message || '❌ Error uploading category. Please try again.'
       );
       console.error('Submit error:', err.response?.data || err.message);
     } finally {
@@ -105,11 +111,8 @@ const UploadCategory = () => {
     }
   };
 
-  // Confirm and delete category
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this category?')) {
-      return;
-    }
+    if (!window.confirm('Are you sure you want to delete this category?')) return;
     try {
       await axios.delete(`${API_URL}/${id}`);
       setSuccess('Category deleted successfully!');
@@ -120,45 +123,70 @@ const UploadCategory = () => {
     }
   };
 
-  // Open image modal
   const openImageModal = (imageUrl) => {
     setModalImageSrc(imageUrl);
     setIsImageModalOpen(true);
   };
 
-  // Close image modal
   const closeImageModal = () => {
     setIsImageModalOpen(false);
     setModalImageSrc(null);
   };
 
-  // Open edit modal
   const openEditModal = (cat) => {
     setEditCategoryId(cat._id);
     setEditCategoryName(cat.name);
+     setEditCategoryImage(null);
+  setEditPreviewImage(cat.imageUrl);
     setIsEditModalOpen(true);
     setError('');
     setSuccess('');
   };
 
-  // Close edit modal
   const closeEditModal = () => {
     setIsEditModalOpen(false);
     setEditCategoryId(null);
     setEditCategoryName('');
   };
 
-  // Submit category name edit
+const handleEditImageChange = (e) => {
+  const file = e.target.files[0];
+  setEditCategoryImage(file);
+  if (file) {
+    const reader = new FileReader();
+    reader.onloadend = () => setEditPreviewImage(reader.result);
+    reader.readAsDataURL(file);
+  }
+};
+
   const submitEdit = async () => {
-    if (!editCategoryName.trim()) {
+    const name = editCategoryName.trim();
+
+    if (!name) {
       setError('Category name cannot be empty.');
       return;
     }
+
+    if (
+      usedCategoryNames.includes(name.toLowerCase()) &&
+      name.toLowerCase() !==
+        categories.find((cat) => cat._id === editCategoryId)?.name.toLowerCase()
+    ) {
+      setError('Another category with this name already exists.');
+      return;
+    }
+
+      const formData = new FormData();
+  formData.append('name', name);
+  if (editCategoryImage) {
+    formData.append('image', editCategoryImage);
+  }
+
     setIsSubmitting(true);
     setError('');
     setSuccess('');
     try {
-      await axios.put(`${API_URL}/${editCategoryId}`, { name: editCategoryName.trim() });
+      await axios.put(`${API_URL}/${editCategoryId}`, formData);
       setSuccess('Category name updated!');
       fetchCategories();
       closeEditModal();
@@ -170,7 +198,6 @@ const UploadCategory = () => {
     }
   };
 
-  // Filter categories by search term
   useEffect(() => {
     if (!searchTerm.trim()) {
       setFilteredCategories(categories);
@@ -186,7 +213,6 @@ const UploadCategory = () => {
     <div className="max-w-4xl mx-auto p-4">
       <h2 className="text-2xl font-bold mb-6 text-center">Upload Category</h2>
 
-      {/* Search */}
       <input
         type="text"
         placeholder="Search categories..."
@@ -253,46 +279,44 @@ const UploadCategory = () => {
           </thead>
           <tbody>
             {filteredCategories.map((cat) => (
-              <tr key={cat._id} className="text-center">
-                <td className="p-2 border">
-                  <img
-                    src={cat.imageUrl}
-                    alt={cat.name}
-                    className="h-12 mx-auto cursor-pointer"
-                    onClick={() => openImageModal(cat.imageUrl)}
-                  />
-                </td>
-                <td className="p-2 border">{cat.name}</td>
-                <td className="p-2 border space-x-2">
-                  <button
-                    onClick={() => openEditModal(cat)}
-                    className="text-white bg-yellow-500 px-3 py-1 rounded hover:bg-yellow-600"
-                    disabled={isSubmitting}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(cat._id)}
-                    className="text-white bg-red-500 px-3 py-1 rounded hover:bg-red-600"
-                    disabled={isSubmitting}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
+  <tr key={cat._id} className="text-center">
+    <td className="p-2 border">
+      <img
+        src={cat.imageUrl}
+        alt={cat.name}
+        className="h-12 mx-auto cursor-pointer"
+        onClick={() => openImageModal(cat.imageUrl)}
+      />
+    </td>
+    <td className="p-2 border">{cat.name}</td>
+    <td className="p-2 border space-x-2">
+      <button
+        onClick={() => openEditModal(cat)}
+        className="text-white bg-yellow-500 px-3 py-1 rounded hover:bg-yellow-600"
+        disabled={isSubmitting}
+      >
+        Edit
+      </button>
+
+      {!cat.isUsed && (
+        <button
+          onClick={() => handleDelete(cat._id)}
+          className="text-white bg-red-500 px-3 py-1 rounded hover:bg-red-600"
+          disabled={isSubmitting}
+        >
+          Delete
+        </button>
+      )}
+    </td>
+  </tr>
+))}
+
           </tbody>
         </table>
       )}
 
-      {/* Image Modal */}
       {isImageModalOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50"
-          onClick={closeImageModal}
-          role="dialog"
-          aria-modal="true"
-        >
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50" onClick={closeImageModal}>
           <img
             src={modalImageSrc}
             alt="Category Full View"
@@ -302,25 +326,19 @@ const UploadCategory = () => {
           <button
             onClick={closeImageModal}
             className="absolute top-4 right-4 text-white text-3xl font-bold"
-            aria-label="Close Image Modal"
           >
             &times;
           </button>
         </div>
       )}
 
-      {/* Edit Modal */}
       {isEditModalOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50"
-          role="dialog"
-          aria-modal="true"
-        >
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50">
           <div
             className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg"
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 className="text-xl font-semibold mb-4">Edit Category Name</h3>
+            <h3 className="text-xl font-semibold mb-4">Edit Category </h3>
             <input
               type="text"
               value={editCategoryName}
@@ -328,6 +346,20 @@ const UploadCategory = () => {
               className="w-full p-2 border border-gray-300 rounded-md mb-4"
               disabled={isSubmitting}
             />
+            <input
+  type="file"
+  accept="image/*"
+  onChange={handleEditImageChange}
+  className="w-full p-2 border border-gray-300 rounded-md mb-2"
+/>
+{editPreviewImage && (
+  <img
+    src={editPreviewImage}
+    alt="Edit Preview"
+    className="h-24 rounded border mb-2"
+  />
+)}
+
             {error && <p className="text-red-500 mb-2">{error}</p>}
             {success && <p className="text-green-500 mb-2">{success}</p>}
             <div className="flex justify-end space-x-4">

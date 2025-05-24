@@ -34,7 +34,7 @@ const [loggedInUser, setLoggedInUser] = useState(null);
                 }
                 else if(res.data === "notexist"){
                     alert("SEOT added successfully")
-                    navigate("/addseot")
+                    navigate("/admin")
                 }
             })
             .catch(e=>{

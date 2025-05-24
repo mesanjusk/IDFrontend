@@ -34,7 +34,7 @@ const [loggedInUser, setLoggedInUser] = useState(null);
                 }
                 else if(res.data === "notexist"){
                     alert("SEOK added successfully")
-                    navigate("/")
+                    navigate("/admin")
                 }
             })
             .catch(e=>{
@@ -48,7 +48,7 @@ const [loggedInUser, setLoggedInUser] = useState(null);
         }
     }
     const closeModal = () => {
-        navigate("/");
+        navigate("/admin");
      };
 
     return (

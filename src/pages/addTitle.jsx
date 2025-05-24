@@ -30,7 +30,7 @@ export default function AddTitle() {
                 alert("Title already exists");
             } else if (res.data === "notexist") {
                 alert("Title added successfully");
-                navigate("/");
+                navigate("/admin");
             }
         } catch (e) {
             alert("Something went wrong");
@@ -39,7 +39,7 @@ export default function AddTitle() {
     }
 
     const closeModal = () => {
-        navigate("/");
+        navigate("/admin");
     };
 
     if (isLoading) {

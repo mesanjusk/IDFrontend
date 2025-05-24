@@ -246,12 +246,14 @@ const UploadSubcategory = () => {
                   >
                     Edit
                   </button>
-                  <button
-                    onClick={() => handleDelete(sub._id)}
-                    className="text-red-500 hover:text-red-700"
-                  >
-                    Delete
-                  </button>
+                  {!sub.isUsed && (
+    <button
+      onClick={() => handleDelete(sub._id)}
+      className="text-red-500 hover:text-red-700"
+    >
+      Delete
+    </button>
+  )}
                 </td>
               </tr>
             ))}

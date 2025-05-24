@@ -34,7 +34,7 @@ export default function AddInsta() {
                 }
                 else if(res.data === "notexist"){
                     alert("URL added successfully")
-                    navigate("/")
+                    navigate("/admin")
                 }
             })
             .catch(e=>{
@@ -48,7 +48,7 @@ export default function AddInsta() {
         }
     }
     const closeModal = () => {
-        navigate("/");
+        navigate("/admin");
      };
 
     return (
