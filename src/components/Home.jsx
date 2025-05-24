@@ -10,16 +10,12 @@ import AllCategory from "./allCategory";
 export default function Home() {
   return (
     <div className="font-sans bg-white text-gray-900">
-    <Header />
-     <Banner />
-  <AllCategory />
-  <FavoriteDeal />
+      <Header />
+      <Banner />
+      <AllCategory />
 
-     <SpecialPicks />
 
-     <ProductModal />
-
-     <Footer />
+      <Footer />
     </div>
   );
 }
