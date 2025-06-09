@@ -9,6 +9,7 @@ const UploadCategory = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [dragActive, setDragActive] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   const [categories, setCategories] = useState([]);
   const [page, setPage] = useState(1);
@@ -38,9 +39,7 @@ const UploadCategory = () => {
 
   const fetchCategories = async (pageNum) => {
     try {
-      const res = await axios.get(
-        `/api/categories?page=${pageNum}&limit=${PAGE_SIZE}`
-      );
+      const res = await axios.get(`/api/categories?page=${pageNum}&limit=${PAGE_SIZE}`);
       setCategories(res.data.categories);
       setTotalPages(Math.ceil(res.data.total / PAGE_SIZE));
     } catch (err) {
@@ -85,16 +84,21 @@ const UploadCategory = () => {
       return;
     }
 
+    const nameExists = categories.some((cat) => cat.name.toLowerCase() === categoryName.toLowerCase());
+    if (nameExists) {
+      setError('Category name already exists.');
+      return;
+    }
+
     const formData = new FormData();
     formData.append('name', categoryName);
     formData.append('image', categoryImage);
 
     try {
-      await axios.post(
-        'https://idbackend-rf1u.onrender.com/api/categories',
-        formData,
-        { headers: { 'Content-Type': 'multipart/form-data' } }
-      );
+      setIsUploading(true);
+      await axios.post('https://idbackend-rf1u.onrender.com/api/categories', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
       setSuccess('Category uploaded successfully!');
       setCategoryName('');
       setCategoryImage(null);
@@ -102,10 +106,11 @@ const UploadCategory = () => {
     } catch (err) {
       setError('Error uploading category');
       console.error(err);
+    } finally {
+      setIsUploading(false);
     }
   };
 
-  // Edit Modal handlers
   const openEditModal = (id, currentName) => {
     setEditCategoryId(id);
     setEditName(currentName);
@@ -135,7 +140,6 @@ const UploadCategory = () => {
     }
   };
 
-  // Image Modal handlers
   const openImageModal = (imageUrl) => {
     setImageModalUrl(imageUrl);
     setImageModalOpen(true);
@@ -199,9 +203,10 @@ const UploadCategory = () => {
 
         <button
           type="submit"
-          className="mt-4 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          className="mt-4 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+          disabled={isUploading}
         >
-          Upload
+          {isUploading ? 'Uploading...' : 'Upload'}
         </button>
       </form>
 
@@ -213,17 +218,15 @@ const UploadCategory = () => {
       <table className="w-full table-auto border-collapse border border-gray-300 mb-4">
         <thead>
           <tr className="bg-gray-100">
-            <th className="border border-gray-300 px-3 py-2">Image</th>
-            <th className="border border-gray-300 px-3 py-2">Name</th>
-            <th className="border border-gray-300 px-3 py-2">Actions</th>
+            <th scope="col" className="border border-gray-300 px-3 py-2">Image</th>
+            <th scope="col" className="border border-gray-300 px-3 py-2">Name</th>
+            <th scope="col" className="border border-gray-300 px-3 py-2">Actions</th>
           </tr>
         </thead>
         <tbody>
           {categories.length === 0 && (
             <tr>
-              <td colSpan="3" className="text-center py-4">
-                No categories found.
-              </td>
+              <td colSpan="3" className="text-center py-4">No categories found.</td>
             </tr>
           )}
           {categories.map(({ _id, name, imageUrl }) => (
@@ -257,7 +260,6 @@ const UploadCategory = () => {
         </tbody>
       </table>
 
-      {/* Pagination controls */}
       <div className="flex justify-center gap-4">
         <button
           disabled={page <= 1}
@@ -266,9 +268,7 @@ const UploadCategory = () => {
         >
           Previous
         </button>
-        <span className="pt-1">
-          Page {page} of {totalPages}
-        </span>
+        <span className="pt-1">Page {page} of {totalPages}</span>
         <button
           disabled={page >= totalPages}
           onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
@@ -278,17 +278,13 @@ const UploadCategory = () => {
         </button>
       </div>
 
-      {/* Edit Name Modal */}
       {editModalOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-          onClick={closeEditModal}
-        >
-          <div
-            className="bg-white p-6 rounded shadow-lg w-80"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h4 className="text-lg font-semibold mb-4">Edit Category Name</h4>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={closeEditModal}>
+          <div className="bg-white p-6 rounded shadow-lg w-80" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center mb-4">
+              <h4 className="text-lg font-semibold">Edit Category Name</h4>
+              <button onClick={closeEditModal} className="text-gray-500 hover:text-black">✖</button>
+            </div>
             <input
               type="text"
               value={editName}
@@ -314,24 +310,14 @@ const UploadCategory = () => {
         </div>
       )}
 
-      {/* Image Preview Modal */}
       {imageModalOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
-          onClick={closeImageModal}
-        >
-          <div className="max-w-[90vw] max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
-            <img
-              src={imageModalUrl}
-              alt="Category Preview"
-              className="max-w-full max-h-full rounded shadow-lg"
-            />
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50" onClick={closeImageModal}>
+          <div className="max-w-[90vw] max-h-[90vh] relative" onClick={(e) => e.stopPropagation()}>
+            <img src={imageModalUrl} alt="Category Preview" className="max-w-full max-h-full rounded shadow-lg" />
             <button
               onClick={closeImageModal}
-              className="mt-2 w-full bg-red-600 text-white py-1 rounded hover:bg-red-700"
-            >
-              Close
-            </button>
+              className="absolute top-0 right-0 m-2 text-white bg-red-600 rounded-full px-2 py-1 hover:bg-red-700"
+            >✖</button>
           </div>
         </div>
       )}
