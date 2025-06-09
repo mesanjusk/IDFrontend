@@ -1,12 +1,16 @@
-// Fixed CreateListing component with safe getName mapping
-// - Avoids .find() on non-array
-// - Provides correct key mappings for dropdownData lookup
+// Final cleaned version of CreateListing component
+// - Removed: Description, Discount, Favorite
+// - Cleaned form state, reset logic, and UI
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate, useLocation } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
 
 const CreateListing = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [form, setForm] = useState({
     title: '',
     category: '',
@@ -18,200 +22,260 @@ const CreateListing = () => {
 
   const [images, setImages] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
-  const [listings, setListings] = useState([]);
-  const [dropdownData, setDropdownData] = useState({ categories: [], subcategories: [], religions: [] });
-  const [searchTerm, setSearchTerm] = useState('');
-  const [editId, setEditId] = useState(null);
-  const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [loggedInUser, setLoggedInUser] = useState(null);
+  const [dropdownData, setDropdownData] = useState({
+    categories: [],
+    subcategories: [],
+    religions: []
+  });
+
   const fileInputRef = useRef(null);
 
+  const safeExtract = (res) => {
+    if (Array.isArray(res)) return res;
+    if (res?.result) return res.result;
+    return [];
+  };
+
   useEffect(() => {
+    const userNameFromState = location.state?.id;
+    const user = userNameFromState || localStorage.getItem('User_name');
+    if (user) {
+      setLoggedInUser(user);
+    } else {
+      navigate('/login');
+    }
+    setTimeout(() => setLoading(false), 2000);
+  }, [location.state, navigate]);
+
+  useEffect(() => {
+    const fetchDropdowns = async () => {
+      try {
+        const [categoryRes, subcategoryRes, religionRes] = await Promise.all([
+          axios.get('/api/categories/'),
+          axios.get('/api/subcategories'),
+          axios.get('/api/religions/GetReligionList'),
+        ]);
+        setDropdownData({
+          categories: safeExtract(categoryRes.data),
+          subcategories: safeExtract(subcategoryRes.data),
+          religions: safeExtract(religionRes.data),
+        });
+      } catch (error) {
+        console.error('Error fetching dropdown data:', error);
+      }
+    };
+
     fetchDropdowns();
-    fetchListings();
   }, []);
 
-  const fetchDropdowns = async () => {
-    const [categoryRes, subcategoryRes, religionRes] = await Promise.all([
-      axios.get('/api/categories/'),
-      axios.get('/api/subcategories'),
-      axios.get('/api/religions/GetReligionList'),
-    ]);
-    setDropdownData({
-      categories: categoryRes.data || [],
-      subcategories: subcategoryRes.data || [],
-      religions: religionRes.data || []
-    });
-  };
-
-  const fetchListings = async () => {
-    const res = await axios.get('/api/listings');
-    setListings(res.data || []);
-  };
-
   const handleInputChange = (field) => (e) => {
-    setForm({ ...form, [field]: e.target.value });
+    const value = e?.target?.value ?? e;
+    setForm({ ...form, [field]: value });
   };
 
   const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files);
     const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
     const filtered = files.filter(file => validTypes.includes(file.type));
-    const newImages = [];
-    for (const file of filtered) {
-      const compressedBlob = await imageCompression(file, { maxSizeMB: 1, maxWidthOrHeight: 1920, useWebWorker: true });
-      newImages.push(new File([compressedBlob], file.name, { type: compressedBlob.type }));
+
+    if (filtered.length !== files.length) {
+      alert('Some files were skipped. Only JPG, PNG, WEBP allowed.');
     }
-    setImages(newImages);
-    setPreviewImages(newImages.map(file => ({ url: URL.createObjectURL(file) })));
+
+    if (filtered.length + images.length > 10) {
+      alert('Max 10 images allowed.');
+      return;
+    }
+
+    setLoading(true);
+    const newImages = [];
+
+    for (const file of filtered) {
+      try {
+        const alreadyExists = images.some(img => img.name === file.name && img.size === file.size);
+        if (alreadyExists) continue;
+
+        const compressedBlob = await imageCompression(file, {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1920,
+          useWebWorker: true,
+        });
+
+        const compressedFile = new File([compressedBlob], `${Date.now()}-${file.name}`, {
+          type: compressedBlob.type,
+        });
+
+        newImages.push(compressedFile);
+      } catch (err) {
+        console.error('Compression failed:', err);
+      }
+    }
+
+    const updatedImages = [...images, ...newImages];
+    setImages(updatedImages);
+    setPreviewImages(updatedImages.map(file => ({
+      url: URL.createObjectURL(file),
+      name: file.name,
+      size: (file.size / 1024).toFixed(1) + ' KB'
+    })));
+    setLoading(false);
+  };
+
+  const removeImage = (index) => {
+    const updatedImages = images.filter((_, i) => i !== index);
+    setImages(updatedImages);
+    setPreviewImages(updatedImages.map(file => ({
+      url: URL.createObjectURL(file),
+      name: file.name,
+      size: (file.size / 1024).toFixed(1) + ' KB'
+    })));
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    Object.entries(form).forEach(([k, v]) => formData.append(k, v));
-    images.forEach(img => formData.append('images', img));
 
-    if (editId) {
-      await axios.put(`/api/listings/${editId}`, formData);
-    } else {
-      await axios.post('/api/listings', formData);
+    if (loading) return alert('Images still processing...');
+    if (!form.title || !form.category || !form.subcategory || !form.price || images.length === 0) {
+      return alert('Please fill in required fields and upload at least one image.');
     }
 
-    setForm({ title: '', category: '', subcategory: '', religions: '', price: '', MOQ: '' });
-    setImages([]);
-    setPreviewImages([]);
-    setEditId(null);
-    setShowModal(false);
-    fileInputRef.current.value = '';
-    fetchListings();
-  };
-
-  const handleEdit = (item) => {
-    setForm({
-      title: item.title,
-      category: item.category_uuid,
-      subcategory: item.subcategory_uuid,
-      religions: item.religion_uuid,
-      price: item.price,
-      MOQ: item.MOQ
+    const formData = new FormData();
+    Object.entries(form).forEach(([key, value]) => {
+      formData.append(key, value);
     });
-    setEditId(item._id);
-    setImages([]);
-    setPreviewImages([]);
-    setShowModal(true);
-  };
 
-  const handleDelete = async (id) => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this listing?');
-    if (!confirmDelete) return;
-    await axios.delete(`/api/listings/${id}`);
-    fetchListings();
-  };
+    images.forEach(img => formData.append('images', img));
 
-  const filteredListings = listings.filter(item =>
-    item.title?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    try {
+      await axios.post('/api/listings', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: (e) => {
+          setUploadProgress(Math.round((e.loaded * 100) / e.total));
+        }
+      });
 
-  const getName = (uuid, type) => {
-    const list = Array.isArray(dropdownData[type]) ? dropdownData[type] : [];
-    let key = '';
-    if (type === 'categories') key = 'category_uuid';
-    if (type === 'subcategories') key = 'subcategory_uuid';
-    if (type === 'religions') key = 'religion_uuid';
-    const found = list.find(item => item[key] === uuid);
-    return found?.name || '';
+      alert('Listing Created Successfully!');
+      setForm({
+        title: '',
+        category: '',
+        subcategory: '',
+        religions: '',
+        price: '',
+        MOQ: ''
+      });
+      setImages([]);
+      setPreviewImages([]);
+      setUploadProgress(0);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    } catch (err) {
+      console.error('Upload failed:', err);
+      alert(err?.response?.data?.error || 'Upload failed.');
+    }
   };
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-4">
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-6">
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">Upload Design</h1>
+      <form onSubmit={handleSubmit} className="flex flex-col space-y-4 w-full max-w-md">
+
         <input
           type="text"
-          placeholder="Search by title..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="border px-3 py-1 rounded w-1/3"
+          name="title"
+          value={form.title}
+          onChange={handleInputChange('title')}
+          className="w-full p-2 border border-gray-300 rounded-md"
+          placeholder="Enter title"
         />
-        <button
-          onClick={() => {
-            setShowModal(true);
-            setForm({ title: '', category: '', subcategory: '', religions: '', price: '', MOQ: '' });
-            setEditId(null);
-            setImages([]);
-            setPreviewImages([]);
-          }}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
+
+        <select
+          value={form.category}
+          onChange={handleInputChange('category')}
+          className="w-full p-2 border border-gray-300 rounded-md"
         >
-          + New Listing
-        </button>
-      </div>
-
-      <table className="w-full table-auto bg-white shadow rounded">
-        <thead>
-          <tr className="bg-gray-200">
-            <th className="px-4 py-2">Title</th>
-            <th className="px-4 py-2">Category</th>
-            <th className="px-4 py-2">Subcategory</th>
-            <th className="px-4 py-2">Religion</th>
-            <th className="px-4 py-2">Price</th>
-            <th className="px-4 py-2">MOQ</th>
-            <th className="px-4 py-2">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredListings.map((item, idx) => (
-            <tr key={idx} className="border-t">
-              <td className="px-4 py-2">{item.title}</td>
-              <td className="px-4 py-2">{getName(item.category_uuid, 'categories')}</td>
-              <td className="px-4 py-2">{getName(item.subcategory_uuid, 'subcategories')}</td>
-              <td className="px-4 py-2">{getName(item.religion_uuid, 'religions')}</td>
-              <td className="px-4 py-2">{item.price}</td>
-              <td className="px-4 py-2">{item.MOQ}</td>
-              <td className="px-4 py-2 space-x-2">
-                <button onClick={() => handleEdit(item)} className="bg-yellow-400 text-white px-2 py-1 rounded">Edit</button>
-                <button onClick={() => handleDelete(item._id)} className="bg-red-500 text-white px-2 py-1 rounded">Delete</button>
-              </td>
-            </tr>
+          <option value="">Select Category</option>
+          {dropdownData.categories.map((c) => (
+            <option key={c.category_uuid} value={c.category_uuid}>{c.name}</option>
           ))}
-        </tbody>
-      </table>
+        </select>
 
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
-            <h2 className="text-xl font-bold mb-4">{editId ? 'Edit Listing' : 'New Listing'}</h2>
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <input type="text" value={form.title} onChange={handleInputChange('title')} placeholder="Title" className="w-full p-2 border rounded" required />
-              <select value={form.category} onChange={handleInputChange('category')} className="w-full p-2 border rounded" required>
-                <option value="">Select Category</option>
-                {dropdownData.categories.map(c => <option key={c.category_uuid} value={c.category_uuid}>{c.name}</option>)}
-              </select>
-              <select value={form.subcategory} onChange={handleInputChange('subcategory')} className="w-full p-2 border rounded" required>
-                <option value="">Select Subcategory</option>
-                {dropdownData.subcategories.map(s => <option key={s.subcategory_uuid} value={s.subcategory_uuid}>{s.name}</option>)}
-              </select>
-              <select value={form.religions} onChange={handleInputChange('religions')} className="w-full p-2 border rounded" required>
-                <option value="">Select Religion</option>
-                {dropdownData.religions.map(r => <option key={r.religion_uuid} value={r.religion_uuid}>{r.name}</option>)}
-              </select>
-              <input type="text" value={form.price} onChange={handleInputChange('price')} placeholder="Price" className="w-full p-2 border rounded" required />
-              <select value={form.MOQ} onChange={handleInputChange('MOQ')} className="w-full p-2 border rounded" required>
-                <option value="">Select MOQ</option>
-                <option value="1">1</option>
-                <option value="0">0</option>
-              </select>
-              <input type="file" multiple accept="image/*" ref={fileInputRef} onChange={handleImageUpload} className="w-full" />
-              <div className="flex gap-2 flex-wrap">
-                {previewImages.map((img, idx) => <img key={idx} src={img.url} className="w-16 h-16 object-cover rounded" />)}
+        <select
+          value={form.subcategory}
+          onChange={handleInputChange('subcategory')}
+          className="w-full p-2 border border-gray-300 rounded-md"
+        >
+          <option value="">Select Subcategory</option>
+          {dropdownData.subcategories.map((s) => (
+            <option key={s.subcategory_uuid} value={s.subcategory_uuid}>{s.name}</option>
+          ))}
+        </select>
+
+        <select
+          value={form.religions}
+          onChange={handleInputChange('religions')}
+          className="w-full p-2 border border-gray-300 rounded-md"
+        >
+          <option value="">Select Religion</option>
+          {dropdownData.religions.map((r) => (
+            <option key={r.religion_uuid} value={r.religion_uuid}>{r.name}</option>
+          ))}
+        </select>
+
+        <input
+          type="text"
+          name="price"
+          value={form.price}
+          onChange={handleInputChange('price')}
+          className="w-full p-2 border border-gray-300 rounded-md"
+          placeholder="Enter price"
+        />
+
+        <select
+          value={form.MOQ}
+          onChange={handleInputChange('MOQ')}
+          className="w-full p-2 border border-gray-300 rounded-md"
+        >
+          <option value="">Select MOQ</option>
+          <option value="1">1</option>
+          <option value="0">0</option>
+        </select>
+
+        <div className="flex flex-col items-center">
+          <input
+            type="file"
+            ref={fileInputRef}
+            multiple
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="mb-4"
+          />
+          <div className="flex flex-wrap gap-4">
+            {previewImages.map((img, idx) => (
+              <div key={idx} className="relative">
+                <img src={img.url} alt={`Preview ${idx}`} className="w-24 h-24 object-cover rounded-md" />
+                <button
+                  type="button"
+                  onClick={() => removeImage(idx)}
+                  className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
+                >
+                  ×
+                </button>
               </div>
-              <div className="flex justify-end gap-2 mt-4">
-                <button type="button" onClick={() => setShowModal(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
-                <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">{editId ? 'Update' : 'Create'}</button>
-              </div>
-            </form>
+            ))}
           </div>
         </div>
-      )}
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="bg-blue-500 text-white py-2 rounded-md"
+        >
+          {loading ? `Uploading... ${uploadProgress}%` : 'Create Listing'}
+        </button>
+      </form>
     </div>
   );
 };
