@@ -219,7 +219,7 @@ const UploadCategory = () => {
         </div>
       )}
 
-      {/* Existing edit and image modals remain unchanged */}
+      {/* Existing edit and image modals remain  */}
     </div>
   );
 };
