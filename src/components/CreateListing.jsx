@@ -114,10 +114,13 @@ const CreateListing = () => {
   );
 
   const getName = (uuid, type) => {
-    const list = dropdownData[type];
-    const found = list.find(item => item[`${type.slice(0, -1)}_uuid`] === uuid);
-    return found?.name || '';
-  };
+  const list = Array.isArray(dropdownData[type]) ? dropdownData[type] : [];
+  const key = type === 'categories' ? 'category_uuid' :
+              type === 'subcategories' ? 'subcategory_uuid' :
+              type === 'religions' ? 'religion_uuid' : '';
+  const found = list.find(item => item[key] === uuid);
+  return found?.name || '';
+};
 
   return (
     <div className="p-6">
