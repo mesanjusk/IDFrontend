@@ -13,7 +13,9 @@ const UploadSubcategory = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState(null);
 
-  // Modal states
+  const [modalOpen, setModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+
   const [viewImageModal, setViewImageModal] = useState({ open: false, imageUrl: '' });
   const [editModal, setEditModal] = useState({ open: false, subcategory: null });
   const [editName, setEditName] = useState('');
@@ -22,24 +24,16 @@ const UploadSubcategory = () => {
   const [editIsLoading, setEditIsLoading] = useState(false);
 
   useEffect(() => {
-    setTimeout(() => {
-      const userNameFromState = location.state?.id;
-      const user = userNameFromState || localStorage.getItem('User_name');
-      setLoggedInUser(user);
-      if (user) {
-        fetchCategories(user);
-        fetchSubcategories(user)
-      } else {
-        navigate("/login");
-      }
-    }, 2000);
-    setTimeout(() => setIsLoading(false), 2000);
-  }, [location.state, navigate]);
-
-  useEffect(() => {
-    fetchCategories();
-    fetchSubcategories();
-  }, []);
+    const userNameFromState = location.state?.id;
+    const user = userNameFromState || localStorage.getItem('User_name');
+    setLoggedInUser(user);
+    if (user) {
+      fetchCategories();
+      fetchSubcategories();
+    } else {
+      navigate("/login");
+    }
+  }, [navigate]);
 
   const fetchCategories = () => {
     axios
@@ -83,13 +77,13 @@ const UploadSubcategory = () => {
       setStatus('❌ Failed to upload subcategory.');
     } finally {
       setIsLoading(false);
+      setModalOpen(false);
     }
   };
 
   const handleDelete = async (id) => {
     const confirmed = window.confirm('Are you sure you want to delete this subcategory?');
     if (!confirmed) return;
-
     try {
       await axios.delete(`/api/subcategories/${id}`);
       fetchSubcategories();
@@ -98,7 +92,6 @@ const UploadSubcategory = () => {
     }
   };
 
-  // Open view image modal
   const openImageModal = (imageUrl) => {
     setViewImageModal({ open: true, imageUrl });
   };
@@ -107,12 +100,11 @@ const UploadSubcategory = () => {
     setViewImageModal({ open: false, imageUrl: '' });
   };
 
-  // Open edit modal
   const openEditModal = (sub) => {
     setEditModal({ open: true, subcategory: sub });
     setEditName(sub.name);
     setEditCategoryId(sub.categoryId?._id || sub.categoryId);
-    setEditImage(null); // Reset edit image file input
+    setEditImage(null);
   };
 
   const closeEditModal = () => {
@@ -151,64 +143,30 @@ const UploadSubcategory = () => {
     }
   };
 
+  const filteredSubcategories = subcategories.filter(sub =>
+    sub.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h2 className="text-2xl font-semibold text-center mb-6">Upload Subcategory</h2>
 
-      <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Name:</label>
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md"
-            required
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Select Category:</label>
-          <select
-            value={categoryId}
-            onChange={(e) => setCategoryId(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-md"
-            required
-          >
-            <option value="">-- Select a Category --</option>
-            {categories.map((cat) => (
-              <option key={cat._id} value={cat.category_uuid}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Image:</label>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => setImage(e.target.files[0])}
-            className="w-full p-3 border border-gray-300 rounded-md"
-            required
-          />
-        </div>
-
+      <div className="flex justify-between items-center mb-4">
+        <input
+          type="text"
+          placeholder="Search Subcategories..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="p-2 border rounded w-full max-w-sm"
+        />
         <button
-          type="submit"
-          className={`w-full py-2 mt-4 text-white rounded-md ${isLoading ? 'bg-gray-400' : 'bg-blue-500 hover:bg-blue-600'}`}
-          disabled={isLoading}
+          onClick={() => setModalOpen(true)}
+          className="ml-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
         >
-          {isLoading ? 'Uploading...' : 'Upload'}
+          + New Subcategory
         </button>
-      </form>
+      </div>
 
-      {status && <p className="mt-4 text-center">{status}</p>}
-
-      <hr className="my-6" />
-
-      <h3 className="text-xl font-semibold">Existing Subcategories</h3>
       <div className="overflow-x-auto mt-4">
         <table className="min-w-full table-auto">
           <thead className="bg-gray-200">
@@ -220,7 +178,7 @@ const UploadSubcategory = () => {
             </tr>
           </thead>
           <tbody>
-            {subcategories.map((sub) => (
+            {filteredSubcategories.length > 0 ? filteredSubcategories.map((sub) => (
               <tr key={sub._id} className="border-t">
                 <td className="px-4 py-2">
                   <img
@@ -233,11 +191,7 @@ const UploadSubcategory = () => {
                 </td>
                 <td className="px-4 py-2">{sub.name}</td>
                 <td className="px-4 py-2">
-                  {
-                    categories.find(
-                      (cat) => cat._id === (sub.categoryId?._id || sub.categoryId)
-                    )?.name || 'N/A'
-                  }
+                  {categories.find(cat => cat._id === (sub.categoryId?._id || sub.categoryId))?.name || 'N/A'}
                 </td>
                 <td className="px-4 py-2 space-x-2">
                   <button
@@ -247,28 +201,81 @@ const UploadSubcategory = () => {
                     Edit
                   </button>
                   {!sub.isUsed && (
-    <button
-      onClick={() => handleDelete(sub._id)}
-      className="text-red-500 hover:text-red-700"
-    >
-      Delete
-    </button>
-  )}
+                    <button
+                      onClick={() => handleDelete(sub._id)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      Delete
+                    </button>
+                  )}
                 </td>
               </tr>
-            ))}
+            )) : (
+              <tr>
+                <td colSpan="4" className="text-center text-gray-500 py-4">No subcategories found.</td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
 
-      {/* Image Modal */}
+      {/* New Subcategory Modal */}
+      {modalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex justify-center items-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-lg relative">
+            <button
+              className="absolute top-2 right-4 text-2xl text-gray-500"
+              onClick={() => setModalOpen(false)}
+            >
+              &times;
+            </button>
+            <h3 className="text-xl font-semibold mb-4">New Subcategory</h3>
+            <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-4">
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Subcategory Name"
+                className="w-full p-3 border border-gray-300 rounded-md"
+                required
+              />
+              <select
+                value={categoryId}
+                onChange={(e) => setCategoryId(e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-md"
+                required
+              >
+                <option value="">-- Select a Category --</option>
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat.category_uuid}>{cat.name}</option>
+                ))}
+              </select>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setImage(e.target.files[0])}
+                className="w-full p-3 border border-gray-300 rounded-md"
+                required
+              />
+              <button
+                type="submit"
+                className={`w-full py-2 text-white rounded-md ${isLoading ? 'bg-gray-400' : 'bg-blue-500 hover:bg-blue-600'}`}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Uploading...' : 'Upload'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
       {viewImageModal.open && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50" onClick={closeImageModal}>
           <img
             src={viewImageModal.imageUrl}
             alt="Subcategory"
             className="max-w-full max-h-full rounded"
-            onClick={e => e.stopPropagation()} // prevent closing when clicking on image itself
+            onClick={(e) => e.stopPropagation()}
           />
           <button
             onClick={closeImageModal}
@@ -282,62 +289,41 @@ const UploadSubcategory = () => {
       {/* Edit Modal */}
       {editModal.open && (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50" onClick={closeEditModal}>
-          <div
-            className="bg-white rounded-lg p-6 w-full max-w-md"
-            onClick={e => e.stopPropagation()} // prevent closing when clicking inside modal content
-          >
-            <h3 className="text-xl font-semibold mb-4">Edit Subcategory</h3>
+          <div className="bg-white p-6 rounded shadow-lg space-y-4 max-w-md w-full" onClick={e => e.stopPropagation()}>
+            <h3 className="text-xl font-semibold">Edit Subcategory</h3>
             <form onSubmit={handleEditSubmit} encType="multipart/form-data" className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Name:</label>
-                <input
-                  type="text"
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-md"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Select Category:</label>
-                <select
-                  value={editCategoryId}
-                  onChange={(e) => setEditCategoryId(e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-md"
-                  required
-                >
-                  <option value="">-- Select a Category --</option>
-                  {categories.map((cat) => (
-                    <option key={cat._id} value={cat._id}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Replace Image (optional):</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => setEditImage(e.target.files[0])}
-                  className="w-full p-3 border border-gray-300 rounded-md"
-                />
-              </div>
-
-              <div className="flex justify-end space-x-2">
-                <button
-                  type="button"
-                  onClick={closeEditModal}
-                  className="py-2 px-4 bg-gray-300 rounded hover:bg-gray-400"
-                >
+              <input
+                type="text"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-md"
+                required
+              />
+              <select
+                value={editCategoryId}
+                onChange={(e) => setEditCategoryId(e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded-md"
+                required
+              >
+                <option value="">-- Select a Category --</option>
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat._id}>{cat.name}</option>
+                ))}
+              </select>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setEditImage(e.target.files[0])}
+                className="w-full p-3 border border-gray-300 rounded-md"
+              />
+              <div className="flex justify-end gap-2">
+                <button type="button" onClick={closeEditModal} className="px-4 py-2 border rounded">
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={editIsLoading}
-                  className={`py-2 px-4 text-white rounded ${editIsLoading ? 'bg-gray-400' : 'bg-blue-500 hover:bg-blue-600'}`}
+                  className={`px-4 py-2 text-white rounded ${editIsLoading ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'}`}
                 >
                   {editIsLoading ? 'Saving...' : 'Save'}
                 </button>
