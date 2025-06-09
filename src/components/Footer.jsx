@@ -42,7 +42,7 @@ const [config, setConfig] = useState({ name: "", email: "", phone: "", address: 
           </div>
         </div>
         <div className="text-center mt-6 text-xs text-gray-400">
-          © {new Date().getFullYear()} SK Cards. All rights reserved.
+          © {new Date().getFullYear()} {config.name}. All rights reserved.
         </div>
       </footer>
     </div>
