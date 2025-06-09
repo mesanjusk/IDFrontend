@@ -100,7 +100,7 @@ const CreateListing = () => {
   }, []);
 
   const selectedCategory = dropdownData.categories.find(c => c.category_uuid === form.category) || null;
-const selectedSubcategory = dropdownData.subcategories.find(s => s.subcategory_uuid === form.subcategory) || null;
+  const selectedSubcategory = dropdownData.subcategories.find(s => s.subcategory_uuid === form.subcategory) || null;
 
   const handleInputChange = (field) => (e) => {
     setForm({ ...form, [field]: e.target.value });
@@ -198,9 +198,7 @@ const selectedSubcategory = dropdownData.subcategories.find(s => s.subcategory_u
         title: '', category: '', subcategory: '', price: '',
         instagramUrl: '', size: '', religions: '',
         seoTitle: '', seoDescription: '', seoKeywords: '', discount: '',
-    Description: '',
-    MOQ: '',
-    favorite: ''
+        Description: '', MOQ: '', favorite: ''
       });
       setImages([]);
       setPreviewImages([]);
@@ -216,148 +214,37 @@ const selectedSubcategory = dropdownData.subcategories.find(s => s.subcategory_u
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-6">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">Upload Design</h1>
       <form onSubmit={handleSubmit} className="flex flex-col space-y-4 w-full max-w-md">
-        <Dropdown
-          label="Title"
-          options={dropdownData?.titles || []}
-          value={form.title}
-          onChange={handleInputChange('title')}
-          getLabel={(option) => option.name} // Get the display label
-        />
-        <Dropdown
-          label="Category"
-          options={dropdownData?.categories || []}
-          value={selectedCategory}
-          onChange={handleInputChange('category')}
-          getLabel={(option) => option.name}
-        />
-        <Dropdown
-          label="Subcategory"
-          options={dropdownData?.subcategories || []}
-          value={selectedSubcategory}
-          onChange={handleInputChange('subcategory')}
-          getLabel={(option) => option.name}
-        />
-        <div className="mb-4">
-  <label className="block text-sm font-medium text-gray-700 mb-1">Price</label>
-  <input
-    type="text"
-    name="price"
-    value={form.price}
-    onChange={handleInputChange('price')}
-    className="w-full p-2 border border-gray-300 rounded-md"
-    placeholder="Enter price"
-  />
-</div>
-        <Dropdown
-          label="Instagram URL"
-          options={dropdownData?.instagramUrls || []}
-          value={form.instagramUrl}
-          onChange={handleInputChange('instagramUrl')}
-          getLabel={(option) => option.name}
-        />
-        <Dropdown
-          label="Size"
-          options={dropdownData?.sizes || []}
-          value={form.size}
-          onChange={handleInputChange('size')}
-          getLabel={(option) => option.name}
-        />
-        <Dropdown
-          label="Religion"
-          options={dropdownData?.religions || []}
-          value={form.religions}
-          onChange={handleInputChange('religions')}
-          getLabel={(option) => option.name}
-        />
-        <Dropdown
-          label="SEO Title"
-          options={dropdownData?.seot || []}
-          value={form.seoTitle}
-          onChange={handleInputChange('seoTitle')}
-          getLabel={(option) => option.name}
-        />
-        <Dropdown
-          label="SEO Description"
-          options={dropdownData?.seod || []}
-          value={form.seoDescription}
-          onChange={handleInputChange('seoDescription')}
-          getLabel={(option) => option.name}
-        />
-        <Dropdown
-          label="SEO Keywords"
-          options={dropdownData?.seok || []}
-          value={form.seoKeywords}
-          onChange={handleInputChange('seoKeywords')}
-          getLabel={(option) => option.name}
-        />
-       <div className="mb-4">
-  <label className="block text-sm font-medium text-gray-700 mb-1">MOQ</label>
-  <select
-    name="moq"
-    value={form.MOQ}
-    onChange={handleInputChange('MOQ')}
-    className="w-full p-2 border border-gray-300 rounded-md"
-  >
-    <option value="">Select...</option>
-   <option value="1">1</option>
-   <option value="0">0</option>
-  </select>
-</div>
-
-       <div className="mb-4">
-  <label className="block text-sm font-medium text-gray-700 mb-1">Favorite</label>
-  <select
-    name="favorite"
-    value={form.favorite}
-    onChange={handleInputChange('favorite')}
-    className="w-full p-2 border border-gray-300 rounded-md"
-  >
-    <option value="">Select...</option>
-   <option value="0">0</option>
-   <option value="1">1</option>
-  </select>
-</div>
- <div className="mb-4">
-  <label className="block text-sm font-medium text-gray-700 mb-1">Discount</label>
-  <input
-    type="text"
-    name="discount"
-    value={form.discount}
-    onChange={handleInputChange('discount')}
-    className="w-full p-2 border border-gray-300 rounded-md"
-    placeholder="Enter discount"
-  />
-</div>
- <div className="mb-4">
-  <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-  <input
-    type="text"
-    name="description"
-    value={form.Description}
-    onChange={handleInputChange('Description')}
-    className="w-full p-2 border border-gray-300 rounded-md"
-    placeholder="Enter description"
-  />
-</div>
-        <div className="flex flex-col items-center">
-          <input
-            type="file"
-            ref={fileInputRef}
-            multiple
-            accept="image/*"
-            onChange={handleImageUpload}
-            className="mb-4"
-          />
-          <div className="flex flex-wrap gap-4">
-            {previewImages.map((img, idx) => (
-              <div key={idx} className="relative">
-                <img src={img.url} alt={`Preview ${idx}`} className="w-24 h-24 object-cover rounded-md" />
-                <button type="button" onClick={() => removeImage(idx)} className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1">×</button>
-              </div>
-            ))}
-          </div>
+        <Dropdown label="Title" options={dropdownData?.titles || []} value={form.title} onChange={handleInputChange('title')} getLabel={(option) => option.name} />
+        <Dropdown label="Category" options={dropdownData?.categories || []} value={selectedCategory} onChange={handleInputChange('category')} getLabel={(option) => option.name} />
+        <Dropdown label="Subcategory" options={dropdownData?.subcategories || []} value={selectedSubcategory} onChange={handleInputChange('subcategory')} getLabel={(option) => option.name} />
+        <input type="text" name="price" value={form.price} onChange={handleInputChange('price')} className="w-full p-2 border border-gray-300 rounded-md" placeholder="Enter price" />
+        <Dropdown label="Instagram URL" options={dropdownData?.instagramUrls || []} value={form.instagramUrl} onChange={handleInputChange('instagramUrl')} getLabel={(option) => option.name} />
+        <Dropdown label="Size" options={dropdownData?.sizes || []} value={form.size} onChange={handleInputChange('size')} getLabel={(option) => option.name} />
+        <Dropdown label="Religion" options={dropdownData?.religions || []} value={form.religions} onChange={handleInputChange('religions')} getLabel={(option) => option.name} />
+        <Dropdown label="SEO Title" options={dropdownData?.seot || []} value={form.seoTitle} onChange={handleInputChange('seoTitle')} getLabel={(option) => option.name} />
+        <Dropdown label="SEO Description" options={dropdownData?.seod || []} value={form.seoDescription} onChange={handleInputChange('seoDescription')} getLabel={(option) => option.name} />
+        <Dropdown label="SEO Keywords" options={dropdownData?.seok || []} value={form.seoKeywords} onChange={handleInputChange('seoKeywords')} getLabel={(option) => option.name} />
+        <select name="moq" value={form.MOQ} onChange={handleInputChange('MOQ')} className="w-full p-2 border border-gray-300 rounded-md">
+          <option value="">Select...</option>
+          <option value="1">1</option>
+          <option value="0">0</option>
+        </select>
+        <select name="favorite" value={form.favorite} onChange={handleInputChange('favorite')} className="w-full p-2 border border-gray-300 rounded-md">
+          <option value="">Select...</option>
+          <option value="0">0</option>
+          <option value="1">1</option>
+        </select>
+        <input type="text" name="discount" value={form.discount} onChange={handleInputChange('discount')} className="w-full p-2 border border-gray-300 rounded-md" placeholder="Enter discount" />
+        <input type="text" name="description" value={form.Description} onChange={handleInputChange('Description')} className="w-full p-2 border border-gray-300 rounded-md" placeholder="Enter description" />
+        <input type="file" ref={fileInputRef} multiple accept="image/*" onChange={handleImageUpload} className="mb-4" />
+        <div className="flex flex-wrap gap-4">
+          {previewImages.map((img, idx) => (
+            <div key={idx} className="relative">
+              <img src={img.url} alt={`Preview ${idx}`} className="w-24 h-24 object-cover rounded-md" />
+              <button type="button" onClick={() => removeImage(idx)} className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1">×</button>
+            </div>
+          ))}
         </div>
-
         <button type="submit" disabled={loading} className="bg-blue-500 text-white py-2 rounded-md">
           {loading ? `Uploading... ${uploadProgress}%` : 'Create Listing'}
         </button>
