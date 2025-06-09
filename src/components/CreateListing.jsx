@@ -1,7 +1,6 @@
-// Fixed CreateListing component
-// - Modal now works for + New Listing and Edit
-// - Delete includes confirmation
-// - Table shows proper category/subcategory/religion names
+// Fixed CreateListing component with safe getName mapping
+// - Avoids .find() on non-array
+// - Provides correct key mappings for dropdownData lookup
 
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
@@ -114,13 +113,14 @@ const CreateListing = () => {
   );
 
   const getName = (uuid, type) => {
-  const list = Array.isArray(dropdownData[type]) ? dropdownData[type] : [];
-  const key = type === 'categories' ? 'category_uuid' :
-              type === 'subcategories' ? 'subcategory_uuid' :
-              type === 'religions' ? 'religion_uuid' : '';
-  const found = list.find(item => item[key] === uuid);
-  return found?.name || '';
-};
+    const list = Array.isArray(dropdownData[type]) ? dropdownData[type] : [];
+    let key = '';
+    if (type === 'categories') key = 'category_uuid';
+    if (type === 'subcategories') key = 'subcategory_uuid';
+    if (type === 'religions') key = 'religion_uuid';
+    const found = list.find(item => item[key] === uuid);
+    return found?.name || '';
+  };
 
   return (
     <div className="p-6">
