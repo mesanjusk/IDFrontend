@@ -76,6 +76,10 @@ const CreateListing = () => {
     fetchListings();
   }, []);
 
+  const handleInputChange = (field) => (e) => {
+    setForm({ ...form, [field]: e.target.value });
+  };
+
   const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files);
     const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
@@ -159,9 +163,13 @@ const CreateListing = () => {
               <th className="p-2">Category</th>
               <th className="p-2">Subcategory</th>
               <th className="p-2">Price</th>
+              <th className="p-2">Instagram</th>
+              <th className="p-2">Size</th>
+              <th className="p-2">Religion</th>
+              <th className="p-2">SEO Title</th>
               <th className="p-2">Discount</th>
               <th className="p-2">MOQ</th>
-              <th className="p-2">Fav</th>
+              <th className="p-2">Favorite</th>
               <th className="p-2">Images</th>
               <th className="p-2">Actions</th>
             </tr>
@@ -173,6 +181,10 @@ const CreateListing = () => {
                 <td className="p-2">{item.category}</td>
                 <td className="p-2">{item.subcategory}</td>
                 <td className="p-2">{item.price}</td>
+                <td className="p-2">{item.instagramUrl}</td>
+                <td className="p-2">{item.size}</td>
+                <td className="p-2">{item.religions}</td>
+                <td className="p-2">{item.seoTitle}</td>
                 <td className="p-2">{item.discount}</td>
                 <td className="p-2">{item.MOQ}</td>
                 <td className="p-2">{item.favorite}</td>
@@ -196,8 +208,29 @@ const CreateListing = () => {
           <div className="bg-white rounded-lg w-full max-w-3xl p-6 overflow-y-auto max-h-screen relative">
             <button onClick={() => { setShowModal(false); setIsEditing(false); }} className="absolute top-3 right-4 text-xl font-bold text-gray-600">&times;</button>
             <h2 className="text-xl font-semibold mb-4">{isEditing ? 'Edit' : 'New'} Listing</h2>
-            {/* Form here, same as previous answer */}
-            {/* Reuse previous form layout with dropdowns, text fields, file input, preview, submit */}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <input type="text" placeholder="Title" value={form.title} onChange={handleInputChange('title')} className="w-full p-2 border rounded" />
+              <input type="text" placeholder="Category" value={form.category} onChange={handleInputChange('category')} className="w-full p-2 border rounded" />
+              <input type="text" placeholder="Subcategory" value={form.subcategory} onChange={handleInputChange('subcategory')} className="w-full p-2 border rounded" />
+              <input type="number" placeholder="Price" value={form.price} onChange={handleInputChange('price')} className="w-full p-2 border rounded" />
+              <input type="text" placeholder="Instagram URL" value={form.instagramUrl} onChange={handleInputChange('instagramUrl')} className="w-full p-2 border rounded" />
+              <input type="text" placeholder="Size" value={form.size} onChange={handleInputChange('size')} className="w-full p-2 border rounded" />
+              <input type="text" placeholder="Religions" value={form.religions} onChange={handleInputChange('religions')} className="w-full p-2 border rounded" />
+              <input type="text" placeholder="SEO Title" value={form.seoTitle} onChange={handleInputChange('seoTitle')} className="w-full p-2 border rounded" />
+              <input type="text" placeholder="SEO Description" value={form.seoDescription} onChange={handleInputChange('seoDescription')} className="w-full p-2 border rounded" />
+              <input type="text" placeholder="SEO Keywords" value={form.seoKeywords} onChange={handleInputChange('seoKeywords')} className="w-full p-2 border rounded" />
+              <input type="number" placeholder="Discount" value={form.discount} onChange={handleInputChange('discount')} className="w-full p-2 border rounded" />
+              <input type="number" placeholder="MOQ" value={form.MOQ} onChange={handleInputChange('MOQ')} className="w-full p-2 border rounded" />
+              <textarea placeholder="Description" value={form.Description} onChange={handleInputChange('Description')} className="w-full p-2 border rounded" />
+              <input type="number" placeholder="Favorite" value={form.favorite} onChange={handleInputChange('favorite')} className="w-full p-2 border rounded" />
+              <input type="file" multiple accept="image/*" onChange={handleImageUpload} ref={fileInputRef} className="w-full" />
+              <div className="flex flex-wrap gap-4">
+                {previewImages.map((img, idx) => (
+                  <img key={idx} src={img.url} alt="preview" className="w-20 h-20 object-cover rounded" />
+                ))}
+              </div>
+              <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">{isEditing ? 'Update' : 'Create'}</button>
+            </form>
           </div>
         </div>
       )}
