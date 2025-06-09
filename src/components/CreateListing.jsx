@@ -1,52 +1,38 @@
-// Enhanced CreateListing with searchable dropdowns, numeric price validation, and thumbnail display in table
+// Enhanced CreateListing with:
+// ✅ Full edit modal with form prefilled
+// ✅ Toast notifications for actions
 
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
+import toast, { Toaster } from 'react-hot-toast';
 
 const CreateListing = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [form, setForm] = useState({
-    title: '',
-    category: '',
-    subcategory: '',
-    religions: '',
-    price: '',
-    MOQ: ''
-  });
-
+  const [form, setForm] = useState({ title: '', category: '', subcategory: '', religions: '', price: '', MOQ: '' });
   const [images, setImages] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [loggedInUser, setLoggedInUser] = useState(null);
-  const [dropdownData, setDropdownData] = useState({
-    categories: [],
-    subcategories: [],
-    religions: []
-  });
+  const [dropdownData, setDropdownData] = useState({ categories: [], subcategories: [], religions: [] });
   const [listings, setListings] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [editingId, setEditingId] = useState(null);
 
   const fileInputRef = useRef(null);
 
-  const safeExtract = (res) => {
-    if (Array.isArray(res)) return res;
-    if (res?.result) return res.result;
-    return [];
-  };
+  const safeExtract = (res) => Array.isArray(res) ? res : res?.result || [];
 
   useEffect(() => {
     const userNameFromState = location.state?.id;
     const user = userNameFromState || localStorage.getItem('User_name');
-    if (user) {
-      setLoggedInUser(user);
-    } else {
-      navigate('/login');
-    }
+    if (user) setLoggedInUser(user);
+    else navigate('/login');
     setTimeout(() => setLoading(false), 2000);
   }, [location.state, navigate]);
 
@@ -66,10 +52,9 @@ const CreateListing = () => {
         });
         setListings(listingRes.data || []);
       } catch (error) {
-        console.error('Error fetching dropdown data or listings:', error);
+        toast.error('Failed to fetch dropdown or listings.');
       }
     };
-
     fetchDropdowns();
   }, []);
 
@@ -83,8 +68,8 @@ const CreateListing = () => {
     const files = Array.from(e.target.files);
     const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
     const filtered = files.filter(file => validTypes.includes(file.type));
-    if (filtered.length !== files.length) alert('Some files were skipped. Only JPG, PNG, WEBP allowed.');
-    if (filtered.length + images.length > 10) return alert('Max 10 images allowed.');
+    if (filtered.length !== files.length) toast('Some files were skipped.');
+    if (filtered.length + images.length > 10) return toast.error('Max 10 images allowed.');
     setLoading(true);
     const newImages = [];
     for (const file of filtered) {
@@ -92,8 +77,9 @@ const CreateListing = () => {
       const compressedFile = new File([compressedBlob], `${Date.now()}-${file.name}`, { type: compressedBlob.type });
       newImages.push(compressedFile);
     }
-    setImages(prev => [...prev, ...newImages]);
-    setPreviewImages([...images, ...newImages].map(file => ({ url: URL.createObjectURL(file) })));
+    const all = [...images, ...newImages];
+    setImages(all);
+    setPreviewImages(all.map(file => ({ url: URL.createObjectURL(file) })));
     setLoading(false);
   };
 
@@ -106,19 +92,23 @@ const CreateListing = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (loading) return alert('Images still processing...');
     if (!form.title || !form.category || !form.subcategory || !form.price || images.length === 0) {
-      return alert('Please fill in required fields and upload at least one image.');
+      return toast.error('Fill all fields and upload images');
     }
     const formData = new FormData();
     Object.entries(form).forEach(([k, v]) => formData.append(k, v));
     images.forEach(img => formData.append('images', img));
     try {
-      await axios.post('/api/listings', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        onUploadProgress: (e) => setUploadProgress(Math.round((e.loaded * 100) / e.total))
-      });
-      alert('Listing Created Successfully!');
+      if (editingId) {
+        await axios.put(`/api/listings/${editingId}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+        toast.success('Listing updated');
+      } else {
+        await axios.post('/api/listings', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+          onUploadProgress: (e) => setUploadProgress(Math.round((e.loaded * 100) / e.total))
+        });
+        toast.success('Listing created');
+      }
       setForm({ title: '', category: '', subcategory: '', religions: '', price: '', MOQ: '' });
       setImages([]);
       setPreviewImages([]);
@@ -126,67 +116,93 @@ const CreateListing = () => {
       fileInputRef.current.value = '';
       const res = await axios.get('/api/listings');
       setListings(res.data || []);
+      setShowModal(false);
+      setEditingId(null);
     } catch (err) {
-      console.error('Upload failed:', err);
-      alert(err?.response?.data?.error || 'Upload failed.');
+      toast.error('Submit failed.');
     }
   };
 
   const getName = (uuid, type) => {
     const list = dropdownData[type];
-    let key = '';
-    if (type === 'categories') key = 'category_uuid';
-    if (type === 'subcategories') key = 'subcategory_uuid';
-    if (type === 'religions') key = 'religion_uuid';
+    const keyMap = { categories: 'category_uuid', subcategories: 'subcategory_uuid', religions: 'religion_uuid' };
+    const key = keyMap[type];
     const found = Array.isArray(list) ? list.find(item => item[key] === uuid) : null;
     return found?.name || '';
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this listing?')) return;
+    await axios.delete(`/api/listings/${id}`);
+    setListings(listings.filter(item => item._id !== id));
+    toast.success('Listing deleted');
+  };
+
+  const handleEdit = (item) => {
+    setEditingId(item._id);
+    setForm({
+      title: item.title,
+      category: item.category_uuid,
+      subcategory: item.subcategory_uuid,
+      religions: item.religion_uuid,
+      price: item.price,
+      MOQ: item.MOQ
+    });
+    setShowModal(true);
   };
 
   const filteredListings = listings.filter(item =>
     item.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  return (
+return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">Upload Design</h1>
-      <form onSubmit={handleSubmit} className="flex flex-col space-y-4 max-w-xl mx-auto">
+      <Toaster position="top-right" />
+    
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">Upload Design</h1>
+        <button onClick={() => setShowModal(true)} className="bg-green-600 text-white px-4 py-2 rounded">+ New Listing</button>
+      </div>
 
-        <input type="text" value={form.title} onChange={handleInputChange('title')} className="p-2 border rounded" placeholder="Enter title" required />
-
-        <input list="categories" value={form.category} onChange={handleInputChange('category')} className="p-2 border rounded" placeholder="Search Category" required />
-        <datalist id="categories">
-          {dropdownData.categories.map(c => <option key={c.category_uuid} value={c.category_uuid}>{c.name}</option>)}
-        </datalist>
-
-        <input list="subcategories" value={form.subcategory} onChange={handleInputChange('subcategory')} className="p-2 border rounded" placeholder="Search Subcategory" required />
-        <datalist id="subcategories">
-          {dropdownData.subcategories.map(s => <option key={s.subcategory_uuid} value={s.subcategory_uuid}>{s.name}</option>)}
-        </datalist>
-
-        <input list="religions" value={form.religions} onChange={handleInputChange('religions')} className="p-2 border rounded" placeholder="Search Religion" required />
-        <datalist id="religions">
-          {dropdownData.religions.map(r => <option key={r.religion_uuid} value={r.religion_uuid}>{r.name}</option>)}
-        </datalist>
-
-        <input type="text" value={form.price} onChange={handleInputChange('price')} className="p-2 border rounded" placeholder="Enter price (numeric only)" required />
-
-        <select value={form.MOQ} onChange={handleInputChange('MOQ')} className="p-2 border rounded" required>
-          <option value="">Select MOQ</option>
-          <option value="1">1</option>
-          <option value="0">0</option>
-        </select>
-
-        <input type="file" ref={fileInputRef} multiple accept="image/*" onChange={handleImageUpload} className="mb-2" />
-        <div className="flex gap-2 flex-wrap">
-          {previewImages.map((img, idx) => <img key={idx} src={img.url} className="w-20 h-20 object-cover rounded" />)}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow max-w-xl w-full">
+            <h2 className="text-xl font-semibold mb-4">Create New Listing</h2>
+            <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
+              <input type="text" value={form.title} onChange={handleInputChange('title')} className="p-2 border rounded" placeholder="Enter title" required />
+              <select value={form.category} onChange={handleInputChange('category')} className="p-2 border rounded" required>
+                <option value="">Select Category</option>
+                {dropdownData.categories.map(c => <option key={c.category_uuid} value={c.category_uuid}>{c.name}</option>)}
+              </select>
+              <select value={form.subcategory} onChange={handleInputChange('subcategory')} className="p-2 border rounded" required>
+                <option value="">Select Subcategory</option>
+                {dropdownData.subcategories.map(s => <option key={s.subcategory_uuid} value={s.subcategory_uuid}>{s.name}</option>)}
+              </select>
+              <select value={form.religions} onChange={handleInputChange('religions')} className="p-2 border rounded" required>
+                <option value="">Select Religion</option>
+                {dropdownData.religions.map(r => <option key={r.religion_uuid} value={r.religion_uuid}>{r.name}</option>)}
+              </select>
+              <input type="text" value={form.price} onChange={handleInputChange('price')} className="p-2 border rounded" placeholder="Enter price (numeric only)" required />
+              <select value={form.MOQ} onChange={handleInputChange('MOQ')} className="p-2 border rounded" required>
+                <option value="">Select MOQ</option>
+                <option value="1">1</option>
+                <option value="0">0</option>
+              </select>
+              <input type="file" ref={fileInputRef} multiple accept="image/*" onChange={handleImageUpload} className="mb-2" />
+              <div className="flex gap-2 flex-wrap">
+                {previewImages.map((img, idx) => <img key={idx} src={img.url} className="w-20 h-20 object-cover rounded" />)}
+              </div>
+              <div className="flex justify-end gap-4">
+                <button type="button" onClick={() => setShowModal(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
+                <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
+                  {loading ? `Uploading... ${uploadProgress}%` : 'Save'}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
+      )}
 
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
-          {loading ? `Uploading... ${uploadProgress}%` : 'Create Listing'}
-        </button>
-      </form>
-
-      <h2 className="text-xl font-semibold mt-10 mb-4">All Listings</h2>
       <input type="text" placeholder="Search title..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="mb-4 p-2 border rounded w-full max-w-md" />
 
       <table className="min-w-full bg-white shadow rounded">
@@ -199,6 +215,7 @@ const CreateListing = () => {
             <th className="px-3 py-2">Religion</th>
             <th className="px-3 py-2">Price</th>
             <th className="px-3 py-2">MOQ</th>
+            <th className="px-3 py-2">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -213,6 +230,10 @@ const CreateListing = () => {
               <td className="px-3 py-2">{getName(item.religion_uuid, 'religions')}</td>
               <td className="px-3 py-2">{item.price}</td>
               <td className="px-3 py-2">{item.MOQ}</td>
+              <td className="px-3 py-2">
+                <button className="text-blue-600 hover:underline mr-2">Edit</button>
+                <button onClick={() => handleDelete(item._id)} className="text-red-600 hover:underline">Delete</button>
+              </td>
             </tr>
           ))}
         </tbody>
