@@ -89,7 +89,7 @@ export default function Header() {
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex space-x-6">
+        <nav className="hidden md:flex space-x-6" style={{display: 'none'}}>
           {navItems.map((item, index) => (
             <div
               key={index}

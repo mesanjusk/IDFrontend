@@ -28,6 +28,8 @@ import FilterSubategory from './components/filterSubcategory';
 import axios from 'axios';
 import SocialMedia from './components/SocialMedia';
 import AdminDashboard from './components/AdminDashboard';
+import Contact from './components/Contact';
+import AllCategory from './components/allCategory';
 
 function App() {
   const [backendReady, setBackendReady] = useState(false);
@@ -79,6 +81,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/allListing" element={<AllListing />} />
+         <Route path="/allCategories" element={<AllCategory />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/story" element={<StoryGallery />} />
         <Route path="/upload" element={<Upload />} />
@@ -104,6 +107,7 @@ function App() {
          <Route path="/subcategory/:id" element={<FilterSubategory />} />
          <Route path="/list/:itemId" element={<List />} />
          <Route path="/SocialMedia" element={<SocialMedia />} />
+         <Route path="/contact" element={<Contact />} />
       </Routes>
     </Router>
   );

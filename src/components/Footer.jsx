@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom"; // Make sure this import is added
 import axios from "axios";
 
 export default function Footer() {
-const [config, setConfig] = useState({ name: "", email: "", phone: "", address: "" }); 
+  const [config, setConfig] = useState({ name: "", email: "", phone: "", address: "" });
 
- useEffect(() => {
+  useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const response = await axios.get("/api/confi/GetConfiList"); 
+        const response = await axios.get("/api/confi/GetConfiList");
         if (response.data.success && response.data.result.length > 0) {
-          setConfig(response.data.result[0]); 
+          setConfig(response.data.result[0]);
         }
-
       } catch (error) {
         console.error("Failed to fetch configuration:", error);
       }
@@ -30,9 +30,9 @@ const [config, setConfig] = useState({ name: "", email: "", phone: "", address: 
           <div>
             <h3 className="font-semibold mb-2">Quick Links</h3>
             <ul>
-              <li>Home</li>
-              <li>Categories</li>
-              <li>Contact Us</li>
+              <li><Link to="/" className="hover:underline">Home</Link></li>
+              <li><Link to="/allCategories" className="hover:underline">Categories</Link></li>
+              <li><Link to="/contact" className="hover:underline">Contact Us</Link></li>
             </ul>
           </div>
           <div>

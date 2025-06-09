@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import Header from "./Header";
 import Footer from "./Footer";
+import SocialMedia from "./SocialMedia";
 
 export default function ListingPage() {
   const { itemId } = useParams();
@@ -212,6 +213,7 @@ export default function ListingPage() {
       </div>
 
       <Footer />
+      <SocialMedia />
     </>
   );
 }

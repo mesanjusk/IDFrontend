@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import Header from "./Header";
+import Footer from "./Footer";
+import SocialMedia from "./SocialMedia";
 
 export default function AllCategory() {
   const [categories, setCategories] = useState([]);
@@ -25,6 +28,8 @@ export default function AllCategory() {
   }, []);
 
   return (
+    <>
+    <Header />
     <div >
       <section className="py-4"> 
   <div className="container mx-auto px-4">
@@ -85,5 +90,8 @@ export default function AllCategory() {
 </section>
 
     </div>
+    <Footer />
+    <SocialMedia />
+    </>
   );
 }
