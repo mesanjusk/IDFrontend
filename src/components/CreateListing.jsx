@@ -1,7 +1,3 @@
-// Enhanced CreateListing with:
-// ✅ Full edit modal with form prefilled
-// ✅ Toast notifications for actions
-
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -92,15 +88,19 @@ const CreateListing = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.title || !form.category || !form.subcategory || !form.price || images.length === 0) {
-      return toast.error('Fill all fields and upload images');
+    if (!form.title || !form.category || !form.subcategory || !form.price) {
+      return toast.error('Fill all fields');
     }
+
     const formData = new FormData();
     Object.entries(form).forEach(([k, v]) => formData.append(k, v));
     images.forEach(img => formData.append('images', img));
+
     try {
       if (editingId) {
-        await axios.put(`/api/listings/${editingId}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+        await axios.put(`/api/listings/${editingId}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
         toast.success('Listing updated');
       } else {
         await axios.post('/api/listings', formData, {
@@ -109,6 +109,7 @@ const CreateListing = () => {
         });
         toast.success('Listing created');
       }
+
       setForm({ title: '', category: '', subcategory: '', religions: '', price: '', MOQ: '' });
       setImages([]);
       setPreviewImages([]);
@@ -148,6 +149,8 @@ const CreateListing = () => {
       price: item.price,
       MOQ: item.MOQ
     });
+    setImages([]); // Clear new images
+    setPreviewImages((item.images || []).map(img => ({ url: img.url }))); // Show existing ones
     setShowModal(true);
   };
 
@@ -155,10 +158,10 @@ const CreateListing = () => {
     item.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-return (
+  return (
     <div className="min-h-screen bg-gray-100 p-6">
       <Toaster position="top-right" />
-    
+
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-800">Upload Design</h1>
         <button onClick={() => setShowModal(true)} className="bg-green-600 text-white px-4 py-2 rounded">+ New Listing</button>
@@ -167,7 +170,7 @@ return (
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow max-w-xl w-full">
-            <h2 className="text-xl font-semibold mb-4">Create New Listing</h2>
+            <h2 className="text-xl font-semibold mb-4">{editingId ? 'Edit Listing' : 'Create New Listing'}</h2>
             <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
               <input type="text" value={form.title} onChange={handleInputChange('title')} className="p-2 border rounded" placeholder="Enter title" required />
               <select value={form.category} onChange={handleInputChange('category')} className="p-2 border rounded" required>
@@ -190,12 +193,12 @@ return (
               </select>
               <input type="file" ref={fileInputRef} multiple accept="image/*" onChange={handleImageUpload} className="mb-2" />
               <div className="flex gap-2 flex-wrap">
-                {previewImages.map((img, idx) => <img key={idx} src={img.url} className="w-20 h-20 object-cover rounded" />)}
+                {previewImages.map((img, idx) => <img key={idx} src={img.url} className="w-20 h-20 object-cover rounded" alt="preview" />)}
               </div>
               <div className="flex justify-end gap-4">
                 <button type="button" onClick={() => setShowModal(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
                 <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
-                  {loading ? `Uploading... ${uploadProgress}%` : 'Save'}
+                  {loading ? `Uploading... ${uploadProgress}%` : editingId ? 'Update' : 'Save'}
                 </button>
               </div>
             </form>
@@ -231,7 +234,7 @@ return (
               <td className="px-3 py-2">{item.price}</td>
               <td className="px-3 py-2">{item.MOQ}</td>
               <td className="px-3 py-2">
-                <button className="text-blue-600 hover:underline mr-2">Edit</button>
+                <button onClick={() => handleEdit(item)} className="text-blue-600 hover:underline mr-2">Edit</button>
                 <button onClick={() => handleDelete(item._id)} className="text-red-600 hover:underline">Delete</button>
               </td>
             </tr>
