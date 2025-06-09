@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom"; // Make sure this import is added
+import React, { useState, useEffect, useMemo } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 
 export default function Footer() {
@@ -19,30 +19,39 @@ export default function Footer() {
     fetchConfig();
   }, []);
 
+  const year = useMemo(() => new Date().getFullYear(), []);
+
   return (
     <div className="font-sans bg-white text-gray-900">
       <footer className="bg-gray-800 text-gray-200 py-8 mt-6">
         <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-          <div>
-            <h3 className="font-semibold mb-2">{config.name}</h3>
-            <p>{config.address}</p>
-          </div>
-          <div>
+          <address className="not-italic">
+            <h3 className="font-semibold mb-2">{config.name || "Loading..."}</h3>
+            <p>{config.address || "Address not available"}</p>
+          </address>
+
+          <nav>
             <h3 className="font-semibold mb-2">Quick Links</h3>
             <ul>
               <li><Link to="/" className="hover:underline">Home</Link></li>
               <li><Link to="/allCategories" className="hover:underline">Categories</Link></li>
               <li><Link to="/contact" className="hover:underline">Contact Us</Link></li>
             </ul>
-          </div>
+          </nav>
+
           <div>
             <h3 className="font-semibold mb-2">Contact</h3>
-            <p>Email: {config.email}</p>
-            <p>Phone: {config.phone}</p>
+            <p>
+              Email: <a href={`mailto:${config.email}`} className="hover:underline">{config.email || 'N/A'}</a>
+            </p>
+            <p>
+              Phone: <a href={`tel:${config.phone}`} className="hover:underline">{config.phone || 'N/A'}</a>
+            </p>
           </div>
         </div>
+
         <div className="text-center mt-6 text-xs text-gray-400">
-          © {new Date().getFullYear()} {config.name}. All rights reserved.
+          © {year} {config.name || 'Sanju SK Digital'}. All rights reserved.
         </div>
       </footer>
     </div>
