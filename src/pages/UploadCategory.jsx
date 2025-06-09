@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Plus } from 'lucide-react';
 
 const UploadCategory = () => {
   const [categoryName, setCategoryName] = useState('');
@@ -9,15 +8,15 @@ const UploadCategory = () => {
   const [success, setSuccess] = useState('');
   const [dragActive, setDragActive] = useState(false);
   const [categories, setCategories] = useState([]);
-  const [filteredCategories, setFilteredCategories] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [search, setSearch] = useState('');
 
-  const [modalOpen, setModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editCategoryId, setEditCategoryId] = useState(null);
   const [editName, setEditName] = useState('');
+
   const [imageModalOpen, setImageModalOpen] = useState(false);
   const [imageModalUrl, setImageModalUrl] = useState('');
+  const [newCategoryModalOpen, setNewCategoryModalOpen] = useState(false);
 
   useEffect(() => {
     fetchCategories();
@@ -33,17 +32,9 @@ const UploadCategory = () => {
     }
   }, [error, success]);
 
-  useEffect(() => {
-    setFilteredCategories(
-      categories.filter((cat) =>
-        cat.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    );
-  }, [searchTerm, categories]);
-
   const fetchCategories = async () => {
     try {
-      const res = await axios.get('/api/categories');
+      const res = await axios.get(`/api/categories`);
       setCategories(res.data.categories || []);
     } catch (err) {
       setError('Failed to fetch categories');
@@ -81,6 +72,7 @@ const UploadCategory = () => {
       setError('Please provide both category name and image.');
       return;
     }
+
     const formData = new FormData();
     formData.append('name', categoryName);
     formData.append('image', categoryImage);
@@ -92,7 +84,7 @@ const UploadCategory = () => {
       setSuccess('Category uploaded successfully!');
       setCategoryName('');
       setCategoryImage(null);
-      setModalOpen(false);
+      setNewCategoryModalOpen(false);
       fetchCategories();
     } catch (err) {
       setError('Error uploading category');
@@ -149,27 +141,31 @@ const UploadCategory = () => {
     }
   };
 
+  const filteredCategories = categories.filter((cat) =>
+    cat.name.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
     <div className="max-w-4xl mx-auto p-6 border rounded-md shadow">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold">Upload Category</h2>
-        <button onClick={() => setModalOpen(true)} className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-          <Plus size={18} /> New Category
+        <h2 className="text-2xl font-semibold">Categories</h2>
+        <button
+          onClick={() => setNewCategoryModalOpen(true)}
+          className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+        >
+          <span className="text-xl font-bold">+</span>
+          <span>New Category</span>
         </button>
       </div>
 
       <input
         type="text"
-        placeholder="Search categories..."
-        className="w-full border p-2 mb-4 rounded"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
+        placeholder="Search category..."
+        className="mb-4 p-2 w-full border rounded"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
       />
 
-      {error && <p className="text-red-500 mt-2 text-sm">{error}</p>}
-      {success && <p className="text-green-500 mt-2 text-sm">{success}</p>}
-
-      <h3 className="text-xl font-semibold mb-4">Category List</h3>
       <table className="w-full table-auto border-collapse border border-gray-300 mb-4">
         <thead>
           <tr className="bg-gray-100">
@@ -182,27 +178,61 @@ const UploadCategory = () => {
           {filteredCategories.map(({ _id, name, imageUrl }) => (
             <tr key={_id} className="hover:bg-gray-50">
               <td className="border border-gray-300 p-2 text-center">
-                <img src={imageUrl} alt={name} className="h-12 w-12 object-cover inline-block rounded cursor-pointer" onClick={() => openImageModal(imageUrl)} title="Click to preview" />
+                <img
+                  src={imageUrl}
+                  alt={name}
+                  className="h-12 w-12 object-cover inline-block rounded cursor-pointer"
+                  onClick={() => openImageModal(imageUrl)}
+                  title="Click to preview"
+                />
               </td>
               <td className="border border-gray-300 p-2">{name}</td>
               <td className="border border-gray-300 p-2 text-center space-x-2">
-                <button onClick={() => openEditModal(_id, name)} className="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500">Edit</button>
-                <button onClick={() => deleteCategory(_id)} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Delete</button>
+                <button
+                  onClick={() => openEditModal(_id, name)}
+                  className="bg-yellow-400 text-white px-3 py-1 rounded hover:bg-yellow-500"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => deleteCategory(_id)}
+                  className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
+                >
+                  Delete
+                </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {modalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setModalOpen(false)}>
+      {/* New Category Modal */}
+      {newCategoryModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={() => setNewCategoryModalOpen(false)}>
           <div className="bg-white p-6 rounded shadow-lg w-96" onClick={(e) => e.stopPropagation()}>
             <h4 className="text-lg font-semibold mb-4">Add New Category</h4>
             <form onSubmit={handleSubmit} onDragEnter={handleDrag}>
-              <input type="text" value={categoryName} onChange={(e) => setCategoryName(e.target.value)} className="w-full border p-2 rounded mb-4" placeholder="Category name" required />
-              <div className={`border-dashed border-2 p-4 text-center rounded cursor-pointer ${dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300'}`} onDrop={handleDrop} onDragOver={handleDrag} onDragLeave={handleDrag}>
-                <input type="file" accept="image/*" onChange={(e) => handleFileChange(e.target.files[0])} className="hidden" id="upload-file-modal" />
-                <label htmlFor="upload-file-modal" className="cursor-pointer">
+              <input
+                type="text"
+                value={categoryName}
+                onChange={(e) => setCategoryName(e.target.value)}
+                placeholder="Category name"
+                className="w-full border p-2 rounded mb-4"
+              />
+              <div
+                className={`border-dashed border-2 p-4 text-center rounded cursor-pointer ${dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300'}`}
+                onDrop={handleDrop}
+                onDragOver={handleDrag}
+                onDragLeave={handleDrag}
+              >
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleFileChange(e.target.files[0])}
+                  className="hidden"
+                  id="upload-file"
+                />
+                <label htmlFor="upload-file" className="cursor-pointer">
                   {categoryImage ? (
                     <span className="text-sm text-gray-700">{categoryImage.name}</span>
                   ) : (
@@ -210,16 +240,58 @@ const UploadCategory = () => {
                   )}
                 </label>
               </div>
-              <div className="flex justify-end gap-2 mt-4">
-                <button type="button" onClick={() => setModalOpen(false)} className="px-4 py-2 rounded border border-gray-400 hover:bg-gray-100">Cancel</button>
-                <button type="submit" className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">Save</button>
+              <div className="mt-4 flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setNewCategoryModalOpen(false)}
+                  className="px-4 py-2 border border-gray-400 rounded hover:bg-gray-100"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                  Upload
+                </button>
               </div>
             </form>
           </div>
         </div>
       )}
 
-      {/* Existing edit and image modals remain  */}
+      {/* Image Modal */}
+      {imageModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50" onClick={closeImageModal}>
+          <div className="max-w-[90vw] max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
+            <img src={imageModalUrl} alt="Category Preview" className="max-w-full max-h-full rounded shadow-lg" />
+            <button onClick={closeImageModal} className="mt-2 w-full bg-red-600 text-white py-1 rounded hover:bg-red-700">Close</button>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {editModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={closeEditModal}>
+          <div className="bg-white p-6 rounded shadow-lg w-96" onClick={(e) => e.stopPropagation()}>
+            <h4 className="text-lg font-semibold mb-4">Edit Category Name</h4>
+            <input
+              type="text"
+              value={editName}
+              onChange={(e) => setEditName(e.target.value)}
+              className="w-full border p-2 rounded mb-4"
+              autoFocus
+            />
+            <div className="flex justify-end gap-3">
+              <button onClick={closeEditModal} className="px-4 py-2 rounded border border-gray-400 hover:bg-gray-100">Cancel</button>
+              <button onClick={saveEdit} className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">Save</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {error && <p className="text-red-500 mt-2 text-sm">{error}</p>}
+      {success && <p className="text-green-500 mt-2 text-sm">{success}</p>}
     </div>
   );
 };
