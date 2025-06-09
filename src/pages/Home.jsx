@@ -7,6 +7,7 @@ import { useCart } from '../context/CartContext';
 
 const Category = lazy(() => import("../components/Category"));
 const Content = lazy(() => import("../components/Content"));
+const GalleryModal = lazy(() => import("../components/GalleryModal"));
 
 const Home = () => {
   const [listings, setListings] = useState([]);
@@ -16,6 +17,7 @@ const Home = () => {
   const [sortBy, setSortBy] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [openImageModal, setOpenImageModal] = useState(null);
 
   const { addToCart } = useCart();
 
@@ -127,8 +129,15 @@ const Home = () => {
               savedPosts={savedPosts}
               setSavedPosts={setSavedPosts}
               onAddToCart={addToCart}
+              onPreview={setOpenImageModal}
             />
           </Suspense>
+
+          {openImageModal && (
+            <Suspense fallback={<div>Loading Preview...</div>}>
+              <GalleryModal images={openImageModal} onClose={() => setOpenImageModal(null)} />
+            </Suspense>
+          )}
         </>
       )}
     </div>
