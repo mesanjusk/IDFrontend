@@ -1,6 +1,7 @@
-// We'll convert your CreateListing page to use modal for new listing creation
-// and include full edit/delete/search functionality with a table of all listings.
-// Tailwind CSS is used for styling.
+// Fixed CreateListing component
+// - Modal now works for + New Listing and Edit
+// - Delete includes confirmation
+// - Table shows proper category/subcategory/religion names
 
 import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
@@ -96,17 +97,27 @@ const CreateListing = () => {
       MOQ: item.MOQ
     });
     setEditId(item._id);
+    setImages([]);
+    setPreviewImages([]);
     setShowModal(true);
   };
 
   const handleDelete = async (id) => {
+    const confirmDelete = window.confirm('Are you sure you want to delete this listing?');
+    if (!confirmDelete) return;
     await axios.delete(`/api/listings/${id}`);
     fetchListings();
   };
 
   const filteredListings = listings.filter(item =>
-    item.title.toLowerCase().includes(searchTerm.toLowerCase())
+    item.title?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const getName = (uuid, type) => {
+    const list = dropdownData[type];
+    const found = list.find(item => item[`${type.slice(0, -1)}_uuid`] === uuid);
+    return found?.name || '';
+  };
 
   return (
     <div className="p-6">
@@ -119,7 +130,13 @@ const CreateListing = () => {
           className="border px-3 py-1 rounded w-1/3"
         />
         <button
-          onClick={() => { setShowModal(true); setForm({ title: '', category: '', subcategory: '', religions: '', price: '', MOQ: '' }); setEditId(null); }}
+          onClick={() => {
+            setShowModal(true);
+            setForm({ title: '', category: '', subcategory: '', religions: '', price: '', MOQ: '' });
+            setEditId(null);
+            setImages([]);
+            setPreviewImages([]);
+          }}
           className="bg-blue-600 text-white px-4 py-2 rounded"
         >
           + New Listing
@@ -142,9 +159,9 @@ const CreateListing = () => {
           {filteredListings.map((item, idx) => (
             <tr key={idx} className="border-t">
               <td className="px-4 py-2">{item.title}</td>
-              <td className="px-4 py-2">{item.category_name}</td>
-              <td className="px-4 py-2">{item.subcategory_name}</td>
-              <td className="px-4 py-2">{item.religion_name}</td>
+              <td className="px-4 py-2">{getName(item.category_uuid, 'categories')}</td>
+              <td className="px-4 py-2">{getName(item.subcategory_uuid, 'subcategories')}</td>
+              <td className="px-4 py-2">{getName(item.religion_uuid, 'religions')}</td>
               <td className="px-4 py-2">{item.price}</td>
               <td className="px-4 py-2">{item.MOQ}</td>
               <td className="px-4 py-2 space-x-2">
