@@ -1,7 +1,6 @@
-// Top remains same
-import { useState, useRef, useEffect } from 'react'; 
+import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
 
 const CreateListing = () => {
@@ -10,12 +9,12 @@ const CreateListing = () => {
 
   const [form, setForm] = useState({
     title: '',
+    Description: '',
     category: '',
     subcategory: '',
-    price: '',
     religions: '',
+    price: '',
     discount: '',
-    Description: '',
     MOQ: '',
     favorite: ''
   });
@@ -45,7 +44,7 @@ const CreateListing = () => {
     if (user) {
       setLoggedInUser(user);
     } else {
-      navigate("/login");
+      navigate('/login');
     }
     setTimeout(() => setLoading(false), 2000);
   }, [location.state, navigate]);
@@ -71,30 +70,139 @@ const CreateListing = () => {
     fetchDropdowns();
   }, []);
 
-  const handleInputChange = (field) => (valueOrEvent) => {
-    const value = valueOrEvent?.target?.value ?? valueOrEvent;
+  const handleInputChange = (field) => (e) => {
+    const value = e?.target?.value ?? e;
     setForm({ ...form, [field]: value });
   };
 
-  // handleImageUpload, removeImage, handleSubmit remain unchanged...
+  const handleImageUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    const filtered = files.filter(file => validTypes.includes(file.type));
+
+    if (filtered.length !== files.length) {
+      alert('Some files were skipped. Only JPG, PNG, WEBP allowed.');
+    }
+
+    if (filtered.length + images.length > 10) {
+      alert('Max 10 images allowed.');
+      return;
+    }
+
+    setLoading(true);
+    const newImages = [];
+
+    for (const file of filtered) {
+      try {
+        const alreadyExists = images.some(img => img.name === file.name && img.size === file.size);
+        if (alreadyExists) continue;
+
+        const compressedBlob = await imageCompression(file, {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1920,
+          useWebWorker: true,
+        });
+
+        const compressedFile = new File([compressedBlob], `${Date.now()}-${file.name}`, {
+          type: compressedBlob.type,
+        });
+
+        newImages.push(compressedFile);
+      } catch (err) {
+        console.error('Compression failed:', err);
+      }
+    }
+
+    const updatedImages = [...images, ...newImages];
+    setImages(updatedImages);
+    setPreviewImages(updatedImages.map(file => ({
+      url: URL.createObjectURL(file),
+      name: file.name,
+      size: (file.size / 1024).toFixed(1) + ' KB'
+    })));
+    setLoading(false);
+  };
+
+  const removeImage = (index) => {
+    const updatedImages = images.filter((_, i) => i !== index);
+    setImages(updatedImages);
+    setPreviewImages(updatedImages.map(file => ({
+      url: URL.createObjectURL(file),
+      name: file.name,
+      size: (file.size / 1024).toFixed(1) + ' KB'
+    })));
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (loading) return alert('Images still processing...');
+    if (!form.title || !form.category || !form.subcategory || !form.price || images.length === 0) {
+      return alert('Please fill in required fields and upload at least one image.');
+    }
+
+    const formData = new FormData();
+    Object.entries(form).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+
+    images.forEach(img => formData.append('images', img));
+
+    try {
+      await axios.post('/api/listings', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: (e) => {
+          setUploadProgress(Math.round((e.loaded * 100) / e.total));
+        }
+      });
+
+      alert('Listing Created Successfully!');
+      setForm({
+        title: '',
+        Description: '',
+        category: '',
+        subcategory: '',
+        religions: '',
+        price: '',
+        discount: '',
+        MOQ: '',
+        favorite: ''
+      });
+      setImages([]);
+      setPreviewImages([]);
+      setUploadProgress(0);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    } catch (err) {
+      console.error('Upload failed:', err);
+      alert(err?.response?.data?.error || 'Upload failed.');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-6">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">Upload Design</h1>
       <form onSubmit={handleSubmit} className="flex flex-col space-y-4 w-full max-w-md">
-        
-        {/* Text input for Title */}
-        <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-          <input
-            type="text"
-            name="title"
-            value={form.title}
-            onChange={handleInputChange('title')}
-            className="w-full p-2 border border-gray-300 rounded-md"
-            placeholder="Enter title"
-          />
-        </div>
+
+        {/* Title */}
+        <input
+          type="text"
+          name="title"
+          value={form.title}
+          onChange={handleInputChange('title')}
+          className="w-full p-2 border border-gray-300 rounded-md"
+          placeholder="Enter title"
+        />
+
+        {/* Description */}
+        <input
+          type="text"
+          name="description"
+          value={form.Description}
+          onChange={handleInputChange('Description')}
+          className="w-full p-2 border border-gray-300 rounded-md"
+          placeholder="Enter description"
+        />
 
         {/* Category Dropdown */}
         <select
@@ -120,16 +228,6 @@ const CreateListing = () => {
           ))}
         </select>
 
-        {/* Price */}
-        <input
-          type="text"
-          name="price"
-          value={form.price}
-          onChange={handleInputChange('price')}
-          className="w-full p-2 border border-gray-300 rounded-md"
-          placeholder="Enter price"
-        />
-
         {/* Religion Dropdown */}
         <select
           value={form.religions}
@@ -141,6 +239,26 @@ const CreateListing = () => {
             <option key={r.religion_uuid} value={r.religion_uuid}>{r.name}</option>
           ))}
         </select>
+
+        {/* Price */}
+        <input
+          type="text"
+          name="price"
+          value={form.price}
+          onChange={handleInputChange('price')}
+          className="w-full p-2 border border-gray-300 rounded-md"
+          placeholder="Enter price"
+        />
+
+        {/* Discount */}
+        <input
+          type="text"
+          name="discount"
+          value={form.discount}
+          onChange={handleInputChange('discount')}
+          className="w-full p-2 border border-gray-300 rounded-md"
+          placeholder="Enter discount"
+        />
 
         {/* MOQ */}
         <select
@@ -164,28 +282,40 @@ const CreateListing = () => {
           <option value="0">0</option>
         </select>
 
-        {/* Discount */}
-        <input
-          type="text"
-          name="discount"
-          value={form.discount}
-          onChange={handleInputChange('discount')}
-          className="w-full p-2 border border-gray-300 rounded-md"
-          placeholder="Enter discount"
-        />
+        {/* Image Upload */}
+        <div className="flex flex-col items-center">
+          <input
+            type="file"
+            ref={fileInputRef}
+            multiple
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="mb-4"
+          />
+          <div className="flex flex-wrap gap-4">
+            {previewImages.map((img, idx) => (
+              <div key={idx} className="relative">
+                <img src={img.url} alt={`Preview ${idx}`} className="w-24 h-24 object-cover rounded-md" />
+                <button
+                  type="button"
+                  onClick={() => removeImage(idx)}
+                  className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
 
-        {/* Description */}
-        <input
-          type="text"
-          name="description"
-          value={form.Description}
-          onChange={handleInputChange('Description')}
-          className="w-full p-2 border border-gray-300 rounded-md"
-          placeholder="Enter description"
-        />
-
-        {/* Image Upload and Submit Button remain unchanged */}
-
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={loading}
+          className="bg-blue-500 text-white py-2 rounded-md"
+        >
+          {loading ? `Uploading... ${uploadProgress}%` : 'Create Listing'}
+        </button>
       </form>
     </div>
   );
