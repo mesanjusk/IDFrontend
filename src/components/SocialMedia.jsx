@@ -1,11 +1,29 @@
-// SocialMedia.js
+ import React, { useState, useEffect, useMemo } from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
+ 
 export default function SocialMedia() {
+  const [config, setConfig] = useState({ fb: "", insta: "", twitter: "", linkedIn: "" });
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const response = await axios.get("/api/confi/GetConfiList");
+        if (response.data.success && response.data.result.length > 0) {
+          setConfig(response.data.result[0]);
+        }
+      } catch (error) {
+        console.error("Failed to fetch configuration:", error);
+      }
+    };
+    fetchConfig();
+  }, []);
   return (
     <section className="py-6 bg-gray-50">
       <div className="container mx-auto px-4 text-center">
                 <div className="flex justify-center gap-6 text-gray-600">
           <a
-            href="https://facebook.com/yourpage"
+            href={config.fb}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Facebook"
@@ -22,7 +40,7 @@ export default function SocialMedia() {
           </a>
 
           <a
-            href="https://twitter.com/yourhandle"
+            href={config.twitter}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Twitter"
@@ -39,7 +57,7 @@ export default function SocialMedia() {
           </a>
 
           <a
-            href="https://www.instagram.com/sanju.sk.digital/"
+            href={config.insta}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Instagram"
@@ -58,7 +76,7 @@ export default function SocialMedia() {
           </a>
 
           <a
-            href="https://linkedin.com/in/yourprofile"
+            href={config.linkedIn}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="LinkedIn"

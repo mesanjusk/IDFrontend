@@ -13,6 +13,7 @@ import AddSEOK from '../pages/addSEOK';
 import AddSEOT from '../pages/addSEOT';
 import AddConfi from '../pages/addConfi';
 import CreateListing from './CreateListing';
+import AllListing from './allLisiting';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('categories');
@@ -21,7 +22,7 @@ export default function AdminDashboard() {
     { key: 'categories', label: '📂 Categories' },
     { key: 'subcategories', label: '📁 Subcategories' },
     { key: 'banners', label: '📁 Banners' },
-     { key: 'listings', label: '📁 Listings' },
+    { key: 'listings', label: '📁 Add Listing' },
     { key: 'titles', label: '🏷️ Titles' },
     { key: 'prices', label: '💰 Prices' },
      { key: 'users', label: '📂 Users' },
@@ -32,6 +33,7 @@ export default function AdminDashboard() {
     { key: 'seods', label: '💰 SEODS' },
      { key: 'seoks', label: '📂 SEOKS' },
     { key: 'seots', label: '📁 SEOKS' },
+     { key: 'allListing', label: '🏷️ AllListing' },
   ];
 
   return (
@@ -61,6 +63,7 @@ export default function AdminDashboard() {
         {activeTab === 'subcategories' && <UploadSubcategory />}
          {activeTab === 'banners' && <UploadBanner />}
          {activeTab === 'listings' && <CreateListing />}
+          {activeTab === 'allListing' && <AllListing />}
         {activeTab === 'titles' && <AddTitle />}
         {activeTab === 'prices' && <AddPrice />}
          {activeTab === 'users' && <AddUser />}
