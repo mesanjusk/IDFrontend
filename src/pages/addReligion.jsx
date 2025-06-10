@@ -1,4 +1,3 @@
-// AddReligion with list view, duplicate check, modal form, Tailwind-only UI
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
@@ -28,9 +27,11 @@ export default function AddReligion() {
   const fetchReligions = async () => {
     try {
       const res = await axios.get('/api/religions/GetReligionList');
-      setReligions(res.data || []);
+      console.log('Fetched religions:', res.data); // Debugging log
+      setReligions(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error('Failed to fetch religions:', err);
+      setReligions([]); // fallback to empty array to avoid .map() crash
     }
   };
 
@@ -94,22 +95,23 @@ export default function AddReligion() {
             </tr>
           </thead>
           <tbody>
-            {religions.map(r => (
-              <tr key={r.religion_uuid} className="border-t">
-                <td className="p-3">{r.name}</td>
-                <td className="p-3 space-x-2">
-                  <button
-                    onClick={() => handleEdit(r)}
-                    className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
-                  >Edit</button>
-                  <button
-                    onClick={() => handleDelete(r.religion_uuid)}
-                    className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
-                  >Delete</button>
-                </td>
-              </tr>
-            ))}
-            {religions.length === 0 && (
+            {Array.isArray(religions) && religions.length > 0 ? (
+              religions.map(r => (
+                <tr key={r.religion_uuid} className="border-t">
+                  <td className="p-3">{r.name}</td>
+                  <td className="p-3 space-x-2">
+                    <button
+                      onClick={() => handleEdit(r)}
+                      className="px-3 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600"
+                    >Edit</button>
+                    <button
+                      onClick={() => handleDelete(r.religion_uuid)}
+                      className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                    >Delete</button>
+                  </td>
+                </tr>
+              ))
+            ) : (
               <tr>
                 <td colSpan="2" className="text-center p-4 text-gray-500">No religions found.</td>
               </tr>
