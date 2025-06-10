@@ -1,181 +1,246 @@
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
-import Dropdown from './Dropdown';
+import toast, { Toaster } from 'react-hot-toast';
 
 const CreateListing = () => {
   const navigate = useNavigate();
-  const [form, setForm] = useState({
-    title: '', category: '', subcategory: '', price: '',
-    instagramUrl: '', size: '', religions: '',
-    seoTitle: '', seoDescription: '', seoKeywords: '',
-    discount: '', Description: '', MOQ: '', favorite: ''
-  });
+  const location = useLocation();
 
+  const [form, setForm] = useState({ title: '', category: '', subcategory: '', religions: '', price: '', MOQ: '' });
   const [images, setImages] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
-  const [uploadProgress, setUploadProgress] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [dropdownData, setDropdownData] = useState({
-    titles: [], categories: [], subcategories: [], instagramUrls: [],
-    sizes: [], religions: [], seot: [], seod: [], seok: []
-  });
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [loggedInUser, setLoggedInUser] = useState(null);
+  const [dropdownData, setDropdownData] = useState({ categories: [], subcategories: [], religions: [] });
   const [listings, setListings] = useState([]);
-  const [search, setSearch] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+
   const fileInputRef = useRef(null);
 
   const safeExtract = (res) => Array.isArray(res) ? res : res?.result || [];
 
-  const fetchDropdowns = async () => {
-    try {
-      const [titleRes, categoryRes, subcategoryRes, instagramUrlRes, sizeRes, religionRes, seotRes, seodRes, seokRes] = await Promise.all([
-        axios.get('/api/titles/GetTitleList'),
-        axios.get('/api/categories/'),
-        axios.get('/api/subcategories'),
-        axios.get('/api/instas/GetInstaList'),
-        axios.get('/api/sizes/GetSizeList'),
-        axios.get('/api/religions/GetReligionList'),
-        axios.get('/api/seots/GetSEOTitleList'),
-        axios.get('/api/seods/GetSEODesList'),
-        axios.get('/api/seoks/GetSEOKeyList')
-      ]);
-      setDropdownData({
-        titles: safeExtract(titleRes.data),
-        categories: safeExtract(categoryRes.data),
-        subcategories: safeExtract(subcategoryRes.data),
-        instagramUrls: safeExtract(instagramUrlRes.data),
-        sizes: safeExtract(sizeRes.data),
-        religions: safeExtract(religionRes.data),
-        seot: safeExtract(seotRes.data),
-        seod: safeExtract(seodRes.data),
-        seok: safeExtract(seokRes.data)
-      });
-    } catch (err) {
-      console.error('Dropdown error:', err);
-    }
-  };
+  useEffect(() => {
+    const userNameFromState = location.state?.id;
+    const user = userNameFromState || localStorage.getItem('User_name');
+    if (user) setLoggedInUser(user);
+    else navigate('/login');
+    setTimeout(() => setLoading(false), 2000);
+  }, [location.state, navigate]);
 
   useEffect(() => {
+    const fetchDropdowns = async () => {
+      try {
+        const [categoryRes, subcategoryRes, religionRes, listingRes] = await Promise.all([
+          axios.get('/api/categories/'),
+          axios.get('/api/subcategories'),
+          axios.get('/api/religions/GetReligionList'),
+          axios.get('/api/listings')
+        ]);
+        setDropdownData({
+          categories: safeExtract(categoryRes.data),
+          subcategories: safeExtract(subcategoryRes.data),
+          religions: safeExtract(religionRes.data)
+        });
+        setListings(listingRes.data || []);
+      } catch (error) {
+        toast.error('Failed to fetch dropdown or listings.');
+      }
+    };
     fetchDropdowns();
-    fetchListings();
   }, []);
 
-  const fetchListings = async () => {
-    try {
-      const res = await axios.get('/api/listings');
-      setListings(res.data || []);
-    } catch (err) {
-      console.error('Fetch listings error:', err);
-    }
+  const handleInputChange = (field) => (e) => {
+    const value = e?.target?.value ?? e;
+    if (field === 'price' && value && !/^\d*\.?\d*$/.test(value)) return;
+    setForm({ ...form, [field]: value });
   };
-
-  const handleInputChange = (field) => (e) => setForm({ ...form, [field]: e.target.value });
 
   const handleImageUpload = async (e) => {
     const files = Array.from(e.target.files);
     const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
     const filtered = files.filter(file => validTypes.includes(file.type));
-    if (filtered.length + images.length > 10) return alert("Max 10 images allowed.");
+    if (filtered.length !== files.length) toast('Some files were skipped.');
+    if (filtered.length + images.length > 10) return toast.error('Max 10 images allowed.');
+    setLoading(true);
     const newImages = [];
     for (const file of filtered) {
       const compressedBlob = await imageCompression(file, { maxSizeMB: 1, maxWidthOrHeight: 1920, useWebWorker: true });
       const compressedFile = new File([compressedBlob], `${Date.now()}-${file.name}`, { type: compressedBlob.type });
       newImages.push(compressedFile);
     }
-    const updated = [...images, ...newImages];
+    const all = [...images, ...newImages];
+    setImages(all);
+    setPreviewImages(all.map(file => ({ url: URL.createObjectURL(file) })));
+    setLoading(false);
+  };
+
+  const removeImage = (index) => {
+    const updated = images.filter((_, i) => i !== index);
     setImages(updated);
-    setPreviewImages(updated.map(f => ({ url: URL.createObjectURL(f), name: f.name })));
+    setPreviewImages(updated.map(file => ({ url: URL.createObjectURL(file) })));
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.title || !form.category || !form.subcategory || !form.price || images.length === 0) return alert("Missing required fields.");
+    if (!form.title || !form.category || !form.subcategory || !form.price) {
+      return toast.error('Fill all fields');
+    }
+
     const formData = new FormData();
     Object.entries(form).forEach(([k, v]) => formData.append(k, v));
     images.forEach(img => formData.append('images', img));
+
     try {
-      await axios.post('/api/listings', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        onUploadProgress: (e) => setUploadProgress(Math.round((e.loaded * 100) / e.total))
-      });
+      if (editingId) {
+        await axios.put(`/api/listings/${editingId}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        toast.success('Listing updated');
+      } else {
+        await axios.post('/api/listings', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+          onUploadProgress: (e) => setUploadProgress(Math.round((e.loaded * 100) / e.total))
+        });
+        toast.success('Listing created');
+      }
+
+      setForm({ title: '', category: '', subcategory: '', religions: '', price: '', MOQ: '' });
+      setImages([]);
+      setPreviewImages([]);
+      setUploadProgress(0);
+      fileInputRef.current.value = '';
+      const res = await axios.get('/api/listings');
+      setListings(res.data || []);
       setShowModal(false);
-      fetchListings();
+      setEditingId(null);
     } catch (err) {
-      alert('Upload failed.');
+      toast.error('Submit failed.');
     }
   };
 
-  const filteredListings = listings.filter(item => item.title?.toLowerCase().includes(search.toLowerCase()));
+  const getName = (uuid, type) => {
+    const list = dropdownData[type];
+    const keyMap = { categories: 'category_uuid', subcategories: 'subcategory_uuid', religions: 'religion_uuid' };
+    const key = keyMap[type];
+    const found = Array.isArray(list) ? list.find(item => item[key] === uuid) : null;
+    return found?.name || '';
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this listing?')) return;
+    await axios.delete(`/api/listings/${id}`);
+    setListings(listings.filter(item => item._id !== id));
+    toast.success('Listing deleted');
+  };
+
+  const handleEdit = (item) => {
+    setEditingId(item._id);
+    setForm({
+      title: item.title,
+      category: item.category_uuid,
+      subcategory: item.subcategory_uuid,
+      religions: item.religion_uuid,
+      price: item.price,
+      MOQ: item.MOQ
+    });
+    setImages([]); // Clear new images
+    setPreviewImages((item.images || []).map(img => ({ url: img.url }))); // Show existing ones
+    setShowModal(true);
+  };
+
+  const filteredListings = listings.filter(item =>
+    item.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gray-100 p-6">
+      <Toaster position="top-right" />
+
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Listings</h2>
-        <button onClick={() => setShowModal(true)} className="bg-blue-600 text-white px-4 py-2 rounded">+ New Listing</button>
+        <h1 className="text-3xl font-bold text-gray-800">Upload Design</h1>
+        <button onClick={() => setShowModal(true)} className="bg-green-600 text-white px-4 py-2 rounded">+ New Listing</button>
       </div>
 
-      <input
-        type="text"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="Search by title..."
-        className="w-full p-2 mb-4 border border-gray-300 rounded"
-      />
-
-      {filteredListings.length === 0 ? (
-        <p className="text-gray-500 text-center mt-10">No listings found.</p>
-      ) : (
-        <table className="min-w-full border text-sm">
-          <thead className="bg-gray-200">
-            <tr>
-              <th className="px-4 py-2 text-left">Title</th>
-              <th className="px-4 py-2 text-left">Category</th>
-              <th className="px-4 py-2 text-left">Subcategory</th>
-              <th className="px-4 py-2 text-left">Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredListings.map((item, idx) => (
-              <tr key={idx} className="border-t">
-                <td className="px-4 py-2">{item.title}</td>
-                <td className="px-4 py-2">{item.category}</td>
-                <td className="px-4 py-2">{item.subcategory}</td>
-                <td className="px-4 py-2">{item.price}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-
-      {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white rounded-lg w-full max-w-2xl p-6 overflow-y-auto max-h-screen relative">
-            <button
-              onClick={() => setShowModal(false)}
-              className="absolute top-3 right-4 text-xl font-bold text-gray-600 hover:text-black"
-            >
-              &times;
-            </button>
-            <h2 className="text-xl font-semibold mb-4">New Listing</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <Dropdown label="Title" options={dropdownData.titles} value={form.title} onChange={handleInputChange('title')} getLabel={o => o.name} />
-              <Dropdown label="Category" options={dropdownData.categories} value={form.category} onChange={handleInputChange('category')} getLabel={o => o.name} />
-              <Dropdown label="Subcategory" options={dropdownData.subcategories} value={form.subcategory} onChange={handleInputChange('subcategory')} getLabel={o => o.name} />
-              <input type="text" placeholder="Price" value={form.price} onChange={handleInputChange('price')} className="w-full p-2 border rounded" />
-              <input type="file" multiple accept="image/*" onChange={handleImageUpload} ref={fileInputRef} className="w-full" />
-              <div className="flex flex-wrap gap-4">
-                {previewImages.map((img, idx) => (
-                  <img key={idx} src={img.url} alt="preview" className="w-20 h-20 object-cover rounded" />
-                ))}
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow max-w-xl w-full">
+            <h2 className="text-xl font-semibold mb-4">{editingId ? 'Edit Listing' : 'Create New Listing'}</h2>
+            <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
+              <input type="text" value={form.title} onChange={handleInputChange('title')} className="p-2 border rounded" placeholder="Enter title" required />
+              <select value={form.category} onChange={handleInputChange('category')} className="p-2 border rounded" required>
+                <option value="">Select Category</option>
+                {dropdownData.categories.map(c => <option key={c.category_uuid} value={c.category_uuid}>{c.name}</option>)}
+              </select>
+              <select value={form.subcategory} onChange={handleInputChange('subcategory')} className="p-2 border rounded" required>
+                <option value="">Select Subcategory</option>
+                {dropdownData.subcategories.map(s => <option key={s.subcategory_uuid} value={s.subcategory_uuid}>{s.name}</option>)}
+              </select>
+              <select value={form.religions} onChange={handleInputChange('religions')} className="p-2 border rounded" required>
+                <option value="">Select Religion</option>
+                {dropdownData.religions.map(r => <option key={r.religion_uuid} value={r.religion_uuid}>{r.name}</option>)}
+              </select>
+              <input type="text" value={form.price} onChange={handleInputChange('price')} className="p-2 border rounded" placeholder="Enter price (numeric only)" required />
+              <select value={form.MOQ} onChange={handleInputChange('MOQ')} className="p-2 border rounded" required>
+                <option value="">Select MOQ</option>
+                <option value="1">1</option>
+                <option value="0">0</option>
+              </select>
+              <input type="file" ref={fileInputRef} multiple accept="image/*" onChange={handleImageUpload} className="mb-2" />
+              <div className="flex gap-2 flex-wrap">
+                {previewImages.map((img, idx) => <img key={idx} src={img.url} className="w-20 h-20 object-cover rounded" alt="preview" />)}
               </div>
-              <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">Create</button>
+              <div className="flex justify-end gap-4">
+                <button type="button" onClick={() => setShowModal(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>
+                <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
+                  {loading ? `Uploading... ${uploadProgress}%` : editingId ? 'Update' : 'Save'}
+                </button>
+              </div>
             </form>
           </div>
         </div>
       )}
+
+      <input type="text" placeholder="Search title..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="mb-4 p-2 border rounded w-full max-w-md" />
+
+      <table className="min-w-full bg-white shadow rounded">
+        <thead>
+          <tr className="bg-gray-200">
+            <th className="px-3 py-2">Image</th>
+            <th className="px-3 py-2">Title</th>
+            <th className="px-3 py-2">Category</th>
+            <th className="px-3 py-2">Subcategory</th>
+            <th className="px-3 py-2">Religion</th>
+            <th className="px-3 py-2">Price</th>
+            <th className="px-3 py-2">MOQ</th>
+            <th className="px-3 py-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredListings.map((item, i) => (
+            <tr key={i} className="border-t text-sm text-center">
+              <td className="px-3 py-2">
+                <img src={item.images?.[0]?.url || '/placeholder.jpg'} className="w-14 h-14 object-cover rounded" alt="Thumb" />
+              </td>
+              <td className="px-3 py-2">{item.title}</td>
+              <td className="px-3 py-2">{getName(item.category_uuid, 'categories')}</td>
+              <td className="px-3 py-2">{getName(item.subcategory_uuid, 'subcategories')}</td>
+              <td className="px-3 py-2">{getName(item.religion_uuid, 'religions')}</td>
+              <td className="px-3 py-2">{item.price}</td>
+              <td className="px-3 py-2">{item.MOQ}</td>
+              <td className="px-3 py-2">
+                <button onClick={() => handleEdit(item)} className="text-blue-600 hover:underline mr-2">Edit</button>
+                <button onClick={() => handleDelete(item._id)} className="text-red-600 hover:underline">Delete</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 };
