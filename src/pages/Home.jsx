@@ -1,8 +1,8 @@
-import { useState, useEffect, useMemo, Suspense, lazy } from 'react';
-import axios from 'axios';
+// Home.jsx – Optimized with Tailwind CSS, SEO, and performance improvements
+
+import { useState, useEffect, useMemo, Suspense, lazy, useDeferredValue } from 'react';
 import { Helmet } from 'react-helmet';
-import Skeleton from 'react-loading-skeleton';
-import 'react-loading-skeleton/dist/skeleton.css';
+import axios from 'axios';
 import { useCart } from '../context/CartContext';
 
 const Category = lazy(() => import("../components/Category"));
@@ -14,12 +14,13 @@ const Home = () => {
   const [savedPosts, setSavedPosts] = useState({});
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [sortBy, setSortBy] = useState('');
+  const [sortBy, setSortBy] = useState(() => localStorage.getItem('sortBy') || '');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openImageModal, setOpenImageModal] = useState(null);
-
   const { addToCart } = useCart();
+
+  const deferredSearch = useDeferredValue(searchTerm);
 
   useEffect(() => {
     const fetchListings = async () => {
@@ -49,9 +50,13 @@ const Home = () => {
     localStorage.setItem('savedPosts', JSON.stringify(savedPosts));
   }, [savedPosts]);
 
+  useEffect(() => {
+    localStorage.setItem('sortBy', sortBy);
+  }, [sortBy]);
+
   const filteredListings = useMemo(() => {
     let filtered = listings.filter((item) =>
-      item.title?.toLowerCase().includes(searchTerm.toLowerCase())
+      item.title?.toLowerCase().includes(deferredSearch.toLowerCase())
     );
     if (selectedCategory) {
       filtered = filtered.filter((item) => item.category === selectedCategory);
@@ -66,9 +71,8 @@ const Home = () => {
       default:
         return filtered;
     }
-  }, [listings, searchTerm, sortBy, selectedCategory]);
+  }, [listings, deferredSearch, sortBy, selectedCategory]);
 
-  // Disable right-click for security
   useEffect(() => {
     const preventContextMenu = (e) => e.preventDefault();
     document.addEventListener('contextmenu', preventContextMenu);
@@ -78,8 +82,28 @@ const Home = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 via-white to-white px-4 py-6">
       <Helmet>
-        <title>Wedding Cards – Sanju SK Digital</title>
-        <meta name="description" content="Order premium wedding cards online with customization at Sanju SK Digital Gondia." />
+        <title>Wedding Cards – Kanwal Cards</title>
+        <meta name="description" content="Order premium wedding cards online with customization at Kanwal Cards." />
+        <meta property="og:title" content="Wedding Cards – Kanwal Cards" />
+        <meta property="og:description" content="Custom wedding invitations – personalize & order online." />
+        <meta property="og:image" content="https://kanwalcards.in/preview.webp" />
+        <link rel="canonical" href={window.location.href} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <script type="application/ld+json">{`
+          {
+            "@context": "https://schema.org",
+            "@type": "Store",
+            "name": "Kanwal Cards",
+            "url": "https://kanwalcards.in",
+            "logo": "https://kanwalcards.in/logo.webp",
+            "description": "Custom wedding cards online",
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Gondia",
+              "addressCountry": "IN"
+            }
+          }
+        `}</script>
       </Helmet>
 
       <div className="text-center mb-6">
@@ -94,11 +118,13 @@ const Home = () => {
           className="border rounded px-4 py-2 w-full sm:w-1/2 shadow-sm"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          aria-label="Search wedding cards"
         />
         <select
           className="border rounded px-4 py-2 shadow-sm"
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
+          aria-label="Sort cards"
         >
           <option value="">Sort By</option>
           <option value="price-asc">Price (Low → High)</option>
@@ -108,14 +134,18 @@ const Home = () => {
       </div>
 
       {loading ? (
-        <Skeleton height={40} count={4} />
+        <div className="animate-pulse space-y-4">
+          <div className="h-10 bg-gray-200 rounded"></div>
+          <div className="h-10 bg-gray-200 rounded"></div>
+          <div className="h-10 bg-gray-200 rounded"></div>
+        </div>
       ) : error ? (
         <div className="text-center text-red-600 mt-10">{error}</div>
       ) : filteredListings.length === 0 ? (
         <div className="text-center text-gray-500 mt-10">No cards found.</div>
       ) : (
         <>
-          <Suspense fallback={<Skeleton height={40} />}>
+          <Suspense fallback={<div className="h-10 bg-gray-100 animate-pulse" />}>
             <Category
               uniqueCategories={[...new Set(listings.map((item) => item.category))]}
               selectedCategory={selectedCategory}
@@ -123,7 +153,7 @@ const Home = () => {
             />
           </Suspense>
 
-          <Suspense fallback={<Skeleton count={4} height={180} />}>
+          <Suspense fallback={<div className="space-y-6 animate-pulse"><div className="h-40 bg-gray-200 rounded" /><div className="h-40 bg-gray-200 rounded" /></div>}>
             <Content
               listings={filteredListings}
               savedPosts={savedPosts}
@@ -134,7 +164,7 @@ const Home = () => {
           </Suspense>
 
           {openImageModal && (
-            <Suspense fallback={<div>Loading Preview...</div>}>
+            <Suspense fallback={<div className="text-center mt-6">Loading Preview…</div>}>
               <GalleryModal images={openImageModal} onClose={() => setOpenImageModal(null)} />
             </Suspense>
           )}
