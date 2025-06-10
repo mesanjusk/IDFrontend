@@ -179,31 +179,31 @@ const UploadSubcategory = () => {
           </thead>
           <tbody>
             {filteredSubcategories.length > 0 ? filteredSubcategories.map((sub) => (
-              <tr key={sub._id} className="border-t">
-                <td className="px-4 py-2">
+              <tr key={sub._id} className="border-t text-sm text-center">
+                <td className="p-2 border">
                   <img
                     src={sub.imageUrl}
                     alt={sub.name}
                     width="50"
-                    className="rounded cursor-pointer"
+                    className="h-12 mx-auto cursor-pointer"
                     onClick={() => openImageModal(sub.imageUrl)}
                   />
                 </td>
-                <td className="px-4 py-2">{sub.name}</td>
-                <td className="px-4 py-2">
+                <td className="p-2 border">{sub.name}</td>
+                <td className="p-2 border">
                   {categories.find(cat => cat._id === (sub.categoryId?._id || sub.categoryId))?.name || 'N/A'}
                 </td>
-                <td className="px-4 py-2 space-x-2">
+                <td className="p-2 border space-x-2">
                   <button
                     onClick={() => openEditModal(sub)}
-                    className="text-blue-600 hover:underline"
+                    className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600"
                   >
                     Edit
                   </button>
                   {!sub.isUsed && (
                     <button
                       onClick={() => handleDelete(sub._id)}
-                      className="text-red-500 hover:text-red-700"
+                      className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600"
                     >
                       Delete
                     </button>

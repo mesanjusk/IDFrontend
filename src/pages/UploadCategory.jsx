@@ -36,7 +36,7 @@ const UploadCategory = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get(API_URL);
+      const res = await axios.get('/api/categories/with-usage');
       setCategories(res.data);
       setFilteredCategories(res.data);
       setUsedCategoryNames(res.data.map((cat) => cat.name.toLowerCase()));

@@ -1,4 +1,3 @@
-// 📁 src/pages/AdminDashboard.jsx
 import React, { useState, useEffect } from 'react';
 import UploadCategory from '../pages/UploadCategory';
 import UploadSubcategory from '../pages/UploadSubcategory';

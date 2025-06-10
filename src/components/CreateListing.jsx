@@ -19,6 +19,9 @@ const CreateListing = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
+   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+    const [modalImageSrc, setModalImageSrc] = useState(null);
+  
 
   const fileInputRef = useRef(null);
 
@@ -50,6 +53,7 @@ const CreateListing = () => {
       } catch (error) {
         toast.error('Failed to fetch dropdown or listings.');
       }
+      
     };
     fetchDropdowns();
   }, []);
@@ -132,6 +136,11 @@ const CreateListing = () => {
     return found?.name || '';
   };
 
+   const openImageModal = (src) => {
+    setModalImageSrc(src);
+    setIsImageModalOpen(true);
+  };
+
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this listing?')) return;
     await axios.delete(`/api/listings/${id}`);
@@ -208,40 +217,68 @@ const CreateListing = () => {
 
       <input type="text" placeholder="Search title..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="mb-4 p-2 border rounded w-full max-w-md" />
 
-      <table className="min-w-full bg-white shadow rounded">
+      <table className="w-full border border-gray-300 rounded-md">
         <thead>
-          <tr className="bg-gray-200">
-            <th className="px-3 py-2">Image</th>
-            <th className="px-3 py-2">Title</th>
-            <th className="px-3 py-2">Category</th>
-            <th className="px-3 py-2">Subcategory</th>
-            <th className="px-3 py-2">Religion</th>
-            <th className="px-3 py-2">Price</th>
-            <th className="px-3 py-2">MOQ</th>
-            <th className="px-3 py-2">Actions</th>
+          <tr className="bg-gray-100">
+            <th className="p-2 border">Image</th>
+            <th className="p-2 border">Title</th>
+            <th className="p-2 border">Category</th>
+            <th className="p-2 border">Subcategory</th>
+            <th className="p-2 border">Religion</th>
+            <th className="p-2 border">Price</th>
+            <th className="p-2 border">MOQ</th>
+            <th className="p-2 border">Actions</th>
           </tr>
         </thead>
         <tbody>
           {filteredListings.map((item, i) => (
-            <tr key={i} className="border-t text-sm text-center">
-              <td className="px-3 py-2">
-                <img src={item.images?.[0]?.url || '/placeholder.jpg'} className="w-14 h-14 object-cover rounded" alt="Thumb" />
+            <tr key={i} className="text-center">
+              <td className="p-2 border">
+                 {Array.isArray(item.images) && item.images.length > 0 ? (
+                    <div className="flex gap-2 justify-center">
+                      {item.images.map((imgUrl, index) => (
+                        <img
+                          key={index}
+                          src={imgUrl}
+                          alt="Thumb"
+                         className="h-12 mx-auto cursor-pointer" 
+                         onClick={() => openImageModal(imgUrl)}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <span>No image</span>
+                  )}
               </td>
-              <td className="px-3 py-2">{item.title}</td>
-              <td className="px-3 py-2">{getName(item.category_uuid, 'categories')}</td>
-              <td className="px-3 py-2">{getName(item.subcategory_uuid, 'subcategories')}</td>
-              <td className="px-3 py-2">{getName(item.religion_uuid, 'religions')}</td>
-              <td className="px-3 py-2">{item.price}</td>
-              <td className="px-3 py-2">{item.MOQ}</td>
-              <td className="px-3 py-2">
-                <button onClick={() => handleEdit(item)} className="text-blue-600 hover:underline mr-2">Edit</button>
-                <button onClick={() => handleDelete(item._id)} className="text-red-600 hover:underline">Delete</button>
+              <td className="p-2 border">{item.title}</td>
+              <td className="p-2 border">{getName(item.category, 'categories')}</td>
+              <td className="p-2 border">{getName(item.subcategory, 'subcategories')}</td>
+              <td className="p-2 border">{getName(item.religions, 'religions')}</td>
+              <td className="p-2 border">{item.price}</td>
+              <td className="p-2 border">{item.MOQ}</td>
+              <td className="p-2 border space-x-2">
+                <button onClick={() => handleEdit(item)} className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">Edit</button>
+                <button onClick={() => handleDelete(item._id)} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Delete</button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+       {/* Image Modal */}
+      {isImageModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50" onClick={() => setIsImageModalOpen(false)}>
+          <img
+            src={modalImageSrc}
+            alt="Banner Full View"
+            className="max-h-[90vh] max-w-[90vw] rounded shadow-lg"
+            onClick={(e) => e.stopPropagation()}
+          />
+          <button className="absolute top-4 right-4 text-white text-3xl font-bold">&times;</button>
+        </div>
+      )}
     </div>
+    
   );
 };
 

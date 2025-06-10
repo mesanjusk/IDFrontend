@@ -79,13 +79,15 @@ export default function Header() {
   return (
     <header className="bg-white shadow-md w-full z-50">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center space-x-2 text-blue-600 text-2xl font-bold">
-          <img
-            src={config.logo || "/default-logo.png"}
-            alt="Logo"
+       <div className="flex items-center space-x-2 text-blue-600 text-2xl font-bold">
+          <Link to="/" className="flex items-center space-x-2">
+           <img
+             src={config.logo || "/default-logo.png"}
+              alt="Logo"
             className="w-8 h-8 object-contain"
-          />
-          <Link to="/">{config.name || ""}</Link>
+            />
+             <span>{config.name || ""}</span>
+           </Link>
         </div>
 
         {/* Desktop Navigation */}
@@ -133,7 +135,7 @@ export default function Header() {
         </nav>
 
         {/* Search & Icons */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-4" style={{ display: "none"}}>
           {/* Search Bar */}
           <div className="relative hidden md:block w-64">
             <input
