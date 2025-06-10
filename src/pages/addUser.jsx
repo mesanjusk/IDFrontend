@@ -6,7 +6,7 @@ import toast, { Toaster } from 'react-hot-toast';
 export default function AddUser() {
   const navigate = useNavigate();
   const location = useLocation();
-const [form, setForm] = useState({ User_name: '', Mobile_number: '' });
+const [form, setForm] = useState({ User_name: '', Password: '', Mobile_number: '' });
   const [loggedInUser, setLoggedInUser] = useState(null);
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
@@ -126,6 +126,7 @@ const [form, setForm] = useState({ User_name: '', Mobile_number: '' });
     setEditingId(item._id);
     setForm({
       User_name: item.User_name,
+      Password: item.Password,
       Mobile_number: item.Mobile_number,
     });
     setShowModal(true);
@@ -148,6 +149,7 @@ const [form, setForm] = useState({ User_name: '', Mobile_number: '' });
             <h2 className="text-xl font-semibold mb-4">{editingId ? 'Edit User' : 'Add User'}</h2>
             <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
               <input type="text" value={form.User_name} onChange={handleInputChange('User_name')} className="p-2 border rounded" placeholder="Enter name" required />
+            <input type="text" value={form.Password} onChange={handleInputChange('Password')} className="p-2 border rounded" placeholder="Enter password" required />
              <input type="text" value={form.Mobile_number} onChange={handleInputChange('Mobile_number')} className="p-2 border rounded" placeholder="Enter number" required />
               <div className="flex justify-end gap-4">
                 <button type="button" onClick={() => setShowModal(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>

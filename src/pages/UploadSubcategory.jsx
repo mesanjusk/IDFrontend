@@ -37,7 +37,7 @@ const UploadSubcategory = () => {
 
   const fetchCategories = () => {
     axios
-      .get('/api/categories')
+      .get('/api/categories/with-usage')
       .then((res) => setCategories(res.data))
       .catch((err) => console.error('Error fetching categories:', err));
   };

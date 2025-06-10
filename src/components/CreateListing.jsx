@@ -8,7 +8,7 @@ const CreateListing = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [form, setForm] = useState({ title: '', category: '', subcategory: '', religions: '', price: '', MOQ: '' });
+  const [form, setForm] = useState({ title: '', category: '', subcategory: '', religions: '', price: '', favorite: '' });
   const [images, setImages] = useState([]);
   const [previewImages, setPreviewImages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -39,7 +39,7 @@ const CreateListing = () => {
     const fetchDropdowns = async () => {
       try {
         const [categoryRes, subcategoryRes, religionRes, listingRes] = await Promise.all([
-          axios.get('/api/categories/'),
+          axios.get('/api/categories/with-usage'),
           axios.get('/api/subcategories'),
           axios.get('/api/religions/GetReligionList'),
           axios.get('/api/listings')
@@ -156,7 +156,7 @@ const CreateListing = () => {
       subcategory: item.subcategory_uuid,
       religions: item.religion_uuid,
       price: item.price,
-      MOQ: item.MOQ
+      favorite: item.favorite
     });
     setImages([]); // Clear new images
     setPreviewImages((item.images || []).map(img => ({ url: img.url }))); // Show existing ones
@@ -195,8 +195,8 @@ const CreateListing = () => {
                 {dropdownData.religions.map(r => <option key={r.religion_uuid} value={r.religion_uuid}>{r.name}</option>)}
               </select>
               <input type="text" value={form.price} onChange={handleInputChange('price')} className="p-2 border rounded" placeholder="Enter price (numeric only)" required />
-              <select value={form.MOQ} onChange={handleInputChange('MOQ')} className="p-2 border rounded" required>
-                <option value="">Select MOQ</option>
+              <select value={form.favorite} onChange={handleInputChange('favorite')} className="p-2 border rounded" required>
+                <option value="">Select Favorite</option>
                 <option value="1">1</option>
                 <option value="0">0</option>
               </select>
@@ -226,7 +226,6 @@ const CreateListing = () => {
             <th className="p-2 border">Subcategory</th>
             <th className="p-2 border">Religion</th>
             <th className="p-2 border">Price</th>
-            <th className="p-2 border">MOQ</th>
             <th className="p-2 border">Actions</th>
           </tr>
         </thead>
@@ -255,7 +254,6 @@ const CreateListing = () => {
               <td className="p-2 border">{getName(item.subcategory, 'subcategories')}</td>
               <td className="p-2 border">{getName(item.religions, 'religions')}</td>
               <td className="p-2 border">{item.price}</td>
-              <td className="p-2 border">{item.MOQ}</td>
               <td className="p-2 border space-x-2">
                 <button onClick={() => handleEdit(item)} className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">Edit</button>
                 <button onClick={() => handleDelete(item._id)} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Delete</button>
