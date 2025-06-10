@@ -27,7 +27,7 @@ export default function Footer() {
         <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
           <address className="not-italic">
             <h3 className="font-semibold mb-2">{config.name || "Loading..."}</h3>
-            <p>{config.address || "Address not available"}</p>
+            <p>{config.address || ""}</p>
           </address>
 
           <nav>
@@ -51,7 +51,7 @@ export default function Footer() {
         </div>
 
         <div className="text-center mt-6 text-xs text-gray-400">
-          © {year} {config.name || 'Sanju SK Digital'}. All rights reserved.
+          © {year} {config.name || ''}. All rights reserved.
         </div>
       </footer>
     </div>
