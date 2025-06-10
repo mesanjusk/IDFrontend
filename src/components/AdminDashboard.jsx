@@ -67,7 +67,7 @@ export default function AdminDashboard() {
           sidebarOpen ? 'translate-x-0' : '-translate-x-full sm:translate-x-0'
         }`}
       >
-        <h2 className="text-xl font-bold text-blue-600 mb-6">🛠 Admin Menu</h2>
+        <h2 className="text-xl font-bold text-blue-600 mb-6">🛠 Dashboard</h2>
         <nav className="space-y-2">
           {tabs.map((tab) => (
             <button
@@ -99,8 +99,8 @@ export default function AdminDashboard() {
 
       {/* Main Content */}
       <main className="flex-1 p-6">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6 text-center">🎛️ Admin Dashboard</h1>
-        <div className="bg-white p-6 rounded-2xl shadow-xl">
+        
+        <div className="bg-white p-6 ">
           {activeTab === 'categories' && <UploadCategory />}
           {activeTab === 'subcategories' && <UploadSubcategory />}
           {activeTab === 'banners' && <UploadBanner />}
