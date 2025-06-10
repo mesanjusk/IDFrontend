@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './components/Home';
+import Home1 from './pages/Home1';
 import StoryGallery from './components/StoryGallery';
 import Upload from './components/Upload';
 import Insta from './components/Insta';
@@ -81,6 +82,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/allListing" element={<AllListing />} />
+        <Route path="/home1" element={<Home1 />} />
          <Route path="/allCategories" element={<AllCategory />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="/story" element={<StoryGallery />} />

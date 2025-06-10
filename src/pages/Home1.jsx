@@ -1,4 +1,4 @@
-// Home.jsx – Optimized with Tailwind CSS, SEO, and performance improvements
+// Home.jsx – Revamped to match premium eCommerce (like CaratLane), fully styled with Tailwind CSS
 
 import { useState, useEffect, useMemo, Suspense, lazy, useDeferredValue } from 'react';
 import { Helmet } from 'react-helmet';
@@ -80,10 +80,10 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 via-white to-white px-4 py-6">
+    <div className="min-h-screen bg-white px-4 pt-4 pb-20">
       <Helmet>
         <title>Wedding Cards – Kanwal Cards</title>
-        <meta name="description" content="Order premium wedding cards online with customization at Kanwal Cards." />
+        <meta name="description" content="Premium wedding invitation cards with elegant designs and customization options." />
         <meta property="og:title" content="Wedding Cards – Kanwal Cards" />
         <meta property="og:description" content="Custom wedding invitations – personalize & order online." />
         <meta property="og:image" content="https://kanwalcards.in/preview.webp" />
@@ -106,25 +106,27 @@ const Home = () => {
         `}</script>
       </Helmet>
 
-      <div className="text-center mb-6">
-        <h1 className="text-3xl font-bold text-pink-700 drop-shadow-sm">Custom Wedding Cards</h1>
-        <p className="text-gray-600 mt-1">Browse, customize & order online</p>
-      </div>
+      {/* Hero Section */}
+      <section className="relative rounded-xl overflow-hidden bg-[url('/hero-bg.webp')] bg-cover bg-center h-[350px] flex items-center justify-center mb-10">
+        <div className="bg-white/80 backdrop-blur-sm p-8 rounded-lg shadow-md text-center max-w-lg">
+          <h1 className="text-4xl font-semibold text-gray-800">Elegant Wedding Cards</h1>
+          <p className="mt-2 text-sm text-gray-600">Discover & customize premium designs for your big day</p>
+        </div>
+      </section>
 
+      {/* Search & Sort Bar */}
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
         <input
           type="text"
           placeholder="Search wedding cards..."
-          className="border rounded px-4 py-2 w-full sm:w-1/2 shadow-sm"
+          className="border border-gray-300 rounded px-4 py-2 w-full sm:w-2/5 text-sm focus:ring-pink-500 focus:border-pink-500"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          aria-label="Search wedding cards"
         />
         <select
-          className="border rounded px-4 py-2 shadow-sm"
+          className="border border-gray-300 rounded px-4 py-2 text-sm focus:ring-pink-500 focus:border-pink-500"
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
-          aria-label="Sort cards"
         >
           <option value="">Sort By</option>
           <option value="price-asc">Price (Low → High)</option>
@@ -133,27 +135,29 @@ const Home = () => {
         </select>
       </div>
 
-      {loading ? (
-        <div className="animate-pulse space-y-4">
-          <div className="h-10 bg-gray-200 rounded"></div>
-          <div className="h-10 bg-gray-200 rounded"></div>
-          <div className="h-10 bg-gray-200 rounded"></div>
-        </div>
-      ) : error ? (
-        <div className="text-center text-red-600 mt-10">{error}</div>
-      ) : filteredListings.length === 0 ? (
-        <div className="text-center text-gray-500 mt-10">No cards found.</div>
-      ) : (
-        <>
-          <Suspense fallback={<div className="h-10 bg-gray-100 animate-pulse" />}>
-            <Category
-              uniqueCategories={[...new Set(listings.map((item) => item.category))]}
-              selectedCategory={selectedCategory}
-              setSelectedCategory={setSelectedCategory}
-            />
-          </Suspense>
+      {/* Category Tabs */}
+      <Suspense fallback={<div className="h-10 bg-gray-100 animate-pulse" />}>
+        <Category
+          uniqueCategories={[...new Set(listings.map((item) => item.category))]}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+        />
+      </Suspense>
 
-          <Suspense fallback={<div className="space-y-6 animate-pulse"><div className="h-40 bg-gray-200 rounded" /><div className="h-40 bg-gray-200 rounded" /></div>}>
+      {/* Content Grid */}
+      <div className="mt-6">
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="h-72 bg-gray-100 animate-pulse rounded-lg" />
+            ))}
+          </div>
+        ) : error ? (
+          <div className="text-center text-red-600 mt-10">{error}</div>
+        ) : filteredListings.length === 0 ? (
+          <div className="text-center text-gray-500 mt-10">No cards found.</div>
+        ) : (
+          <Suspense fallback={<div className="text-center">Loading cards…</div>}>
             <Content
               listings={filteredListings}
               savedPosts={savedPosts}
@@ -162,14 +166,25 @@ const Home = () => {
               onPreview={setOpenImageModal}
             />
           </Suspense>
+        )}
+      </div>
 
-          {openImageModal && (
-            <Suspense fallback={<div className="text-center mt-6">Loading Preview…</div>}>
-              <GalleryModal images={openImageModal} onClose={() => setOpenImageModal(null)} />
-            </Suspense>
-          )}
-        </>
+      {/* Gallery Modal */}
+      {openImageModal && (
+        <Suspense fallback={<div className="text-center mt-6">Loading Preview…</div>}>
+          <GalleryModal images={openImageModal} onClose={() => setOpenImageModal(null)} />
+        </Suspense>
       )}
+
+      {/* Newsletter Placeholder */}
+      <section className="mt-20 bg-pink-50 py-12 rounded-xl text-center shadow-inner">
+        <h2 className="text-xl font-semibold text-gray-800">Stay Inspired</h2>
+        <p className="text-sm text-gray-600 mt-1 mb-4">Subscribe for latest designs & offers</p>
+        <div className="flex justify-center">
+          <input className="rounded-l px-4 py-2 border border-gray-300 text-sm w-64" placeholder="Your email" />
+          <button className="bg-pink-600 text-white text-sm px-4 py-2 rounded-r hover:bg-pink-700">Subscribe</button>
+        </div>
+      </section>
     </div>
   );
 };
