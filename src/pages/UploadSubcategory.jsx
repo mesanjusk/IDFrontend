@@ -103,7 +103,7 @@ const UploadSubcategory = () => {
   const openEditModal = (sub) => {
     setEditModal({ open: true, subcategory: sub });
     setEditName(sub.name);
-    setEditCategoryId(sub.categoryId?._id || sub.categoryId);
+    setEditCategoryId(sub.categoryId?.category_uuid || sub.categoryId);
     setEditImage(null);
   };
 
@@ -191,7 +191,7 @@ const UploadSubcategory = () => {
                 </td>
                 <td className="p-2 border">{sub.name}</td>
                 <td className="p-2 border">
-                  {categories.find(cat => cat._id === (sub.categoryId?._id || sub.categoryId))?.name || 'N/A'}
+                  {categories.find(cat => cat.category_uuid === sub.categoryId)?.name || 'N/A'}
                 </td>
                 <td className="p-2 border space-x-2">
                   <button
@@ -307,7 +307,7 @@ const UploadSubcategory = () => {
               >
                 <option value="">-- Select a Category --</option>
                 {categories.map((cat) => (
-                  <option key={cat._id} value={cat._id}>{cat.name}</option>
+                  <option key={cat._id} value={cat.category_uuid}>{cat.name}</option>
                 ))}
               </select>
               <input

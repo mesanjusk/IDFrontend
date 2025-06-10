@@ -7,6 +7,7 @@ import toast, { Toaster } from 'react-hot-toast';
 const CreateListing = () => {
   const navigate = useNavigate();
   const location = useLocation();
+const [existingImageURLs, setExistingImageURLs] = useState([]);
 
   const [form, setForm] = useState({ title: '', category: '', subcategory: '', religions: '', price: '', favorite: '' });
   const [images, setImages] = useState([]);
@@ -90,43 +91,58 @@ const CreateListing = () => {
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!form.title || !form.category || !form.subcategory || !form.price) {
-      return toast.error('Fill all fields');
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!form.title || !form.category || !form.subcategory || !form.price) {
+    return toast.error('Fill all fields');
+  }
+
+  const formData = new FormData();
+  Object.entries(form).forEach(([key, value]) => {
+    formData.append(key, value);
+  });
+
+  images.forEach((img) => formData.append("images", img));
+
+  // Include existing image URLs during update
+  if (editingId && existingImageURLs.length > 0) {
+    formData.append("existingImages", JSON.stringify(existingImageURLs));
+  }
+
+  try {
+    if (editingId) {
+      await axios.put(`/api/listings/${editingId}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+      toast.success("Listing updated");
+    } else {
+      await axios.post("/api/listings", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+        onUploadProgress: (e) =>
+          setUploadProgress(Math.round((e.loaded * 100) / e.total))
+      });
+      toast.success("Listing created");
     }
 
-    const formData = new FormData();
-    Object.entries(form).forEach(([k, v]) => formData.append(k, v));
-    images.forEach(img => formData.append('images', img));
+    // Reset
+    setForm({ title: '', category: '', subcategory: '', religions: '', price: '', favorite: '' });
+    setImages([]);
+    setExistingImageURLs([]);
+    setPreviewImages([]);
+    fileInputRef.current.value = '';
+    setUploadProgress(0);
+    setEditingId(null);
+    setShowModal(false);
 
-    try {
-      if (editingId) {
-        await axios.put(`/api/listings/${editingId}`, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
-        toast.success('Listing updated');
-      } else {
-        await axios.post('/api/listings', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-          onUploadProgress: (e) => setUploadProgress(Math.round((e.loaded * 100) / e.total))
-        });
-        toast.success('Listing created');
-      }
+    const updated = await axios.get("/api/listings");
+    setListings(updated.data || []);
+  } catch (error) {
+    console.error(error);
+    toast.error("Submit failed.");
+  }
+};
 
-      setForm({ title: '', category: '', subcategory: '', religions: '', price: '', MOQ: '' });
-      setImages([]);
-      setPreviewImages([]);
-      setUploadProgress(0);
-      fileInputRef.current.value = '';
-      const res = await axios.get('/api/listings');
-      setListings(res.data || []);
-      setShowModal(false);
-      setEditingId(null);
-    } catch (err) {
-      toast.error('Submit failed.');
-    }
-  };
 
   const getName = (uuid, type) => {
     const list = dropdownData[type];
@@ -149,19 +165,24 @@ const CreateListing = () => {
   };
 
   const handleEdit = (item) => {
-    setEditingId(item._id);
-    setForm({
-      title: item.title,
-      category: item.category_uuid,
-      subcategory: item.subcategory_uuid,
-      religions: item.religion_uuid,
-      price: item.price,
-      favorite: item.favorite
-    });
-    setImages([]); // Clear new images
-    setPreviewImages((item.images || []).map(img => ({ url: img.url }))); // Show existing ones
-    setShowModal(true);
-  };
+  setEditingId(item._id);
+  setForm({
+    title: item.title || '',
+    category: item.category_uuid || '',
+    subcategory: item.subcategory_uuid || '',
+    religions: item.religion_uuid || '',
+    price: item.price || '',
+    favorite: item.favorite || ''
+  });
+
+  setImages([]); 
+  setExistingImageURLs(item.images || []); 
+  setPreviewImages(
+    (item.images || []).map((url) => ({ url })) 
+  );
+
+  setShowModal(true);
+};
 
   const filteredListings = listings.filter(item =>
     item.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -202,7 +223,9 @@ const CreateListing = () => {
               </select>
               <input type="file" ref={fileInputRef} multiple accept="image/*" onChange={handleImageUpload} className="mb-2" />
               <div className="flex gap-2 flex-wrap">
-                {previewImages.map((img, idx) => <img key={idx} src={img.url} className="w-20 h-20 object-cover rounded" alt="preview" />)}
+                {previewImages.map((img, idx) => (
+                  <img key={idx} src={img.url} className="w-20 h-20 object-cover rounded" alt="preview" />
+                ))}
               </div>
               <div className="flex justify-end gap-4">
                 <button type="button" onClick={() => setShowModal(false)} className="bg-gray-400 text-white px-4 py-2 rounded">Cancel</button>

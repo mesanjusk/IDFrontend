@@ -89,7 +89,7 @@ const AddReligion = () => {
     formData.append('name', name);
 
     try {
-      await axios.put(`${API_URL}/${editReligionId}`, formData);
+      await axios.put(`${API_URL}/${editReligionId}`, { name });
       toast.success('Religion updated.');
       setIsEditModalOpen(false);
       fetchReligions();
