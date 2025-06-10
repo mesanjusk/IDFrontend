@@ -246,9 +246,7 @@ const [existingImageURLs, setExistingImageURLs] = useState([]);
             <th className="p-2 border">Image</th>
             <th className="p-2 border">Title</th>
             <th className="p-2 border">Category</th>
-            <th className="p-2 border">Subcategory</th>
-            <th className="p-2 border">Religion</th>
-            <th className="p-2 border">Price</th>
+           
             <th className="p-2 border">Actions</th>
           </tr>
         </thead>
@@ -274,9 +272,7 @@ const [existingImageURLs, setExistingImageURLs] = useState([]);
               </td>
               <td className="p-2 border">{item.title}</td>
               <td className="p-2 border">{getName(item.category, 'categories')}</td>
-              <td className="p-2 border">{getName(item.subcategory, 'subcategories')}</td>
-              <td className="p-2 border">{getName(item.religions, 'religions')}</td>
-              <td className="p-2 border">{item.price}</td>
+             
               <td className="p-2 border space-x-2">
                 <button onClick={() => handleEdit(item)} className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">Edit</button>
                 <button onClick={() => handleDelete(item._id)} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Delete</button>
