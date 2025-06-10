@@ -41,14 +41,15 @@ export default function AdminDashboard() {
   };
 
   const tabs = [
+    { key: 'listings', label: '📁 Item' },
     { key: 'categories', label: '📂 Categories' },
     { key: 'subcategories', label: '📁 Subcategories' },
-    { key: 'banners', label: '📁 Banners' },
-    { key: 'listings', label: '📁 Add Listing' },
-    { key: 'allListing', label: '📦 All Listings' },
-    { key: 'users', label: '👥 Users' },
+    
+    { key: 'religions', label: '🛐 Religions' },   
+    
     { key: 'confis', label: '⚙️ Configuration' },
-    { key: 'religions', label: '🛐 Religions' },
+    { key: 'banners', label: '📁 Banners' },
+    { key: 'users', label: '👥 Users' },
   ];
 
   return (
@@ -100,7 +101,7 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <main className="flex-1 p-6">
         
-        <div className="bg-white p-6 ">
+        <div className="min-h-screen p-6 ">
           {activeTab === 'categories' && <UploadCategory />}
           {activeTab === 'subcategories' && <UploadSubcategory />}
           {activeTab === 'banners' && <UploadBanner />}
