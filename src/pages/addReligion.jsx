@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api'
 import { useNavigate, useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
@@ -29,7 +29,7 @@ const AddReligion = () => {
 
   const fetchReligions = async () => {
     try {
-      const res = await axios.get(`${API_URL}/GetReligionList`);
+      const res = await api.get(`${API_URL}/GetReligionList`);
      const data = Array.isArray(res.data.result) ? res.data.result : [];
     setReligions(data);
     setFilteredReligions(data);
@@ -60,7 +60,7 @@ const AddReligion = () => {
     formData.append('name', name);
 
     try {
-      await axios.post(API_URL, formData);
+      await api.post(API_URL, formData);
       toast.success('Religion created.');
       setReligionName('');
       setIsCreateModalOpen(false);
@@ -89,7 +89,7 @@ const AddReligion = () => {
     formData.append('name', name);
 
     try {
-      await axios.put(`${API_URL}/${editReligionId}`, { name });
+      await api.put(`${API_URL}/${editReligionId}`, { name });
       toast.success('Religion updated.');
       setIsEditModalOpen(false);
       fetchReligions();
@@ -101,7 +101,7 @@ const AddReligion = () => {
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this Religion?')) return;
     try {
-      await axios.delete(`${API_URL}/${id}`);
+      await api.delete(`${API_URL}/${id}`);
       toast.success('Deleted');
       fetchReligions();
     } catch {

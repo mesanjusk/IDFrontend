@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { useNavigate } from "react-router-dom";
-import axios from "axios"
+import api from '../api'
 
 export default function AddPrice() {
     const navigate = useNavigate();
@@ -25,7 +25,7 @@ export default function AddPrice() {
     async function submit(e){
         e.preventDefault();
         try{
-            await axios.post("/api/prices/add",{
+            await api.post("/api/prices/add",{
                 price
             })
             .then(res=>{

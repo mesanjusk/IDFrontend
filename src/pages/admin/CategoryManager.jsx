@@ -1,6 +1,6 @@
 // Folder: src/pages/admin/CategoryManager.jsx
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../api'
 
 export default function CategoryManager() {
   const [categories, setCategories] = useState([]);
@@ -8,7 +8,7 @@ export default function CategoryManager() {
   const [image, setImage] = useState(null);
 
   const fetchCategories = async () => {
-    const res = await axios.get('/api/categories');
+    const res = await api.get('/api/categories');
     setCategories(res.data);
   };
 
@@ -21,14 +21,14 @@ export default function CategoryManager() {
     const formData = new FormData();
     formData.append('name', name);
     formData.append('image', image);
-    await axios.post('/api/categories', formData);
+    await api.post('/api/categories', formData);
     fetchCategories();
     setName('');
     setImage(null);
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`/api/categories/${id}`);
+    await api.delete(`/api/categories/${id}`);
     fetchCategories();
   };
 

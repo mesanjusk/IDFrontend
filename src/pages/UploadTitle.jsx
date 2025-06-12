@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import api from '../api'
 
 const UploadCategory = () => {
   const [categoryName, setCategoryName] = useState('');
@@ -32,7 +32,7 @@ const UploadCategory = () => {
 
     try {
       // Make POST request to your deployed backend
-      const response = await axios.post(
+      const response = await api.post(
         '/api/categories', // Updated URL
         formData,
         {

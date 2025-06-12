@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useNavigate, useLocation } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
 import toast, { Toaster } from 'react-hot-toast';
@@ -40,10 +40,10 @@ const [existingImageURLs, setExistingImageURLs] = useState([]);
     const fetchDropdowns = async () => {
       try {
         const [categoryRes, subcategoryRes, religionRes, listingRes] = await Promise.all([
-          axios.get('/api/categories/with-usage'),
-          axios.get('/api/subcategories'),
-          axios.get('/api/religions/GetReligionList'),
-          axios.get('/api/listings')
+          api.get('/api/categories/with-usage'),
+          api.get('/api/subcategories'),
+          api.get('/api/religions/GetReligionList'),
+          api.get('/api/listings')
         ]);
         setDropdownData({
           categories: safeExtract(categoryRes.data),
@@ -112,12 +112,12 @@ const [existingImageURLs, setExistingImageURLs] = useState([]);
 
   try {
     if (editingId) {
-      await axios.put(`/api/listings/${editingId}`, formData, {
+      await api.put(`/api/listings/${editingId}`, formData, {
         headers: { "Content-Type": "multipart/form-data" }
       });
       toast.success("Listing updated");
     } else {
-      await axios.post("/api/listings", formData, {
+      await api.post("/api/listings", formData, {
         headers: { "Content-Type": "multipart/form-data" },
         onUploadProgress: (e) =>
           setUploadProgress(Math.round((e.loaded * 100) / e.total))
@@ -135,7 +135,7 @@ const [existingImageURLs, setExistingImageURLs] = useState([]);
     setEditingId(null);
     setShowModal(false);
 
-    const updated = await axios.get("/api/listings");
+    const updated = await api.get("/api/listings");
     setListings(updated.data || []);
   } catch (error) {
     console.error(error);
@@ -159,7 +159,7 @@ const [existingImageURLs, setExistingImageURLs] = useState([]);
 
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this listing?')) return;
-    await axios.delete(`/api/listings/${id}`);
+    await api.delete(`/api/listings/${id}`);
     setListings(listings.filter(item => item._id !== id));
     toast.success('Listing deleted');
   };

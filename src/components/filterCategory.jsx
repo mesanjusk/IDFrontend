@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from '../api';
 import Carousel from "./Carousel";
 
 export default function FilterCategory() {
@@ -11,7 +11,7 @@ export default function FilterCategory() {
   useEffect(() => {
     const fetchListings = async () => {
       try {
-        const response = await axios.get(
+        const response = await api.get(
           "/api/listings"
         );
         setListings(response.data);

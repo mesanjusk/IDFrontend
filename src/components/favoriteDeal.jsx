@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from '../api';
 import Carousel from "./Carousel";
 
 
@@ -12,7 +12,7 @@ export default function FavoriteDeal() {
   useEffect(() => {
     const fetchFavoriteListings = async () => {
       try {
-        const response = await axios.get(
+        const response = await api.get(
           "/api/listings/favorite?favorite=1"
         );
         setFavoriteListings(response.data);

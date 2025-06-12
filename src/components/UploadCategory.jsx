@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { FaPlus } from 'react-icons/fa';
 
 const PAGE_SIZE = 5;
@@ -42,7 +42,7 @@ const UploadCategory = () => {
 
   const fetchCategories = async (pageNum) => {
     try {
-      const res = await axios.get(`/api/categories?page=${pageNum}&limit=${PAGE_SIZE}`);
+      const res = await api.get(`/api/categories?page=${pageNum}&limit=${PAGE_SIZE}`);
       setCategories(res.data.categories);
       setFilteredCategories(res.data.categories);
       setTotalPages(Math.ceil(res.data.total / PAGE_SIZE));
@@ -76,7 +76,7 @@ const UploadCategory = () => {
     formData.append('name', categoryName);
     formData.append('image', categoryImage);
     try {
-      await axios.post('/api/categories', formData, {
+      await api.post('/api/categories', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setSuccess('Category uploaded successfully!');
@@ -101,7 +101,7 @@ const UploadCategory = () => {
       return;
     }
     try {
-      await axios.put(`/api/categories/${editCategoryId}`, { name: editName });
+      await api.put(`/api/categories/${editCategoryId}`, { name: editName });
       setSuccess('Category updated');
       setEditModalOpen(false);
       fetchCategories(page);
@@ -113,7 +113,7 @@ const UploadCategory = () => {
   const deleteCategory = async (id) => {
     if (!window.confirm('Are you sure you want to delete this category?')) return;
     try {
-      await axios.delete(`/api/categories/${id}`);
+      await api.delete(`/api/categories/${id}`);
       setSuccess('Category deleted');
       fetchCategories(page);
     } catch (err) {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { useNavigate, useLocation } from "react-router-dom";
 
 const API_URL = '/api/listings';
@@ -19,7 +19,7 @@ const AllListing = () => {
 
   const fetchListings = async () => {
     try {
-      const res = await axios.get(API_URL);
+      const res = await api.get(API_URL);
       setListings(res.data);
     } catch (err) {
       console.error('Fetch error:', err);
@@ -57,7 +57,7 @@ const AllListing = () => {
 
   const confirmDelete = async () => {
     try {
-      await axios.delete(`${API_URL}/${selectedItem._id}`);
+      await api.delete(`${API_URL}/${selectedItem._id}`);
       await fetchListings();
       closeModal();
     } catch (err) {
@@ -67,7 +67,7 @@ const AllListing = () => {
 
   const confirmEdit = async () => {
     try {
-      await axios.put(`${API_URL}/${selectedItem._id}`, { title: editedTitle });
+      await api.put(`${API_URL}/${selectedItem._id}`, { title: editedTitle });
       await fetchListings();
       closeModal();
     } catch (err) {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react"; 
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from '../api';
 import Header from "./Header";
 import Footer from "./Footer";
 import SocialMedia from "./SocialMedia";
@@ -21,8 +21,8 @@ export default function FilterSubcategory() {
   const fetchListingsByCategoryId = async () => {
     try {
       const [listingsRes, categoriesRes] = await Promise.all([
-        axios.get("/api/listings"),
-        axios.get("/api/categories")
+        api.get("/api/listings"),
+        api.get("/api/categories")
       ]);
 
       const listings = listingsRes.data;
@@ -61,7 +61,7 @@ const filtered = listings.filter(
 useEffect(() => {
   const fetchSubcategories = async () => {
     try {
-      const response = await axios.get("/api/subcategories");
+      const response = await api.get("/api/subcategories");
       const matched = response.data.filter((sub) => {
         const catId = sub.categoryId?._id || sub.categoryId?.$oid || sub.categoryId;
         return catId?.toString() === id?.toString();

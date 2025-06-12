@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from '../api';
 import { useNavigate } from "react-router-dom";
 
 export default function AllCategory() {
@@ -11,7 +11,7 @@ export default function AllCategory() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("/api/categories");
+        const response = await api.get("/api/categories");
         setCategories(response.data);
       } catch (err) {
         console.error("Error fetching categories:", err);

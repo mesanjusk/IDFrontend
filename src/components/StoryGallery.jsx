@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import axios from "axios";
+import api from '../api';
 
 export default function StoryGallery() {
   const [images, setImages] = useState([]);
@@ -11,7 +11,7 @@ export default function StoryGallery() {
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const res = await axios.get("/api/images");
+        const res = await api.get("/api/images");
         setImages(res.data);
       } catch (err) {
         console.error("Error fetching story images:", err);

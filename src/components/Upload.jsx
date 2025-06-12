@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
+import api from '../api';
 
 function Upload() {
   const [file, setFile] = useState('');
@@ -32,7 +32,7 @@ function Upload() {
     formData.append('seoKeywords', seoKeywords);
 
     try {
-      const response = await axios.post('/api/images', formData, {
+      const response = await api.post('/api/images', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       alert('Uploaded successfully');

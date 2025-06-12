@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://idbackend-rf1u.onrender.com',
-});
+// Configure axios globally so any module importing this file gets the base URL.
+axios.defaults.baseURL = import.meta.env.VITE_API_BASE_URL ||
+  'https://idbackend-rf1u.onrender.com';
 
-export default api;
+export default axios;

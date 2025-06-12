@@ -7,7 +7,7 @@ import {
   FiX,
 } from "react-icons/fi";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import api from '../api';
 
 export default function Header() {
   const [openDropdown, setOpenDropdown] = useState(null);
@@ -53,7 +53,7 @@ export default function Header() {
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const response = await axios.get("/api/confi/GetConfiList");
+        const response = await api.get("/api/confi/GetConfiList");
         if (response.data.success && response.data.result.length > 0) {
           setConfig(response.data.result[0]);
         }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"; 
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import api from '../api';
 import Header from "./Header";
 import Footer from "./Footer";
 import SocialMedia from "./SocialMedia";
@@ -22,7 +22,7 @@ export default function ListingPage() {
       }
 
       try {
-        const response = await axios.get(`/api/listings/${itemId}`);
+        const response = await api.get(`/api/listings/${itemId}`);
         setItems([response.data]);
         if (response.data.images && response.data.images.length > 0) {
           setSelectedImage(response.data.images[0]);

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from '../api';
 import Footer from "./Footer";
 import Header from "./Header";
 
@@ -12,7 +12,7 @@ export default function SubCategory() {
   useEffect(() => {
     const fetchSubcategories = async () => {
       try {
-        const response = await axios.get("/api/subcategories");
+        const response = await api.get("/api/subcategories");
         const matched = response.data.filter((sub) => {
           const catId = sub.categoryId?._id || sub.categoryId?.$oid || sub.categoryId;
           return catId?.toString() === id?.toString();

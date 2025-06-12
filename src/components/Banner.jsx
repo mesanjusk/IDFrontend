@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from '../api';
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper/modules";
 import "swiper/css";
@@ -20,7 +20,7 @@ export default function Banner() {
   useEffect(() => {
     const fetchBanners = async () => {
       try {
-        const response = await axios.get(
+        const response = await api.get(
           "/api/banners"
         );
         setBanners(response.data);

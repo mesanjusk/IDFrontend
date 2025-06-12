@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from '../api'
 
 export default function Login() {
     const navigate = useNavigate();
@@ -11,7 +11,7 @@ export default function Login() {
         e.preventDefault();
     
         try {
-            const response = await axios.post("/api/users/login", {
+            const response = await api.post("/api/users/login", {
                 User_name,
                 Password
             });

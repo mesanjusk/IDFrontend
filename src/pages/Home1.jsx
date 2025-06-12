@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, Suspense, lazy, useDeferredValue } from 'react';
 import { Helmet } from 'react-helmet';
-import axios from 'axios';
+import api from '../api'
 import { useCart } from '../context/CartContext';
 
 const Category = lazy(() => import("../components/Category"));
@@ -25,7 +25,7 @@ const Home = () => {
   useEffect(() => {
     const fetchListings = async () => {
       try {
-        const response = await axios.get('/api/listings');
+        const response = await api.get('/api/listings');
         setListings(response.data);
       } catch (err) {
         console.error('Error fetching listings:', err);

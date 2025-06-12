@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api'
 import { useNavigate, useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
@@ -36,7 +36,7 @@ const UploadCategory = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get('/api/categories/with-usage');
+      const res = await api.get('/api/categories/with-usage');
       setCategories(res.data);
       setFilteredCategories(res.data);
       setUsedCategoryNames(res.data.map((cat) => cat.name.toLowerCase()));
@@ -67,7 +67,7 @@ const UploadCategory = () => {
     formData.append('image', categoryImage);
 
     try {
-      await axios.post(API_URL, formData);
+      await api.post(API_URL, formData);
       toast.success('Category created.');
       setCategoryName('');
       setCategoryImage(null);
@@ -118,7 +118,7 @@ const UploadCategory = () => {
     if (editCategoryImage) formData.append('image', editCategoryImage);
 
     try {
-      await axios.put(`${API_URL}/${editCategoryId}`, formData);
+      await api.put(`${API_URL}/${editCategoryId}`, formData);
       toast.success('Category updated.');
       setIsEditModalOpen(false);
       fetchCategories();
@@ -130,7 +130,7 @@ const UploadCategory = () => {
   const handleDelete = async (id) => {
     if (!window.confirm('Delete this category?')) return;
     try {
-      await axios.delete(`${API_URL}/${id}`);
+      await api.delete(`${API_URL}/${id}`);
       toast.success('Deleted');
       fetchCategories();
     } catch {

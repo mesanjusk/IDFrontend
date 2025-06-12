@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from "react-router-dom";
-import axios from "axios";
+import api from '../api'
 
 export default function AddTitle() {
     const navigate = useNavigate();
@@ -25,7 +25,7 @@ export default function AddTitle() {
     async function submit(e) {
         e.preventDefault();
         try {
-            const res = await axios.post("/api/titles/add", { name });
+            const res = await api.post("/api/titles/add", { name });
             if (res.data === "exist") {
                 alert("Title already exists");
             } else if (res.data === "notexist") {

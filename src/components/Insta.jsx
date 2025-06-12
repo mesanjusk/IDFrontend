@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from '../api';
 
 const categories = ["All", "Wedding", "Birthday", "Vastu", "Opening"];
 
@@ -11,7 +11,7 @@ export default function InstagramStyleGallery() {
 
   const fetchImages = async () => {
     try {
-      const res = await axios.get("/api/images");
+      const res = await api.get("/api/images");
       setImages(res.data);
       setFilteredImages(res.data);
     } catch (err) {

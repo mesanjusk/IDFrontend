@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api'
 import { useNavigate } from "react-router-dom";
 
 const UploadSubcategory = () => {
@@ -36,14 +36,14 @@ const UploadSubcategory = () => {
   }, [navigate]);
 
   const fetchCategories = () => {
-    axios
+    api
       .get('/api/categories/with-usage')
       .then((res) => setCategories(res.data))
       .catch((err) => console.error('Error fetching categories:', err));
   };
 
   const fetchSubcategories = () => {
-    axios
+    api
       .get('/api/subcategories')
       .then((res) => setSubcategories(res.data))
       .catch((err) => console.error('Error fetching subcategories:', err));
@@ -66,7 +66,7 @@ const UploadSubcategory = () => {
     formData.append('image', image);
 
     try {
-      await axios.post('/api/subcategories', formData);
+      await api.post('/api/subcategories', formData);
       setStatus('✅ Subcategory uploaded successfully!');
       setName('');
       setImage(null);
@@ -85,7 +85,7 @@ const UploadSubcategory = () => {
     const confirmed = window.confirm('Are you sure you want to delete this subcategory?');
     if (!confirmed) return;
     try {
-      await axios.delete(`/api/subcategories/${id}`);
+      await api.delete(`/api/subcategories/${id}`);
       fetchSubcategories();
     } catch (error) {
       console.error('Delete error:', error);
@@ -132,7 +132,7 @@ const UploadSubcategory = () => {
     }
 
     try {
-      await axios.put(`/api/subcategories/${editModal.subcategory._id}`, formData);
+      await api.put(`/api/subcategories/${editModal.subcategory._id}`, formData);
       fetchSubcategories();
       closeEditModal();
     } catch (error) {

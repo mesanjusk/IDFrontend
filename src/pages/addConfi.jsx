@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api'
 import { useNavigate, useLocation } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
 import toast, { Toaster } from 'react-hot-toast';
@@ -31,7 +31,7 @@ const AddConfi = () => {
     if (user) setLoggedInUser(user);
     else navigate('/login');
 
-    axios.get('/api/confi/GetConfiList')
+    api.get('/api/confi/GetConfiList')
   .then(res => {
     const result = res.data?.result || res.data || [];
     setConfig(Array.isArray(result) ? result : []);
@@ -78,12 +78,12 @@ const AddConfi = () => {
 
     try {
       if (editingId) {
-        await axios.put(`/api/confi/${editingId}`, formData, {
+        await api.put(`/api/confi/${editingId}`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
         toast.success('Config updated');
       } else {
-        await axios.post('/api/confi/add', formData, {
+        await api.post('/api/confi/add', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
           onUploadProgress: (e) => setUploadProgress(Math.round((e.loaded * 100) / e.total))
         });
@@ -103,7 +103,7 @@ const AddConfi = () => {
 
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this config?')) return;
-    await axios.delete(`/api/confi/${id}`);
+    await api.delete(`/api/confi/${id}`);
     setConfig(config.filter(item => item._id !== id));
     toast.success('Config deleted');
   };

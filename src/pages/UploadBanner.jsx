@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api'
 import { useNavigate, useLocation } from 'react-router-dom';
 import toast, { Toaster } from 'react-hot-toast';
 
@@ -32,7 +32,7 @@ const UploadBanner = () => {
 
   const fetchBanners = async () => {
     try {
-      const res = await axios.get(API_URL);
+      const res = await api.get(API_URL);
       setBanners(res.data.reverse());
     } catch (err) {
       toast.error('Error fetching banners');
@@ -63,7 +63,7 @@ const UploadBanner = () => {
       const formData = new FormData();
       formData.append('name', bannerName);
       formData.append('image', image);
-      return axios.post(API_URL, formData, {
+      return api.post(API_URL, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
     });
@@ -86,7 +86,7 @@ const UploadBanner = () => {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this banner?')) return;
     try {
-      await axios.delete(`${API_URL}/${id}`);
+      await api.delete(`${API_URL}/${id}`);
       toast.success('Banner deleted');
       fetchBanners();
     } catch (err) {
@@ -98,7 +98,7 @@ const UploadBanner = () => {
   const handleEditSubmit = async () => {
     if (!editModal.name.trim()) return;
     try {
-      await axios.put(`${API_URL}/${editModal.id}`, { name: editModal.name });
+      await api.put(`${API_URL}/${editModal.id}`, { name: editModal.name });
       toast.success('Banner name updated');
       setEditModal({ open: false, id: null, name: '' });
       fetchBanners();

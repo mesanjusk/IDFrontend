@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { useNavigate } from "react-router-dom";
-import axios from "axios"
+import api from '../api'
 
 export default function AddInsta() {
     const navigate = useNavigate();
@@ -25,7 +25,7 @@ export default function AddInsta() {
     async function submit(e){
         e.preventDefault();
         try{
-            await axios.post("/api/instas/add",{
+            await api.post("/api/instas/add",{
                 name
             })
             .then(res=>{

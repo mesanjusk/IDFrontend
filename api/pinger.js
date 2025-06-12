@@ -1,5 +1,5 @@
 // /api/pinger.js
-const API_BASE_URL = process.env.API_BASE_URL || 'https://idbackend-rf1u.onrender.com';
+const API_BASE_URL = process.env.VITE_API_BASE_URL || 'https://idbackend-rf1u.onrender.com';
 
 export default async function handler(req, res) {
   try {

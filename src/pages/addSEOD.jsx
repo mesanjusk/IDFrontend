@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { useNavigate } from "react-router-dom";
-import axios from "axios"
+import api from '../api'
 
 export default function AddSEOD() {
     const navigate = useNavigate();
@@ -26,7 +26,7 @@ const [loggedInUser, setLoggedInUser] = useState(null);
     async function submit(e){
         e.preventDefault();
         try{
-            await axios.post("/api/seods/add",{
+            await api.post("/api/seods/add",{
                 name
             })
             .then(res=>{

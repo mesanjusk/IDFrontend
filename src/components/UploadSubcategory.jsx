@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import api from '../api';
 
 const UploadSubcategory = () => {
   const [subcategoryName, setSubcategoryName] = useState('');
@@ -15,7 +15,7 @@ const UploadSubcategory = () => {
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get('/api/subcategories');
+      const res = await api.get('/api/subcategories');
       setAllSubcategories(res.data);
     } catch (err) {
       console.error("Failed to fetch categories:", err);
@@ -44,7 +44,7 @@ const UploadSubcategory = () => {
     setLoading(true);
 
     try {
-      await axios.post('/api/subcategories', formData, {
+      await api.post('/api/subcategories', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 

@@ -1,7 +1,7 @@
 // 📁 src/pages/Admin.jsx
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api'
 import { Helmet } from 'react-helmet';
 
 const Admin = () => {
@@ -32,7 +32,7 @@ const Admin = () => {
 
   const fetchListings = async () => {
     try {
-      const response = await axios.get('/api/listings');
+      const response = await api.get('/api/listings');
       setListings(response.data);
     } catch (err) {
       console.error('Error fetching listings:', err);
@@ -44,7 +44,7 @@ const Admin = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`/api/listings/${id}`);
+      await api.delete(`/api/listings/${id}`);
       fetchListings();
     } catch (err) {
       alert('Failed to delete item.');
@@ -59,7 +59,7 @@ const Admin = () => {
   const handleAddListing = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('/api/listings', formData);
+      await api.post('/api/listings', formData);
       setFormData({ title: '', category: '', price: '', status: 'Published' });
       setShowAddForm(false);
       fetchListings();

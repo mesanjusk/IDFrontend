@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api'
 import toast, { Toaster } from 'react-hot-toast';
 
 export default function AddUser() {
@@ -35,7 +35,7 @@ const [form, setForm] = useState({ User_name: '', Password: '', Mobile_number: '
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get('/api/users/GetUserList');
+      const res = await api.get('/api/users/GetUserList');
       const result = res.data?.result || res.data || [];
       setUsers(result);
       setFilteredUsers(result);
@@ -49,7 +49,7 @@ const [form, setForm] = useState({ User_name: '', Password: '', Mobile_number: '
   const submit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('/api/users/addUser', {
+      const res = await api.post('/api/users/addUser', {
         User_name,
         Password,
         Mobile_number,
@@ -98,7 +98,7 @@ const [form, setForm] = useState({ User_name: '', Password: '', Mobile_number: '
 
   try {
     if (editingId) {
-      await axios.put(`/api/users/updateUser/${editingId}`, {
+      await api.put(`/api/users/updateUser/${editingId}`, {
          User_name: form.User_name,
         Mobile_number: form.Mobile_number,
       });
@@ -117,7 +117,7 @@ const [form, setForm] = useState({ User_name: '', Password: '', Mobile_number: '
 
    const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this user?')) return;
-    await axios.delete(`/api/users/${id}`);
+    await api.delete(`/api/users/${id}`);
     setUsers(users.filter(item => item._id !== id));
     toast.success('User deleted');
   };

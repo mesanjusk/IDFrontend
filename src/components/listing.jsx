@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import { Helmet } from 'react-helmet';
 import Navbar from './Navbar';
 import Footer from './Footer1';
@@ -34,7 +34,7 @@ const Home = () => {
   useEffect(() => {
     const fetchListings = async () => {
       try {
-        const response = await axios.get('/api/listings');
+        const response = await api.get('/api/listings');
         setListings(response.data);
       } catch (err) {
         console.error('Error fetching listings:', err);

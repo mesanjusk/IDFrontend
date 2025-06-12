@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from '../api';
 
 export default function SpecialPicks() {
   const navigate = useNavigate();
@@ -9,7 +9,7 @@ export default function SpecialPicks() {
   useEffect(() => {
     const fetchSubcategories = async () => {
       try {
-        const response = await axios.get(
+        const response = await api.get(
           "/api/subcategories"
         );
         setSubcategories(response.data);
