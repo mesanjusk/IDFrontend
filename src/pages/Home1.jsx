@@ -3,7 +3,6 @@
 import { useState, useEffect, useMemo, Suspense, lazy, useDeferredValue } from 'react';
 import { Helmet } from 'react-helmet';
 import api from '../api'
-import { useCart } from '../context/CartContext';
 
 const Category = lazy(() => import("../components/Category"));
 const Content = lazy(() => import("../components/Content"));
@@ -18,7 +17,6 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [openImageModal, setOpenImageModal] = useState(null);
-  const { addToCart } = useCart();
 
   const deferredSearch = useDeferredValue(searchTerm);
 
@@ -162,7 +160,6 @@ const Home = () => {
               listings={filteredListings}
               savedPosts={savedPosts}
               setSavedPosts={setSavedPosts}
-              onAddToCart={addToCart}
               onPreview={setOpenImageModal}
             />
           </Suspense>
