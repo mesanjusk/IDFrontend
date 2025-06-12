@@ -27,6 +27,8 @@ import AddConfi from './pages/addConfi';
 import List from './components/list';
 import FilterSubategory from './components/filterSubcategory';
 import axios from 'axios';
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://idbackend-rf1u.onrender.com';
 import SocialMedia from './components/SocialMedia';
 import AdminDashboard from './components/AdminDashboard';
 import Contact from './components/Contact';
@@ -34,13 +36,13 @@ import AllCategory from './components/allCategory';
 
 function App() {
   const [backendReady, setBackendReady] = useState(false);
-  axios.defaults.baseURL = "https://idbackend-rf1u.onrender.com";
+  axios.defaults.baseURL = API_BASE_URL;
   useEffect(() => {
     const timeout = setTimeout(() => {
       setBackendReady(true); 
     }, 5000);
 
-    fetch('https://idbackend-rf1u.onrender.com/api/ping')
+    fetch(`${API_BASE_URL}/api/ping`)
       .then((res) => res.json())
       .then(() => {
         clearTimeout(timeout);

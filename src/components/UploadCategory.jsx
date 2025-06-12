@@ -76,7 +76,7 @@ const UploadCategory = () => {
     formData.append('name', categoryName);
     formData.append('image', categoryImage);
     try {
-      await axios.post('https://idbackend-rf1u.onrender.com/api/categories', formData, {
+      await axios.post('/api/categories', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setSuccess('Category uploaded successfully!');
@@ -101,7 +101,7 @@ const UploadCategory = () => {
       return;
     }
     try {
-      await axios.put(`https://idbackend-rf1u.onrender.com/api/categories/${editCategoryId}`, { name: editName });
+      await axios.put(`/api/categories/${editCategoryId}`, { name: editName });
       setSuccess('Category updated');
       setEditModalOpen(false);
       fetchCategories(page);
@@ -113,7 +113,7 @@ const UploadCategory = () => {
   const deleteCategory = async (id) => {
     if (!window.confirm('Are you sure you want to delete this category?')) return;
     try {
-      await axios.delete(`https://idbackend-rf1u.onrender.com/api/categories/${id}`);
+      await axios.delete(`/api/categories/${id}`);
       setSuccess('Category deleted');
       fetchCategories(page);
     } catch (err) {

@@ -1,7 +1,9 @@
 // /api/pinger.js
+const API_BASE_URL = process.env.API_BASE_URL || 'https://idbackend-rf1u.onrender.com';
+
 export default async function handler(req, res) {
   try {
-    const response = await fetch("https://idbackend-rf1u.onrender.com/api/ping");
+    const response = await fetch(`${API_BASE_URL}/api/ping`);
     const data = await response.text();
     res.status(200).send(`Pinged backend: ${data}`);
   } catch (error) {
