@@ -3,6 +3,7 @@ import api from '../api'
 import { useNavigate, useLocation } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
 import toast, { Toaster } from 'react-hot-toast';
+import PageLayout from '../components/PageLayout';
 
 const AddConfi = () => {
   const navigate = useNavigate();
@@ -134,7 +135,8 @@ const AddConfi = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <PageLayout>
+      <div className="p-6">
       <Toaster position="top-right" />
 
       <div className="flex justify-between items-center mb-6">
@@ -218,7 +220,8 @@ const AddConfi = () => {
           <button className="absolute top-4 right-4 text-white text-3xl font-bold">&times;</button>
         </div>
       )}
-    </div>
+      </div>
+    </PageLayout>
   );
 };
 

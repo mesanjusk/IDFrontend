@@ -3,6 +3,7 @@ import api from '../api';
 import { useNavigate, useLocation } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
 import toast, { Toaster } from 'react-hot-toast';
+import PageLayout from './PageLayout';
 
 const CreateListing = () => {
   const navigate = useNavigate();
@@ -189,7 +190,8 @@ const [existingImageURLs, setExistingImageURLs] = useState([]);
   );
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <PageLayout showFooter={false}>
+      <div className="p-6">
       <Toaster position="top-right" />
 
       <div className="flex justify-between items-center mb-6">
@@ -295,7 +297,8 @@ const [existingImageURLs, setExistingImageURLs] = useState([]);
         </div>
       )}
     </div>
-    
+    </PageLayout>
+
   );
 };
 

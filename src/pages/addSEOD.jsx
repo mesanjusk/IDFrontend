@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { useNavigate } from "react-router-dom";
 import api from '../api'
+import PageLayout from '../components/PageLayout';
 
 export default function AddSEOD() {
     const navigate = useNavigate();
@@ -53,9 +54,8 @@ const [loggedInUser, setLoggedInUser] = useState(null);
      };
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
-           
-            
+        <PageLayout>
+            <div className="p-6">
             <h1 className="text-2xl font-bold mb-6">Add SEODes</h1>
 
             <form  onSubmit={submit} className="bg-white p-4 rounded shadow max-w-md space-y-4">
@@ -64,16 +64,16 @@ const [loggedInUser, setLoggedInUser] = useState(null);
                          
                
                 <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition disabled:opacity-50"> Submit </button>
-                <button 
-                        type="button" 
+                <button
+                        type="button"
                         className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition disabled:opacity-50"
                         onClick={closeModal}
                     >
                         Close
                     </button>
             </form>
-            
-        </div>
+            </div>
+        </PageLayout>
     );
 }
 

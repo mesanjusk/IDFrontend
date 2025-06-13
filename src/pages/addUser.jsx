@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../api'
+import PageLayout from '../components/PageLayout';
 import toast, { Toaster } from 'react-hot-toast';
 
 export default function AddUser() {
@@ -133,7 +134,8 @@ const [form, setForm] = useState({ User_name: '', Password: '', Mobile_number: '
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
+    <PageLayout>
+    <div className="p-4 max-w-4xl mx-auto">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl md:text-2xl font-bold">Add User</h2>
         <button
@@ -249,5 +251,6 @@ const [form, setForm] = useState({ User_name: '', Password: '', Mobile_number: '
         </div>
       )}
     </div>
+    </PageLayout>
   );
 }

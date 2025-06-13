@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import api from '../api';
+import PageLayout from './PageLayout';
 
 const UploadSubcategory = () => {
   const [subcategoryName, setSubcategoryName] = useState('');
@@ -63,7 +64,8 @@ const UploadSubcategory = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <PageLayout showFooter={false}>
+    <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">Upload New SubCategory</h1>
 
       <form onSubmit={handleSubmit} className="bg-white p-4 rounded shadow max-w-md space-y-4">
@@ -110,6 +112,7 @@ const UploadSubcategory = () => {
         </div>
       </div>
     </div>
+    </PageLayout>
   );
 };
 

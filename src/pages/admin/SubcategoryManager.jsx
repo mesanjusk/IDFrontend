@@ -1,6 +1,7 @@
 // Folder: src/pages/admin/CategoryManager.jsx
 import { useState, useEffect } from 'react';
 import api from '../../api'
+import PageLayout from '../../components/PageLayout';
 
 export default function CategoryManager() {
   const [categories, setCategories] = useState([]);
@@ -33,6 +34,7 @@ export default function CategoryManager() {
   };
 
   return (
+    <PageLayout>
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Category Manager</h1>
       <form onSubmit={handleUpload} className="mb-6 space-y-4">
@@ -80,5 +82,6 @@ export default function CategoryManager() {
         </tbody>
       </table>
     </div>
+    </PageLayout>
   );
 }

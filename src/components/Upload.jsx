@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import api from '../api';
+import PageLayout from './PageLayout';
 
 function Upload() {
   const [file, setFile] = useState('');
@@ -44,7 +45,8 @@ function Upload() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-6">
+    <PageLayout showFooter={false}>
+    <div className="flex flex-col items-center justify-center p-6">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">Upload Design</h1>
 
       <div className="flex flex-col space-y-4 w-full max-w-md">
@@ -131,6 +133,7 @@ function Upload() {
         </button>
       </div>
     </div>
+    </PageLayout>
   );
 }
 

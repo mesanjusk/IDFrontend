@@ -3,6 +3,7 @@ import api from '../api';
 import { Helmet } from 'react-helmet';
 import Navbar from './Navbar';
 import Footer from './Footer1';
+import PageLayout from './PageLayout';
 import Category from './Category';
 import Content from './Content';
 import { useNavigate } from "react-router-dom";
@@ -60,7 +61,8 @@ const Home = () => {
   const uniqueCategories = [...new Set(listings.map((item) => item.category))];
 
   return (
-    <div className="max-w-sm mx-auto min-h-screen bg-white flex flex-col">
+    <PageLayout showFooter={false}>
+    <div className="max-w-sm mx-auto bg-white flex flex-col">
       <Helmet>
         <title>Home – Sanju SK Digital</title>
         <meta name="description" content="Explore custom wedding cards, trophies, awards, ID cards and digital printing services from Sanju SK Digital Gondia." />
@@ -101,6 +103,7 @@ const Home = () => {
       {/* Footer */}
       <Footer />
     </div>
+    </PageLayout>
   );
 };
 
