@@ -2,6 +2,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../api'
+import PageLayout from '../components/PageLayout';
 import { Helmet } from 'react-helmet';
 
 const Admin = () => {
@@ -91,7 +92,8 @@ const Admin = () => {
   }, [listings, searchTerm, sortBy, selectedCategory, statusFilter]);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <PageLayout>
+    <div className="flex">
       {/* Sidebar */}
       <aside className="w-60 bg-white shadow p-4 hidden sm:block">
         <h2 className="text-xl font-bold text-pink-600 mb-4">Admin Panel</h2>
@@ -203,6 +205,7 @@ const Admin = () => {
         )}
       </main>
     </div>
+    </PageLayout>
   );
 };
 

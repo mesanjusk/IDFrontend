@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api'
+import PageLayout from '../components/PageLayout';
 import { useNavigate } from "react-router-dom";
 
 const UploadSubcategory = () => {
@@ -148,6 +149,7 @@ const UploadSubcategory = () => {
   );
 
   return (
+    <PageLayout>
     <div className="p-6 max-w-4xl mx-auto">
       <h2 className="text-2xl font-semibold text-center mb-6">Subcategory List</h2>
 
@@ -333,6 +335,7 @@ const UploadSubcategory = () => {
         </div>
       )}
     </div>
+    </PageLayout>
   );
 };
 

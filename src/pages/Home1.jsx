@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, Suspense, lazy, useDeferredValue } from 'react';
 import { Helmet } from 'react-helmet';
 import api from '../api'
+import PageLayout from '../components/PageLayout';
 
 const Category = lazy(() => import("../components/Category"));
 const Content = lazy(() => import("../components/Content"));
@@ -78,7 +79,8 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white px-4 pt-4 pb-20">
+    <PageLayout>
+    <div className="px-4 pt-4 pb-20">
       <Helmet>
         <title>Wedding Cards – Kanwal Cards</title>
         <meta name="description" content="Premium wedding invitation cards with elegant designs and customization options." />
@@ -183,6 +185,7 @@ const Home = () => {
         </div>
       </section>
     </div>
+    </PageLayout>
   );
 };
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import api from '../api'
+import PageLayout from '../components/PageLayout';
 
 const UploadCategory = () => {
   const [categoryName, setCategoryName] = useState('');
@@ -51,6 +52,7 @@ const UploadCategory = () => {
   };
 
   return (
+    <PageLayout>
     <div>
       <h2>Upload Category</h2>
       <form onSubmit={handleSubmit}>
@@ -78,6 +80,7 @@ const UploadCategory = () => {
       {error && <p style={{ color: 'red' }}>{error}</p>}
       {success && <p style={{ color: 'green' }}>{success}</p>}
     </div>
+    </PageLayout>
   );
 };
 
