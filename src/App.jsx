@@ -32,6 +32,10 @@ import AdminDashboard from './components/AdminDashboard';
 import Contact from './components/Contact';
 import AllCategory from './components/allCategory';
 import Favorites from './components/Favorites';
+import ProductListing from './pages/ProductListing';
+import ProductDetail from './pages/ProductDetail';
+import Cart from './pages/Cart';
+import Checkout from './pages/Checkout';
 
 function App() {
   const [backendReady, setBackendReady] = useState(false);
@@ -111,6 +115,10 @@ function App() {
         <Route path="/SocialMedia" element={<SocialMedia />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/favorites" element={<Favorites />} />
+        <Route path="/products" element={<ProductListing />} />
+        <Route path="/products/:id" element={<ProductDetail />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<Checkout />} />
       </Routes>
     </Router>
   );
