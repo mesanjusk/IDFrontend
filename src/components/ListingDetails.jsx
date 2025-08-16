@@ -43,19 +43,23 @@ const ListingDetails = () => {
         {isFavorite ? 'Remove from Favourites' : 'Add to Favourites'}
       </button>
 
-      {/* Render Images */}
-      <div className="grid grid-cols-1 gap-4">
-        {listing.images.map((image, index) => (
-          <img
-            key={index}
-            src={image}
-            alt={`Listing image ${index + 1}`}
-            className="w-full h-96 object-cover rounded"
-          />
-        ))}
+        {/* Render Images */}
+        {listing.images?.length ? (
+          <div className="grid grid-cols-1 gap-4">
+            {listing.images.map((image, index) => (
+              <img
+                key={index}
+                src={image}
+                alt={`Listing image ${index + 1}`}
+                className="w-full h-96 object-cover rounded"
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-gray-500">No images available.</p>
+        )}
       </div>
-    </div>
-  );
-};
+    );
+  };
 
 export default ListingDetails;

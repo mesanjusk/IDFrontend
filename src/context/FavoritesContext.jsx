@@ -3,24 +3,28 @@ import { createContext, useContext, useEffect, useState } from 'react';
 const FavoritesContext = createContext();
 
 export const FavoritesProvider = ({ children }) => {
-  const [favorites, setFavorites] = useState([]);
+    const [favorites, setFavorites] = useState([]);
 
-  // Load from localStorage on mount
-  useEffect(() => {
-    const stored = localStorage.getItem('favorites');
-    if (stored) {
-      try {
-        setFavorites(JSON.parse(stored));
-      } catch (_) {
-        // ignore parse errors
+    // Load from localStorage on mount
+    useEffect(() => {
+      if (typeof window !== 'undefined') {
+        const stored = window.localStorage.getItem('favorites');
+        if (stored) {
+          try {
+            setFavorites(JSON.parse(stored));
+          } catch (_) {
+            // ignore parse errors
+          }
+        }
       }
-    }
-  }, []);
+    }, []);
 
-  // Persist to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem('favorites', JSON.stringify(favorites));
-  }, [favorites]);
+    // Persist to localStorage whenever it changes
+    useEffect(() => {
+      if (typeof window !== 'undefined') {
+        window.localStorage.setItem('favorites', JSON.stringify(favorites));
+      }
+    }, [favorites]);
 
   const addFavorite = (listing) => {
     setFavorites((prev) => {
