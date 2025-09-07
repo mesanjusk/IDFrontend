@@ -2,6 +2,7 @@ import React from 'react';
 import { FaCamera, FaInstagram, FaMapMarkerAlt, FaPen } from 'react-icons/fa';
 import { Helmet } from 'react-helmet';
 import Footer from './Footer1';
+import PageLayout from './PageLayout';
 
 const Profile = () => {
   const userProfile = {
@@ -18,7 +19,8 @@ const Profile = () => {
   };
 
   return (
-    <div className="profile-page bg-white flex flex-col min-h-screen">
+    <PageLayout showFooter={false}>
+    <div className="profile-page bg-white flex flex-col">
       <Helmet>
         <title>{userProfile.name} – Photographer, Designer & Digital Printing in Gondia</title>
         <meta
@@ -102,6 +104,7 @@ const Profile = () => {
         <Footer />
       </div>
     </div>
+    </PageLayout>
   );
 };
 

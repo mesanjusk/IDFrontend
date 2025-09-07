@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import api from '../api'
+import PageLayout from '../components/PageLayout';
 
 export default function Login() {
     const navigate = useNavigate();
@@ -38,7 +39,8 @@ export default function Login() {
     }
     
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
+        <PageLayout>
+            <div className="p-6">
                 <h1 className="text-2xl font-bold mb-6">Login</h1>
                 <form  onSubmit={submit} className="bg-white p-4 rounded shadow max-w-md space-y-4">
                         <input
@@ -62,6 +64,7 @@ export default function Login() {
                     
                     <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition disabled:opacity-50">Submit</button>
                 </form>
-        </div>
+            </div>
+        </PageLayout>
     );
 }

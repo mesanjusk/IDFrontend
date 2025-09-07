@@ -7,6 +7,7 @@ import AllListing from './allLisiting';
 import AddUser from '../pages/addUser';
 import AddConfi from '../pages/addConfi';
 import AddReligion from '../pages/addReligion';
+import PageLayout from './PageLayout';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState(null);
@@ -52,7 +53,8 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
+    <PageLayout showFooter={false}>
+    <div className="flex">
       {/* Mobile Toggle Button */}
       <button
         className="sm:hidden fixed top-4 left-4 z-50 bg-blue-600 text-white p-2 rounded-md shadow-md"
@@ -99,8 +101,8 @@ export default function AdminDashboard() {
 
       {/* Main Content */}
       <main className="flex-1 p-6">
-        
-        <div className="min-h-screen p-6 ">
+
+        <div className="p-6 ">
           {activeTab === 'categories' && <UploadCategory />}
           {activeTab === 'subcategories' && <UploadSubcategory />}
           {activeTab === 'banners' && <UploadBanner />}
@@ -112,5 +114,6 @@ export default function AdminDashboard() {
         </div>
       </main>
     </div>
+    </PageLayout>
   );
 }

@@ -1,13 +1,11 @@
 import React from "react";
-import Header from "./Header";
-import Footer from "./Footer";
+import PageLayout from "./PageLayout";
 import SocialMedia from "./SocialMedia";
 
 export default function Contact() {
   return (
-    <>
-    <Header />
-    <div className="min-h-screen py-10 px-4 bg-gray-100 text-gray-900">
+    <PageLayout>
+    <div className="py-10 px-4">
       <div className="max-w-2xl mx-auto bg-white p-6 rounded shadow">
         <h1 className="text-2xl font-bold mb-4">Contact Us</h1>
         <p className="mb-4">
@@ -48,8 +46,7 @@ export default function Contact() {
         </form>
       </div>
     </div>
-    <Footer />
     <SocialMedia />
-    </>
+    </PageLayout>
   );
 }
