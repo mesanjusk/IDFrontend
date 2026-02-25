@@ -1,7 +1,7 @@
 // Home.jsx – Revamped to match premium eCommerce (like CaratLane), fully styled with Tailwind CSS
 
 import { useState, useEffect, useMemo, Suspense, lazy, useDeferredValue } from 'react';
-import { Helmet } from 'react-helmet';
+import { Helmet } from '../components/common/HelmetShim';
 import api from '../api'
 
 const Category = lazy(() => import("../components/Category"));

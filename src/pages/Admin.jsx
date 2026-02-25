@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../api'
-import { Helmet } from 'react-helmet';
+import { Helmet } from '../components/common/HelmetShim';
 
 const Admin = () => {
   const navigate = useNavigate();

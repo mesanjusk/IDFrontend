@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import ProductCard from '../components/ProductCard';
+import LoadingSkeleton from '../components/common/LoadingSkeleton';
 import api from '../api';
 
 const ProductListing = () => {
@@ -8,15 +9,28 @@ const ProductListing = () => {
   const [category, setCategory] = useState('');
   const [sort, setSort] = useState('');
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get('/api/products').then(res => setProducts(res.data));
-    api.get('/api/categories').then(res => setCategories(res.data));
+    const load = async () => {
+      try {
+        const [productsRes, categoriesRes] = await Promise.all([
+          api.get('/api/products'),
+          api.get('/api/categories'),
+        ]);
+        setProducts(productsRes.data);
+        setCategories(categoriesRes.data);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    load();
   }, []);
 
   const filtered = products
-    .filter(p => p.title.toLowerCase().includes(search.toLowerCase()))
-    .filter(p => (category ? p.category === category : true));
+    .filter((p) => p.title.toLowerCase().includes(search.toLowerCase()))
+    .filter((p) => (category ? p.category === category : true));
 
   const sorted = [...filtered].sort((a, b) => {
     if (sort === 'price-asc') return a.price - b.price;
@@ -26,41 +40,38 @@ const ProductListing = () => {
 
   return (
     <div className="p-4">
-      <div className="flex flex-col sm:flex-row gap-4 mb-4">
+      <div className="mb-4 flex flex-col gap-4 sm:flex-row">
         <input
           type="text"
           placeholder="Search products"
           value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="border p-2 flex-1"
+          onChange={(e) => setSearch(e.target.value)}
+          className="flex-1 border p-2"
         />
-        <select
-          value={category}
-          onChange={e => setCategory(e.target.value)}
-          className="border p-2"
-        >
+        <select value={category} onChange={(e) => setCategory(e.target.value)} className="border p-2">
           <option value="">All Categories</option>
-          {categories.map(c => (
+          {categories.map((c) => (
             <option key={c} value={c}>
               {c}
             </option>
           ))}
         </select>
-        <select
-          value={sort}
-          onChange={e => setSort(e.target.value)}
-          className="border p-2"
-        >
+        <select value={sort} onChange={(e) => setSort(e.target.value)} className="border p-2">
           <option value="">Sort By</option>
           <option value="price-asc">Price: Low to High</option>
           <option value="price-desc">Price: High to Low</option>
         </select>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {sorted.map(product => (
-          <ProductCard key={product._id} product={product} />
-        ))}
-      </div>
+
+      {loading ? (
+        <LoadingSkeleton />
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {sorted.map((product) => (
+            <ProductCard key={product._id} product={product} />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

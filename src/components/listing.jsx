@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../api';
-import { Helmet } from 'react-helmet';
+import { Helmet } from './common/HelmetShim';
 import Navbar from './Navbar';
 import Footer from './Footer1';
 import Category from './Category';

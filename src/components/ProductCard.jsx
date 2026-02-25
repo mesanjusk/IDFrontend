@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import LazyImage from './common/LazyImage';
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
@@ -8,16 +9,14 @@ const ProductCard = ({ product }) => {
   const productLink = product?.detailPath || `/products/${product?._id}`;
 
   return (
-    <article className="group overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-lg">
-      
+    <article className="group overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-lg">
       <Link to={productLink} className="block">
         <div className="relative">
           {product?.images?.[0] ? (
-            <img
+            <LazyImage
               src={product.images[0]}
-              alt={product?.title || "Product image"}
+              alt={product?.title || 'Product image'}
               className="h-48 w-full rounded-t-xl object-cover"
-              loading="lazy"
             />
           ) : (
             <div className="flex h-48 w-full items-center justify-center rounded-t-xl bg-gray-100 text-sm text-gray-500">
@@ -35,19 +34,13 @@ const ProductCard = ({ product }) => {
 
       <div className="p-4">
         <Link to={productLink}>
-          <h3 className="line-clamp-1 text-lg font-bold text-gray-800">
-            {product?.title}
-          </h3>
+          <h3 className="line-clamp-1 text-lg font-bold text-gray-800">{product?.title}</h3>
         </Link>
 
-        <p className="mt-2 line-clamp-2 text-sm text-gray-600">
-          {product?.description}
-        </p>
+        <p className="mt-2 line-clamp-2 text-sm text-gray-600">{product?.description}</p>
 
         <div className="mt-4">
-          <span className="text-xl font-bold text-red-600">
-            ₹{product?.price}
-          </span>
+          <span className="text-xl font-bold text-red-600">₹{product?.price}</span>
         </div>
 
         <button
