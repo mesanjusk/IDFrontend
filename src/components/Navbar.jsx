@@ -1,40 +1,95 @@
-import { FaFacebookMessenger, FaShoppingCart } from 'react-icons/fa';
+import { useState } from 'react';
+import { FaBars, FaShoppingCart, FaTimes, FaUserCircle } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 
+const menuItems = [
+  { label: 'Home', to: '/' },
+  { label: 'Shop', to: '/products' },
+  { label: 'Categories', to: '/allCategories' },
+  { label: 'Favourites', to: '/favorites' },
+  { label: 'Contact', to: '/contact' },
+];
+
 const Navbar = () => {
   const { items } = useCart();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div className="flex justify-between items-center p-3 sticky top-0 bg-white z-10">
-      <Link to="/" className="text-xl font-bold flex items-center gap-2">
-        SK Cards
-      </Link>
-      <div className="flex items-center gap-4">
-        <Link to="/products" className="text-sm text-gray-700 hover:underline">
-          Shop
+    <header className="sticky top-0 z-50 bg-white shadow-md">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+        <Link to="/" className="text-xl font-bold text-gray-800">
+          SK Cards
         </Link>
-        <Link to="/favorites" className="text-sm text-gray-700 hover:underline">
-          Favourites
-        </Link>
-        <Link to="/cart" className="relative text-2xl text-gray-700">
-          <FaShoppingCart />
-          {items.length > 0 && (
-            <span className="absolute -top-2 -right-2 bg-pink-600 text-white rounded-full text-xs px-1">
-              {items.length}
-            </span>
-          )}
-        </Link>
-        <a
-          href="https://wa.me/919372333633?text=Hi%2C%20I%20would%20like%20to%20make%20an%20enquiry"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-2xl text-green-600"
-        >
-          <FaFacebookMessenger />
-        </a>
+
+        <nav className="hidden flex-1 justify-center md:flex">
+          <ul className="flex items-center gap-7">
+            {menuItems.map((item) => (
+              <li key={item.label}>
+                <Link
+                  to={item.to}
+                  className="group relative text-sm font-medium text-gray-700 transition-all duration-300 hover:text-red-600"
+                >
+                  {item.label}
+                  <span className="absolute -bottom-1 left-0 h-0.5 w-0 bg-red-600 transition-all duration-300 group-hover:w-full" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div className="flex items-center gap-4">
+          <Link to="/cart" className="relative text-xl text-gray-700 transition-all duration-300 hover:text-red-600">
+            <FaShoppingCart />
+            {items.length > 0 && (
+              <span className="absolute -right-2 -top-2 rounded-full bg-red-600 px-1.5 py-0.5 text-xs text-white">
+                {items.length}
+              </span>
+            )}
+          </Link>
+          <Link to="/login" className="hidden text-2xl text-gray-700 transition-all duration-300 hover:text-red-600 md:block">
+            <FaUserCircle />
+          </Link>
+          <button
+            type="button"
+            className="text-xl text-gray-700 md:hidden"
+            onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? <FaTimes /> : <FaBars />}
+          </button>
+        </div>
       </div>
-    </div>
+
+      <div
+        className={`overflow-hidden border-t border-gray-100 bg-white transition-all duration-300 md:hidden ${
+          isMobileMenuOpen ? 'max-h-80 py-2' : 'max-h-0 py-0'
+        }`}
+      >
+        <ul className="space-y-1 px-4">
+          {menuItems.map((item) => (
+            <li key={item.label}>
+              <Link
+                to={item.to}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition-all duration-300 hover:bg-gray-50 hover:text-red-600"
+              >
+                {item.label}
+              </Link>
+            </li>
+          ))}
+          <li>
+            <Link
+              to="/login"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="block rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition-all duration-300 hover:bg-gray-50 hover:text-red-600"
+            >
+              Profile
+            </Link>
+          </li>
+        </ul>
+      </div>
+    </header>
   );
 };
 
