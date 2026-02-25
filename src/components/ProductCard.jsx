@@ -5,17 +5,17 @@ const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
 
   const badge = product?.badge;
-  const productLink =
-    product?.detailPath || `/products/${product?._id}`;
+  const productLink = product?.detailPath || `/products/${product?._id}`;
 
   return (
     <article className="group overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-lg">
+      
       <Link to={productLink} className="block">
         <div className="relative">
           {product?.images?.[0] ? (
             <img
               src={product.images[0]}
-              alt={product.title}
+              alt={product?.title || "Product image"}
               className="h-48 w-full rounded-t-xl object-cover"
               loading="lazy"
             />
@@ -36,23 +36,23 @@ const ProductCard = ({ product }) => {
       <div className="p-4">
         <Link to={productLink}>
           <h3 className="line-clamp-1 text-lg font-bold text-gray-800">
-            {product.title}
+            {product?.title}
           </h3>
         </Link>
 
         <p className="mt-2 line-clamp-2 text-sm text-gray-600">
-          {product.description}
+          {product?.description}
         </p>
 
         <div className="mt-4">
           <span className="text-xl font-bold text-red-600">
-            ₹{product.price}
+            ₹{product?.price}
           </span>
         </div>
 
         <button
           onClick={() => addToCart(product)}
-          className="mt-4 w-full rounded-lg bg-red-600 px-4 py-2.5 font-semibold text-white transition-all duration-300 hover:bg-red-700"
+          className="mt-4 w-full rounded-lg bg-red-600 px-4 py-2.5 font-semibold text-white transition-all duration-300 hover:bg-red-700 active:scale-95"
         >
           Add to Cart
         </button>

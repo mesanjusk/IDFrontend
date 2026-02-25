@@ -16,23 +16,10 @@ const FeaturedProducts = ({ products = [], visibleCount = 8, onLoadMore }) => {
         </div>
 
         <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
-          {visibleProducts.map((product, index) => (
+          {visibleProducts.map((product) => (
             <ProductCard
               key={product._id || product.listing_uuid}
-              product={{
-                ...product,
-                badge:
-                  index % 3 === 0
-                    ? 'Popular'
-                    : index % 5 === 0
-                    ? 'New'
-                    : product.badge,
-                detailPath:
-                  product?.detailPath ||
-                  (product?.listing_uuid || product?.subcategory
-                    ? `/list/${product?._id || product?.listing_uuid}`
-                    : `/products/${product?._id}`),
-              }}
+              product={product}
             />
           ))}
         </div>

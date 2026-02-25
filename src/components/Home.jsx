@@ -2,12 +2,13 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api';
 
-import ContactPreview from './ContactPreview';
-import FeaturedProducts from './FeaturedProducts';
-import Footer from './Footer';
+import Navbar from './Navbar';
 import HeroSection from './HeroSection';
-import Testimonials from './Testimonials';
+import FeaturedProducts from './FeaturedProducts';
 import WhyChooseUs from './WhyChooseUs';
+import Testimonials from './Testimonials';
+import ContactPreview from './ContactPreview';
+import Footer from './Footer';
 
 const categoryIcons = ['📇', '📘', '🪧', '📦', '📣', '🎁'];
 
@@ -21,10 +22,9 @@ export default function Home() {
     const fetchListings = async () => {
       try {
         const response = await api.get('/api/listings');
-        const payload =
-          Array.isArray(response.data)
-            ? response.data
-            : response.data?.result || [];
+        const payload = Array.isArray(response.data)
+          ? response.data
+          : response.data?.result || [];
         setListings(payload);
       } catch (error) {
         console.error('Failed to fetch listings:', error);
@@ -34,10 +34,9 @@ export default function Home() {
     const fetchCategories = async () => {
       try {
         const response = await api.get('/api/categories');
-        const payload =
-          Array.isArray(response.data)
-            ? response.data
-            : response.data?.result || [];
+        const payload = Array.isArray(response.data)
+          ? response.data
+          : response.data?.result || [];
         setCategories(payload);
       } catch (error) {
         console.error('Failed to fetch categories:', error);
@@ -48,7 +47,7 @@ export default function Home() {
     fetchCategories();
   }, []);
 
-  // Map categories by UUID for fast lookup
+  // Create category map for quick lookup
   const categoriesByUuid = useMemo(() => {
     const map = new Map();
     categories.forEach((category) => {
@@ -59,23 +58,20 @@ export default function Home() {
     return map;
   }, [categories]);
 
-  // Build unique category cards from listings
+  // Build unique category cards
   const categoryCards = useMemo(() => {
     const uniqueCategoryUuids = [
       ...new Set(
-        listings
-          .map((listing) => listing?.category)
-          .filter(Boolean)
+        listings.map((listing) => listing?.category).filter(Boolean)
       ),
     ];
 
     return uniqueCategoryUuids.map((categoryUuid, index) => {
       const categoryDetails = categoriesByUuid.get(categoryUuid);
-      const title = categoryDetails?.name || categoryUuid;
 
       return {
         id: categoryDetails?._id || `${categoryUuid}-${index}`,
-        title,
+        title: categoryDetails?.name || categoryUuid,
         icon: categoryIcons[index % categoryIcons.length],
         imageUrl: categoryDetails?.imageUrl || '',
         categoryUuid,
@@ -87,17 +83,15 @@ export default function Home() {
   const featuredProducts = useMemo(() => {
     return listings.map((listing) => ({
       ...listing,
-      description:
-        listing?.description || listing?.Description || '',
-      images: Array.isArray(listing?.images)
-        ? listing.images
-        : [],
+      description: listing?.description || listing?.Description || '',
+      images: Array.isArray(listing?.images) ? listing.images : [],
       price: listing?.price ?? 0,
     }));
   }, [listings]);
 
   return (
     <div className="bg-white font-sans text-gray-900">
+      <Navbar />
       <HeroSection />
 
       {/* Categories Section */}
@@ -123,14 +117,9 @@ export default function Home() {
                     navigate(`/subcategory/${category.categoryUuid}`)
                   }
                   onKeyDown={(event) => {
-                    if (
-                      event.key === 'Enter' ||
-                      event.key === ' '
-                    ) {
+                    if (event.key === 'Enter' || event.key === ' ') {
                       event.preventDefault();
-                      navigate(
-                        `/subcategory/${category.categoryUuid}`
-                      );
+                      navigate(`/subcategory/${category.categoryUuid}`);
                     }
                   }}
                   className="cursor-pointer rounded-xl border border-gray-100 bg-white p-6 text-center shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
@@ -161,13 +150,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Featured Products Section */}
+      {/* Featured Products */}
       <FeaturedProducts
         products={featuredProducts}
         visibleCount={visibleCount}
-        onLoadMore={() =>
-          setVisibleCount((prev) => prev + 4)
-        }
+        onLoadMore={() => setVisibleCount((prev) => prev + 4)}
       />
 
       <WhyChooseUs />

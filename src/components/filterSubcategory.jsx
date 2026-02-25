@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react"; 
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useMemo } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api';
-import Header from "./Header";
-import Footer from "./Footer";
-import SocialMedia from "./SocialMedia";
+import Footer from './Footer';
+import Navbar from './Navbar';
+import SocialMedia from './SocialMedia';
 
 export default function FilterSubcategory() {
   const { id } = useParams();
@@ -11,153 +11,167 @@ export default function FilterSubcategory() {
 
   const [subcategories, setSubcategories] = useState([]);
   const [allListings, setAllListings] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState(null);
-  const [subItems, setSubItems] = useState([]);
-  const [selectedCategoryName, setSelectedCategoryName] = useState('');
   const [selectedSubcategoryName, setSelectedSubcategoryName] = useState('');
+  const [selectedCategoryName, setSelectedCategoryName] = useState('');
   const [originalListings, setOriginalListings] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-  const fetchListingsByCategoryId = async () => {
-    try {
-      const [listingsRes, categoriesRes] = await Promise.all([
-        api.get("/api/listings"),
-        api.get("/api/categories")
-      ]);
+    const fetchListingsByCategoryId = async () => {
+      try {
+        const [listingsRes, categoriesRes] = await Promise.all([api.get('/api/listings'), api.get('/api/categories')]);
+        const listings = Array.isArray(listingsRes.data) ? listingsRes.data : listingsRes.data?.result || [];
+        const categories = Array.isArray(categoriesRes.data) ? categoriesRes.data : categoriesRes.data?.result || [];
 
-      const listings = listingsRes.data;
-      const categories = categoriesRes.data;
+        const matchedCategory = categories.find((cat) => cat.category_uuid === id || cat._id === id);
+        if (!matchedCategory) {
+          setOriginalListings([]);
+          setAllListings([]);
+          setSelectedCategoryName('');
+          return;
+        }
 
-
-      const matchedCategory = categories.find(cat => cat.category_uuid === id);
-      if (!matchedCategory) {
-        console.warn("No category found with ID:", id);
-        setOriginalListings([]);
-        setAllListings([]);
-        setSelectedCategoryName('');
-        return;
+        setSelectedCategoryName(matchedCategory.name || 'Category');
+        const filtered = listings.filter(
+          (listing) => listing.category === matchedCategory.category_uuid || listing.category === matchedCategory._id,
+        );
+        setOriginalListings(filtered);
+        setAllListings(filtered);
+      } catch (err) {
+        console.error('Error fetching listings or categories:', err);
+      } finally {
+        setLoading(false);
       }
+    };
 
-      setSelectedCategoryName(matchedCategory.name);
-
-     
-const filtered = listings.filter(
-  (listing) => listing.category === matchedCategory.category_uuid || listing.category === matchedCategory._id
-);
-      setOriginalListings(filtered);
-      setAllListings(filtered);
-    } catch (err) {
-      console.error("Error fetching listings or categories:", err);
+    if (id) {
+      fetchListingsByCategoryId();
     }
-  };
+  }, [id]);
 
-  if (id) {
-    fetchListingsByCategoryId();
-  }
-}, [id]);
+  useEffect(() => {
+    const fetchSubcategories = async () => {
+      try {
+        const [subcategoryRes, categoriesRes] = await Promise.all([api.get('/api/subcategories'), api.get('/api/categories')]);
+        const subcategoryPayload = Array.isArray(subcategoryRes.data) ? subcategoryRes.data : subcategoryRes.data?.result || [];
+        const categories = Array.isArray(categoriesRes.data) ? categoriesRes.data : categoriesRes.data?.result || [];
+        const matchedCategory = categories.find((cat) => cat.category_uuid === id || cat._id === id);
 
+        const matched = subcategoryPayload.filter((sub) => {
+          const catId = sub.categoryId?._id || sub.categoryId?.$oid || sub.categoryId;
+          return catId?.toString() === matchedCategory?._id?.toString();
+        });
 
-  // Fetch subcategories based on category ID
-useEffect(() => {
-  const fetchSubcategories = async () => {
-    try {
-      const response = await api.get("/api/subcategories");
-      const matched = response.data.filter((sub) => {
-        const catId = sub.categoryId?._id || sub.categoryId?.$oid || sub.categoryId;
-        return catId?.toString() === id?.toString();
-      });
-      setSubcategories(matched);
-    } catch (err) {
-      console.error("Error fetching subcategories:", err);
-    }
-  };
-  fetchSubcategories();
-}, [id]);
+        setSubcategories(matched);
+      } catch (err) {
+        console.error('Error fetching subcategories:', err);
+      }
+    };
 
-const handleClick = async (item) => {
-    const subcategoryId = item._id;
-    setSelectedCategory(item);
-    navigate(`/list/${subcategoryId}`);
-  };
+    fetchSubcategories();
+  }, [id]);
+
+  const heading = useMemo(() => {
+    if (!selectedSubcategoryName) return selectedCategoryName || 'Category';
+    return `${selectedCategoryName} / ${selectedSubcategoryName}`;
+  }, [selectedCategoryName, selectedSubcategoryName]);
 
   return (
     <>
-      <Header />
-      <div className="font-sans bg-white text-gray-900">
-        {/* Subcategory Carousel */}
-        <section className="py-4">
-          <div className="container mx-auto px-4">
-            <div className="overflow-x-auto scrollbar-hide -mx-4 px-4">
-              <div className="flex gap-6 min-w-max">
-                {subcategories.map((item) => (
-                  <button
-                    key={item._id}
-                    onClick={() => {
-                      setSelectedSubcategoryName(item.name?.trim());
-                      const filteredBySub = originalListings.filter(
-                        (listing) =>
-                          listing.subcategory?.trim().toLowerCase() ===
-                          item.name?.trim().toLowerCase()
-                      );
-                      setAllListings(filteredBySub);
-                    }}
-                    className="flex flex-col items-center cursor-pointer focus:outline-none"
-                    aria-label={`Filter by ${item.name}`}
-                  >
-                    <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-gray-300 hover:border-indigo-500 transition">
-                      {item.imageUrl ? (
-                        <img
-                          src={item.imageUrl}
-                          alt={item.name || "Subcategory"}
-                          className="w-full h-full object-cover"
-                          loading="lazy"
-                        />
-                      ) : (
-                        <div className="flex items-center justify-center w-full h-full bg-gray-200 text-gray-500 text-xs">
-                          No Image
-                        </div>
-                      )}
-                    </div>
-                    <p className="mt-2 text-sm font-medium truncate max-w-[96px] text-center">
-                      {item.name}
-                    </p>
-                  </button>
-                ))}
-              </div>
+      <Navbar />
+      <div className="bg-white font-sans text-gray-900">
+        <section className="bg-gray-50 py-10">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <h1 className="text-3xl font-bold text-gray-900">{heading}</h1>
+            <p className="mt-2 text-gray-600">Browse subcategories and discover matching designs.</p>
+          </div>
+        </section>
+
+        <section className="py-8">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="flex gap-4 overflow-x-auto pb-2">
+              <button
+                onClick={() => {
+                  setSelectedSubcategoryName('');
+                  setAllListings(originalListings);
+                }}
+                className={`whitespace-nowrap rounded-full border px-4 py-2 text-sm font-medium transition-all duration-300 ${
+                  selectedSubcategoryName ? 'border-gray-200 text-gray-700 hover:border-red-600 hover:text-red-600' : 'border-red-600 bg-red-600 text-white'
+                }`}
+              >
+                All
+              </button>
+
+              {subcategories.map((item) => (
+                <button
+                  key={item._id}
+                  onClick={() => {
+                    setSelectedSubcategoryName(item.name?.trim() || '');
+                    const filteredBySub = originalListings.filter(
+                      (listing) =>
+                        listing.subcategory?.trim().toLowerCase() === item.name?.trim().toLowerCase() ||
+                        listing.subcategory === item.subCategory_uuid ||
+                        listing.subcategory === item._id,
+                    );
+                    setAllListings(filteredBySub);
+                  }}
+                  className={`flex items-center gap-2 whitespace-nowrap rounded-full border px-4 py-2 text-sm font-medium transition-all duration-300 ${
+                    selectedSubcategoryName === item.name?.trim()
+                      ? 'border-red-600 bg-red-600 text-white'
+                      : 'border-gray-200 text-gray-700 hover:border-red-600 hover:text-red-600'
+                  }`}
+                  aria-label={`Filter by ${item.name}`}
+                >
+                  {item.imageUrl ? (
+                    <img src={item.imageUrl} alt={item.name || 'Subcategory'} className="h-6 w-6 rounded-full object-cover" />
+                  ) : null}
+                  <span>{item.name}</span>
+                </button>
+              ))}
             </div>
           </div>
         </section>
 
-        {/* Listings Grid */}
-        {allListings.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4 px-4 pb-6">
-            {allListings.map((listing) => (
-              <div
-                key={listing._id}
-                className="border rounded-lg p-3 shadow hover:shadow-md transition cursor-pointer"
-                 onClick={() => handleClick(listing)}
-              >
-                <div className="w-full aspect-square overflow-hidden rounded mb-2">
-                  <img
-                    src={
-                      Array.isArray(listing.images)
-                        ? listing.images[0]
-                        : listing.images
-                    }
-                    alt={listing.title || "Listing"}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
-                </div>
-                <p className="text-sm text-center font-medium truncate">{listing.title}</p>
+        <section className="pb-16">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            {loading ? (
+              <p className="text-center text-gray-500">Loading listings...</p>
+            ) : allListings.length > 0 ? (
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                {allListings.map((listing) => (
+                  <article
+                    key={listing._id}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => navigate(`/list/${listing._id}`)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        navigate(`/list/${listing._id}`);
+                      }
+                    }}
+                    className="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                  >
+                    <div className="aspect-square w-full overflow-hidden bg-gray-100">
+                      <img
+                        src={Array.isArray(listing.images) ? listing.images[0] : listing.images}
+                        alt={listing.title || 'Listing'}
+                        className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="p-4">
+                      <h3 className="line-clamp-1 text-base font-bold text-gray-800">{listing.title}</h3>
+                      <p className="mt-2 text-sm font-semibold text-red-600">₹{listing.price ?? 0}</p>
+                    </div>
+                  </article>
+                ))}
               </div>
-            ))}
+            ) : (
+              <p className="text-center text-gray-500">No listings found in “{selectedCategoryName || 'Selected Category'}”.</p>
+            )}
           </div>
-        ) : (
-          <p className="text-gray-500 text-center px-4">
-            No listings found in “{selectedCategoryName || "Selected Category"}”.
-          </p>
-        )}
+        </section>
       </div>
       <Footer />
       <SocialMedia />
