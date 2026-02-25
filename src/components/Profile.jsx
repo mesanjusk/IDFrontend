@@ -1,6 +1,5 @@
 import React from 'react';
 import { FaCamera, FaInstagram, FaMapMarkerAlt, FaPen } from 'react-icons/fa';
-import { Helmet } from './common/HelmetShim';
 import Footer from './Footer1';
 
 const Profile = () => {
@@ -19,46 +18,7 @@ const Profile = () => {
 
   return (
     <div className="profile-page bg-white flex flex-col min-h-screen">
-      <Helmet>
-        <title>{userProfile.name} – Photographer, Designer & Digital Printing in Gondia</title>
-        <meta
-          name="description"
-          content="Sanju SK Digital – Professional digital creator, photographer, and custom printing expert in Gondia. Custom ID cards, wedding invites, trophies & more."
-        />
-        <link rel="canonical" href={userProfile.profileUrl} />
-        <meta property="og:title" content={`${userProfile.name} – Gondia Printing & Design`} />
-        <meta property="og:description" content={userProfile.bio} />
-        <meta property="og:image" content={userProfile.image} />
-        <meta property="og:url" content={userProfile.profileUrl} />
-        <meta property="og:type" content="profile" />
-        <meta property="og:locale" content="en_IN" />
-        <meta name="robots" content="index, follow" />
-
-        {/* Optional Twitter Meta */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="Sanju SK Digital – Gondia Printing Services" />
-        <meta name="twitter:description" content="Custom cards, trophies, ID cards & more. Visit now." />
-        <meta name="twitter:image" content={userProfile.image} />
-
-        {/* Structured Data for LocalBusiness */}
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "LocalBusiness",
-            name: userProfile.name,
-            image: userProfile.image,
-            url: userProfile.profileUrl,
-            sameAs: [userProfile.instagramUrl, 'https://g.co/kgs/bNmV7os'],
-            address: {
-              "@type": "PostalAddress",
-              addressLocality: "Gondia",
-              addressRegion: "Maharashtra",
-              addressCountry: "IN",
-            },
-            description: userProfile.bio,
-          })}
-        </script>
-      </Helmet>
+      
 
       {/* Profile Info */}
       <div className="flex items-center p-5 space-x-5 sm:flex-col md:flex-row">

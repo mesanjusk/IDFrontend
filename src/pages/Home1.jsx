@@ -1,7 +1,6 @@
 // Home.jsx – Revamped to match premium eCommerce (like CaratLane), fully styled with Tailwind CSS
 
 import { useState, useEffect, useMemo, Suspense, lazy, useDeferredValue } from 'react';
-import { Helmet } from '../components/common/HelmetShim';
 import api from '../api'
 
 const Category = lazy(() => import("../components/Category"));
@@ -79,30 +78,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-white px-4 pt-4 pb-20">
-      <Helmet>
-        <title>Wedding Cards – Sanju SK</title>
-        <meta name="description" content="Premium wedding invitation cards with elegant designs and customization options." />
-        <meta property="og:title" content="Wedding Cards – Sanju SK" />
-        <meta property="og:description" content="Custom wedding invitations – personalize & order online." />
-        <meta property="og:image" content="https://kanwalcards.in/preview.webp" />
-        <link rel="canonical" href={window.location.href} />
-        <meta name="twitter:card" content="summary_large_image" />
-        <script type="application/ld+json">{`
-          {
-            "@context": "https://schema.org",
-            "@type": "Store",
-            "name": "Kanwal Cards",
-            "url": "https://Sanjusk.in",
-            "logo": "https://SanjuSK.in/logo.webp",
-            "description": "Custom wedding cards online",
-            "address": {
-              "@type": "PostalAddress",
-              "addressLocality": "Gondia",
-              "addressCountry": "IN"
-            }
-          }
-        `}</script>
-      </Helmet>
+      
 
       {/* Hero Section */}
       <section className="relative rounded-xl overflow-hidden bg-[url('/hero-bg.webp')] bg-cover bg-center h-[350px] flex items-center justify-center mb-10">

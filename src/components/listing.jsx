@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import api from '../api';
-import { Helmet } from './common/HelmetShim';
 import Navbar from './Navbar';
 import Footer from './Footer1';
 import Category from './Category';
@@ -61,15 +60,7 @@ const Home = () => {
 
   return (
     <div className="max-w-sm mx-auto min-h-screen bg-white flex flex-col">
-      <Helmet>
-        <title>Home – Sanju SK Digital</title>
-        <meta name="description" content="Explore custom wedding cards, trophies, awards, ID cards and digital printing services from Sanju SK Digital Gondia." />
-        <link rel="canonical" href="https://skcard.vercel.app" />
-        <meta property="og:title" content="Sanju SK Digital – Custom Printing Services" />
-        <meta property="og:description" content="Discover quality printing services including wedding invitations, mementos, ID cards and more." />
-        <meta property="og:url" content="https://skcard.vercel.app" />
-        <meta property="og:type" content="website" />
-      </Helmet>
+      
 
       {/* Navbar */}
       <Navbar />

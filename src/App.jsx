@@ -45,7 +45,30 @@ const Checkout = lazy(() => import('./pages/Checkout'));
 
 const PageWithSeo = ({ children }) => {
   const { pathname } = useLocation();
-  const meta = routeMeta[pathname] || { title: 'Page', description: 'Explore Sanju SK products and services.' };
+  const dynamicMeta =
+    (pathname.startsWith('/products/') && {
+      title: 'Product Details',
+      description: 'View product details, pricing, and add items to your cart.',
+    }) ||
+    (pathname.startsWith('/listing/') && {
+      title: 'Listing Details',
+      description: 'Explore listing information, media, and specifications.',
+    }) ||
+    (pathname.startsWith('/subcategory/') && {
+      title: 'Subcategory',
+      description: 'Browse filtered products in this subcategory.',
+    }) ||
+    (pathname.startsWith('/list/') && {
+      title: 'List Item',
+      description: 'View details for this selected list item.',
+    });
+
+  const meta =
+    routeMeta[pathname] ||
+    dynamicMeta || {
+      title: 'Page',
+      description: 'Explore Sanju SK products and services.',
+    };
 
   return (
     <>

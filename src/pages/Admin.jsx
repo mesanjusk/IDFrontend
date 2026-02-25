@@ -2,7 +2,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import api from '../api'
-import { Helmet } from '../components/common/HelmetShim';
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -109,9 +108,7 @@ const Admin = () => {
 
       {/* Main Content */}
       <main className="flex-1 p-6">
-        <Helmet>
-          <title>Admin – Sanju SK Digital</title>
-        </Helmet>
+        
 
         {showAddForm ? (
           <form onSubmit={handleAddListing} className="max-w-xl mx-auto bg-white p-6 rounded shadow">
