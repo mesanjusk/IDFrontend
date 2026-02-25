@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../api';
 
 import ContactPreview from './ContactPreview';
@@ -11,6 +12,7 @@ import WhyChooseUs from './WhyChooseUs';
 const categoryIcons = ['📇', '📘', '🪧', '📦', '📣', '🎁'];
 
 export default function Home() {
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [visibleCount, setVisibleCount] = useState(8);
@@ -45,7 +47,7 @@ export default function Home() {
   }, []);
 
   const categoryCards = useMemo(() => {
-    return categories.slice(0, 6).map((category, index) => {
+    return categories.map((category, index) => {
       const title =
         typeof category === 'string'
           ? category
@@ -55,6 +57,8 @@ export default function Home() {
         id: category?._id || `${title}-${index}`,
         title,
         icon: categoryIcons[index % categoryIcons.length],
+        imageUrl: category?.imageUrl || '',
+        categoryUuid: category?.category_uuid || '',
       };
     });
   }, [categories]);
@@ -76,15 +80,39 @@ export default function Home() {
           </div>
 
           {categoryCards.length > 0 ? (
-            <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {categoryCards.map((category) => (
                 <article
                   key={category.id}
-                  className="rounded-xl border border-gray-100 bg-white p-8 text-center shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() =>
+                    category.categoryUuid &&
+                    navigate(`/subcategory/${category.categoryUuid}`)
+                  }
+                  onKeyDown={(event) => {
+                    if (
+                      (event.key === 'Enter' || event.key === ' ') &&
+                      category.categoryUuid
+                    ) {
+                      event.preventDefault();
+                      navigate(`/subcategory/${category.categoryUuid}`);
+                    }
+                  }}
+                  className="cursor-pointer rounded-xl border border-gray-100 bg-white p-6 text-center shadow-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
                 >
-                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-red-50 text-2xl">
-                    {category.icon}
+                  <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center overflow-hidden rounded-xl bg-red-50 text-3xl">
+                    {category.imageUrl ? (
+                      <img
+                        src={category.imageUrl}
+                        alt={category.title}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      category.icon
+                    )}
                   </div>
+
                   <h3 className="text-lg font-bold text-gray-800">
                     {category.title}
                   </h3>
