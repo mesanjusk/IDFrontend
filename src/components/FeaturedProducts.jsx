@@ -7,17 +7,31 @@ const FeaturedProducts = ({ products = [], visibleCount = 8, onLoadMore }) => {
     <section className="py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900">Featured Products</h2>
-          <p className="mt-3 text-gray-600">Popular picks designed for promotions, events, and everyday branding.</p>
+          <h2 className="text-3xl font-bold text-gray-900">
+            Featured Products
+          </h2>
+          <p className="mt-3 text-gray-600">
+            Popular picks designed for promotions, events, and everyday branding.
+          </p>
         </div>
 
         <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
           {visibleProducts.map((product, index) => (
             <ProductCard
-              key={product._id}
+              key={product._id || product.listing_uuid}
               product={{
                 ...product,
-                badge: index % 3 === 0 ? 'Popular' : index % 5 === 0 ? 'New' : product.badge,
+                badge:
+                  index % 3 === 0
+                    ? 'Popular'
+                    : index % 5 === 0
+                    ? 'New'
+                    : product.badge,
+                detailPath:
+                  product?.detailPath ||
+                  (product?.listing_uuid || product?.subcategory
+                    ? `/list/${product?._id || product?.listing_uuid}`
+                    : `/products/${product?._id}`),
               }}
             />
           ))}
