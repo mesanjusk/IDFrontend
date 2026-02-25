@@ -4,7 +4,17 @@ import { Link } from 'react-router-dom';
 import api from '../api';
 
 export default function Footer() {
-  const [config, setConfig] = useState({ name: '', email: '', phone: '', address: '' });
+  const [config, setConfig] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    address: '',
+    fb: '',
+    insta: '',
+    linkedIn: '',
+    twitter: '',
+    youtube: '',
+  });
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -32,10 +42,17 @@ export default function Footer() {
               Professional printing and advertising services for businesses that want to stand out.
             </p>
             <div className="mt-5 flex items-center gap-3">
-              {[FaFacebookF, FaInstagram, FaLinkedinIn, FaYoutube].map((Icon, index) => (
+              {[
+                { Icon: FaFacebookF, href: config.fb },
+                { Icon: FaInstagram, href: config.insta },
+                { Icon: FaLinkedinIn, href: config.linkedIn },
+                { Icon: FaYoutube, href: config.youtube || config.twitter },
+              ].map(({ Icon, href }, index) => (
                 <a
                   key={index}
-                  href="#"
+                  href={href || '#'}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-800 text-gray-200 transition-all duration-300 hover:bg-red-600 hover:text-white"
                 >
                   <Icon className="text-sm" />
