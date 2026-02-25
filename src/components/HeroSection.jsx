@@ -16,10 +16,10 @@ const HeroSection = () => {
           Premium Printing & Advertising Solutions
         </p>
         <h1 className="max-w-3xl text-4xl font-bold leading-tight sm:text-5xl md:text-6xl">
-          Build Bold Brand Presence with High-Impact Print Media
+          Turning Celebrations Into Beautiful Paper Art
         </h1>
         <p className="mt-6 max-w-2xl text-base text-gray-200 sm:text-lg">
-          From business cards to large-format flex branding, we craft designs and prints that make your business stand out.
+          Making your brand visible, vibrant, and unforgettable.
         </p>
 
         <div className="mt-8 flex flex-wrap gap-4">
