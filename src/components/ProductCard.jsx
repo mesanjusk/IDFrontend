@@ -4,10 +4,11 @@ import { useCart } from '../context/CartContext';
 const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
   const badge = product?.badge;
+  const productLink = product?.detailPath || `/products/${product._id}`;
 
   return (
     <article className="group overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-lg">
-      <Link to={`/products/${product._id}`} className="block">
+      <Link to={productLink} className="block">
         <div className="relative">
           {product.images?.[0] ? (
             <img
@@ -30,7 +31,7 @@ const ProductCard = ({ product }) => {
       </Link>
 
       <div className="p-4">
-        <Link to={`/products/${product._id}`}>
+        <Link to={productLink}>
           <h3 className="line-clamp-1 text-lg font-bold text-gray-800">{product.title}</h3>
         </Link>
         <p className="mt-2 line-clamp-2 text-sm text-gray-600">{product.description}</p>

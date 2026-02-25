@@ -18,6 +18,7 @@ const FeaturedProducts = ({ products = [], visibleCount = 8, onLoadMore }) => {
               product={{
                 ...product,
                 badge: index % 3 === 0 ? 'Popular' : index % 5 === 0 ? 'New' : product.badge,
+                detailPath: product?.detailPath || (product?.listing_uuid || product?.subcategory ? `/list/${product?._id || product?.listing_uuid}` : `/products/${product?._id}`),
               }}
             />
           ))}
