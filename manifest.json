@@ -3,8 +3,8 @@
   "short_name": "WeddingCards",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ec4899",
+  "background_color": "#f7f9f9",
+  "theme_color": "#2fa89c",
   "orientation": "portrait",
   "icons": [
     {

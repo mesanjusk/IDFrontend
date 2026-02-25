@@ -65,8 +65,8 @@ function App() {
         <p>Loading </p>
         <style>{`
           .spinner {
-            border: 6px solid #f3f3f3;
-            border-top: 6px solid #3498db;
+            border: 6px solid var(--color-gray-200);
+            border-top: 6px solid var(--color-primary-500);
             border-radius: 50%;
             width: 50px;
             height: 50px;

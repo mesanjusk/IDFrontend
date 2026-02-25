@@ -1,3 +1,158 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  /* StudioSector4-inspired neutral + teal palette */
+  --color-gray-50: #f7f9f9;
+  --color-gray-100: #eef2f2;
+  --color-gray-200: #dde5e3;
+  --color-gray-300: #c6d2cf;
+  --color-gray-400: #a0b1ad;
+  --color-gray-500: #7d8e8b;
+  --color-gray-600: #5c6b69;
+  --color-gray-700: #3f4f4d;
+  --color-gray-800: #243331;
+  --color-gray-900: #162321;
+
+  --color-primary-50: #e9f9f7;
+  --color-primary-100: #cff3ef;
+  --color-primary-200: #a1e4dd;
+  --color-primary-300: #70d2c8;
+  --color-primary-400: #47c2b5;
+  --color-primary-500: #2fa89c;
+  --color-primary-600: #218379;
+  --color-primary-700: #155952;
+  --color-primary-800: #0f4640;
+  --color-primary-900: #0b3530;
+
+  --color-secondary-50: #ecf7f6;
+  --color-secondary-100: #d5eeeb;
+  --color-secondary-200: #adddd7;
+  --color-secondary-300: #7fc7be;
+  --color-secondary-400: #58afa5;
+  --color-secondary-500: #40988e;
+  --color-secondary-600: #327a72;
+  --color-secondary-700: #275f58;
+  --color-secondary-800: #204f49;
+  --color-secondary-900: #173d38;
+
+  --color-accent-50: #f4f7ff;
+  --color-accent-100: #e8eeff;
+  --color-accent-200: #d2dcff;
+  --color-accent-300: #afc0ff;
+  --color-accent-400: #8b9fff;
+  --color-accent-500: #6b80f0;
+  --color-accent-600: #5364c5;
+  --color-accent-700: #414f9a;
+  --color-accent-800: #343f78;
+  --color-accent-900: #2a345f;
+
+  --color-success-50: #ecfbf4;
+  --color-success-100: #d4f5e3;
+  --color-success-200: #aceac9;
+  --color-success-300: #7edaab;
+  --color-success-400: #56c98f;
+  --color-success-500: #38b175;
+  --color-success-600: #2c8f5d;
+  --color-success-700: #25714b;
+  --color-success-800: #205a3d;
+  --color-success-900: #1a4832;
+
+  --color-warning-50: #fff8eb;
+  --color-warning-100: #feefcb;
+  --color-warning-200: #fddc96;
+  --color-warning-300: #f9c35e;
+  --color-warning-400: #eda833;
+  --color-warning-500: #d9921b;
+  --color-warning-600: #b67414;
+  --color-warning-700: #925812;
+  --color-warning-800: #774714;
+  --color-warning-900: #623b14;
+
+  --surface-bg: var(--color-gray-50);
+  --surface-card: #ffffff;
+  --surface-inverse: var(--color-gray-900);
+  --text-heading: var(--color-gray-900);
+  --text-body: var(--color-gray-700);
+  --text-muted: var(--color-gray-500);
+  --border-default: var(--color-gray-200);
+  --overlay-soft: rgba(11, 35, 33, 0.2);
+  --overlay-strong: rgba(11, 35, 33, 0.75);
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    @apply bg-gray-50 text-gray-900;
+  }
+
+  body {
+    color: var(--text-body);
+    background-color: var(--surface-bg);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--text-heading);
+  }
+
+  p,
+  span,
+  li,
+  label {
+    color: inherit;
+  }
+
+  a {
+    color: var(--color-primary-600);
+    transition: color 220ms ease;
+  }
+
+  a:hover {
+    color: var(--color-primary-700);
+  }
+
+  input,
+  textarea,
+  select {
+    background-color: var(--surface-card);
+    color: var(--text-body);
+    border-color: var(--border-default);
+    transition: border-color 220ms ease, box-shadow 220ms ease, background-color 220ms ease;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--text-muted);
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    border-color: var(--color-primary-500);
+    box-shadow: 0 0 0 3px rgba(47, 168, 156, 0.2);
+    outline: none;
+  }
+
+  button,
+  [role='button'] {
+    transition: background-color 220ms ease, color 220ms ease, border-color 220ms ease, box-shadow 220ms ease, transform 220ms ease;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface-bg: #0d1715;
+    --surface-card: #13201e;
+    --text-heading: #ecf4f3;
+    --text-body: #d4e1df;
+    --text-muted: #9eb3af;
+    --border-default: #2a3f3b;
+  }
+}

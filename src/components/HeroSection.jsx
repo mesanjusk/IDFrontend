@@ -6,7 +6,7 @@ const HeroSection = () => {
       className="relative overflow-hidden bg-gray-900 text-white"
       style={{
         backgroundImage:
-          "linear-gradient(rgba(17,24,39,0.75), rgba(17,24,39,0.75)), url('https://images.unsplash.com/photo-1586074299757-dc655f18518f?auto=format&fit=crop&w=1600&q=80')",
+          "linear-gradient(var(--overlay-strong), var(--overlay-strong)), url('https://images.unsplash.com/photo-1586074299757-dc655f18518f?auto=format&fit=crop&w=1600&q=80')",
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }}
