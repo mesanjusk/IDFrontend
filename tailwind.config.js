@@ -1,16 +1,23 @@
 // tailwind.config.js
 
+const withOpacity = (cssVariable) => ({ opacityValue }) => {
+  if (opacityValue === undefined) {
+    return `rgb(var(${cssVariable}) / 1)`;
+  }
+  return `rgb(var(${cssVariable}) / ${opacityValue})`;
+};
+
 const scale = (token) => ({
-  50: `var(--${token}-50)`,
-  100: `var(--${token}-100)`,
-  200: `var(--${token}-200)`,
-  300: `var(--${token}-300)`,
-  400: `var(--${token}-400)`,
-  500: `var(--${token}-500)`,
-  600: `var(--${token}-600)`,
-  700: `var(--${token}-700)`,
-  800: `var(--${token}-800)`,
-  900: `var(--${token}-900)`,
+  50: withOpacity(`--${token}-50-rgb`),
+  100: withOpacity(`--${token}-100-rgb`),
+  200: withOpacity(`--${token}-200-rgb`),
+  300: withOpacity(`--${token}-300-rgb`),
+  400: withOpacity(`--${token}-400-rgb`),
+  500: withOpacity(`--${token}-500-rgb`),
+  600: withOpacity(`--${token}-600-rgb`),
+  700: withOpacity(`--${token}-700-rgb`),
+  800: withOpacity(`--${token}-800-rgb`),
+  900: withOpacity(`--${token}-900-rgb`),
 });
 
 module.exports = {
