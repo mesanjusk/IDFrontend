@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaBars, FaShoppingCart, FaTimes, FaUserCircle } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import api from '../api';
 import { useCart } from '../context/CartContext';
 
 const menuItems = [
@@ -14,12 +15,31 @@ const menuItems = [
 const Navbar = () => {
   const { items } = useCart();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [config, setConfig] = useState({ name: 'SK Cards', logo: '' });
+
+  useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const response = await api.get('/api/confi/GetConfiList');
+        if (response.data.success && response.data.result.length > 0) {
+          setConfig(response.data.result[0]);
+        }
+      } catch (error) {
+        console.error('Failed to fetch configuration:', error);
+      }
+    };
+
+    fetchConfig();
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-        <Link to="/" className="text-xl font-bold text-gray-800">
-          SK Cards
+        <Link to="/" className="flex items-center gap-2 text-xl font-bold text-gray-800">
+          {config.logo ? (
+            <img src={config.logo} alt={config.name || 'Logo'} className="h-9 w-9 rounded-full object-cover" />
+          ) : null}
+          <span>{config.name || 'SK Cards'}</span>
         </Link>
 
         <nav className="hidden flex-1 justify-center md:flex">
@@ -47,7 +67,10 @@ const Navbar = () => {
               </span>
             )}
           </Link>
-          <Link to="/login" className="hidden text-2xl text-gray-700 transition-all duration-300 hover:text-red-600 md:block">
+          <Link
+            to="/login"
+            className="hidden text-2xl text-gray-700 transition-all duration-300 hover:text-red-600 md:block"
+          >
             <FaUserCircle />
           </Link>
           <button
