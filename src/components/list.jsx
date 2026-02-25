@@ -139,7 +139,7 @@ export default function ListingPage() {
       </main>
 
       <Footer />
-      <SocialMedia />
+      
     </>
   );
 }

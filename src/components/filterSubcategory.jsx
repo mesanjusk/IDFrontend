@@ -174,7 +174,7 @@ export default function FilterSubcategory() {
         </section>
       </div>
       <Footer />
-      <SocialMedia />
+      
     </>
   );
 }
