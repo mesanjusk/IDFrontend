@@ -1,19 +1,20 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useMemo, useState } from 'react';
+import { FaFacebookF, FaInstagram, FaLinkedinIn, FaYoutube } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 import api from '../api';
 
 export default function Footer() {
-  const [config, setConfig] = useState({ name: "", email: "", phone: "", address: "" });
+  const [config, setConfig] = useState({ name: '', email: '', phone: '', address: '' });
 
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const response = await api.get("/api/confi/GetConfiList");
+        const response = await api.get('/api/confi/GetConfiList');
         if (response.data.success && response.data.result.length > 0) {
           setConfig(response.data.result[0]);
         }
       } catch (error) {
-        console.error("Failed to fetch configuration:", error);
+        console.error('Failed to fetch configuration:', error);
       }
     };
     fetchConfig();
@@ -22,38 +23,69 @@ export default function Footer() {
   const year = useMemo(() => new Date().getFullYear(), []);
 
   return (
-    <div className="font-sans bg-white text-gray-900">
-      <footer className="bg-gray-800 text-gray-200 py-8 mt-6">
-        <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-          <address className="not-italic">
-            <h3 className="font-semibold mb-2">{config.name || "Loading..."}</h3>
-            <p>{config.address || ""}</p>
-          </address>
-
-          <nav>
-            <h3 className="font-semibold mb-2">Quick Links</h3>
-            <ul>
-              <li><Link to="/" className="hover:underline">Home</Link></li>
-              <li><Link to="/allCategories" className="hover:underline">Categories</Link></li>
-              <li><Link to="/contact" className="hover:underline">Contact Us</Link></li>
-            </ul>
-          </nav>
+    <footer className="bg-gray-900 py-12 text-white">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4">
+          <div>
+            <h3 className="text-xl font-bold">{config.name || 'SK Cards'}</h3>
+            <p className="mt-4 text-sm text-gray-300">
+              Professional printing and advertising services for businesses that want to stand out.
+            </p>
+            <div className="mt-5 flex items-center gap-3">
+              {[FaFacebookF, FaInstagram, FaLinkedinIn, FaYoutube].map((Icon, index) => (
+                <a
+                  key={index}
+                  href="#"
+                  className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-800 text-gray-200 transition-all duration-300 hover:bg-red-600 hover:text-white"
+                >
+                  <Icon className="text-sm" />
+                </a>
+              ))}
+            </div>
+          </div>
 
           <div>
-            <h3 className="font-semibold mb-2">Contact</h3>
-            <p>
-              Email: <a href={`mailto:${config.email}`} className="hover:underline">{config.email || 'N/A'}</a>
-            </p>
-            <p>
-              Phone: <a href={`tel:${config.phone}`} className="hover:underline">{config.phone || 'N/A'}</a>
-            </p>
+            <h4 className="text-lg font-semibold">Quick Links</h4>
+            <ul className="mt-4 space-y-2 text-sm text-gray-300">
+              <li><Link to="/" className="transition-all duration-300 hover:text-red-400">Home</Link></li>
+              <li><Link to="/products" className="transition-all duration-300 hover:text-red-400">Products</Link></li>
+              <li><Link to="/allCategories" className="transition-all duration-300 hover:text-red-400">Categories</Link></li>
+              <li><Link to="/contact" className="transition-all duration-300 hover:text-red-400">Contact Us</Link></li>
+            </ul>
           </div>
+
+          <div>
+            <h4 className="text-lg font-semibold">Popular Categories</h4>
+            <ul className="mt-4 space-y-2 text-sm text-gray-300">
+              <li><Link to="/products" className="transition-all duration-300 hover:text-red-400">Visiting Cards</Link></li>
+              <li><Link to="/products" className="transition-all duration-300 hover:text-red-400">Flex & Banners</Link></li>
+              <li><Link to="/products" className="transition-all duration-300 hover:text-red-400">Brochures</Link></li>
+              <li><Link to="/products" className="transition-all duration-300 hover:text-red-400">Packaging Prints</Link></li>
+            </ul>
+          </div>
+
+          <address className="not-italic">
+            <h4 className="text-lg font-semibold">Contact Info</h4>
+            <p className="mt-4 text-sm text-gray-300">{config.address || 'Address will appear here.'}</p>
+            <p className="mt-2 text-sm text-gray-300">
+              Email:{' '}
+              <a href={`mailto:${config.email}`} className="transition-all duration-300 hover:text-red-400">
+                {config.email || 'N/A'}
+              </a>
+            </p>
+            <p className="mt-2 text-sm text-gray-300">
+              Phone:{' '}
+              <a href={`tel:${config.phone}`} className="transition-all duration-300 hover:text-red-400">
+                {config.phone || 'N/A'}
+              </a>
+            </p>
+          </address>
         </div>
 
-        <div className="text-center mt-6 text-xs text-gray-400">
-          © {year} {config.name || ''}. All rights reserved.
+        <div className="mt-10 border-t border-gray-800 pt-5 text-center text-sm text-gray-400">
+          © {year} {config.name || 'SK Cards'}. All rights reserved.
         </div>
-      </footer>
-    </div>
+      </div>
+    </footer>
   );
 }

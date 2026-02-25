@@ -3,32 +3,50 @@ import { useCart } from '../context/CartContext';
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
+  const badge = product?.badge;
 
   return (
-    <div className="border rounded-lg p-4 flex flex-col">
-      <Link to={`/products/${product._id}`} className="flex-1">
-        {product.images?.[0] && (
-          <img
-            src={product.images[0]}
-            alt={product.title}
-            className="w-full h-40 object-cover rounded"
-          />
-        )}
-        <h3 className="mt-2 font-semibold">{product.title}</h3>
-        <p className="text-sm text-gray-600 line-clamp-2">
-          {product.description}
-        </p>
+    <article className="group overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-lg">
+      <Link to={`/products/${product._id}`} className="block">
+        <div className="relative">
+          {product.images?.[0] ? (
+            <img
+              src={product.images[0]}
+              alt={product.title}
+              className="h-48 w-full rounded-t-xl object-cover"
+            />
+          ) : (
+            <div className="flex h-48 w-full items-center justify-center rounded-t-xl bg-gray-100 text-sm text-gray-500">
+              No image available
+            </div>
+          )}
+
+          {badge && (
+            <span className="absolute left-3 top-3 rounded-full bg-red-600 px-3 py-1 text-xs font-semibold text-white">
+              {badge}
+            </span>
+          )}
+        </div>
       </Link>
-      <div className="mt-2 flex items-center justify-between">
-        <span className="font-bold">₹{product.price}</span>
+
+      <div className="p-4">
+        <Link to={`/products/${product._id}`}>
+          <h3 className="line-clamp-1 text-lg font-bold text-gray-800">{product.title}</h3>
+        </Link>
+        <p className="mt-2 line-clamp-2 text-sm text-gray-600">{product.description}</p>
+
+        <div className="mt-4">
+          <span className="text-xl font-bold text-red-600">₹{product.price}</span>
+        </div>
+
         <button
           onClick={() => addToCart(product)}
-          className="bg-pink-600 text-white px-3 py-1 rounded"
+          className="mt-4 w-full rounded-lg bg-red-600 px-4 py-2.5 font-semibold text-white transition-all duration-300 hover:bg-red-700"
         >
           Add to Cart
         </button>
       </div>
-    </div>
+    </article>
   );
 };
 
